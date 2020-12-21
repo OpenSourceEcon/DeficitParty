@@ -1,9 +1,7 @@
 '''
-This plots U.S. deficits by year against measures of political party prevalence
-in the Whitehouse and in Congress. It uses the stored dataset
-deficit_party_data.csv, the sources of which are documented in the first two
-rows of the .csv file. The variable names are in the fourth row and the data
-observations begin in the fifth row.
+This plots the time series of U.S. debt as a percentage of GDP from 1929 to
+2019, then adds the CBO extended baseline forecast from 2020 to 2050 from the
+most recent Long-Term Budget Outlook report.
 
 This module defines the following function(s):
 '''
@@ -14,110 +12,106 @@ import datetime as dt
 import os
 from bokeh.io import output_file
 from bokeh.plotting import figure, show
-from bokeh.models import ColumnDataSource, Title, Legend, HoverTool
+from bokeh.models import ColumnDataSource, CDSView, Title, Legend, HoverTool
 # from bokeh.models import Label
 # from bokeh.palettes import Category20
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
-filename_data = ('data/deficit_party_data.csv')
+filename_data = ('data/debt_gdp.csv')
 data_file_path = os.path.join(cur_path, filename_data)
-alldata_df = pd.read_csv(
+debtgdp_df = pd.read_csv(
     data_file_path,
-    names=['Year', 'deficit_gdp', 'president', 'president_party',
-           'congress_num', 'congress_sess', 'dem_whitehouse',
-           'dem_senateseats', 'rep_senateseats', 'oth_senateseats',
-           'tot_senateseats', 'dem_houseseats', 'rep_houseseats',
-           'oth_houseseats', 'tot_houseseats'],
-    dtype = {'Year': 'int64', 'deficit_gdp': 'float64',
-             'president': 'str', 'president_party': 'str',
-             'congress_num': 'int64', 'congress_sess': 'int64',
-             'dem_whitehouse': 'int64', 'dem_senateseats': 'int64',
-             'rep_senateseats': 'int64', 'oth_senateseats': 'int64',
-             'tot_senateseats': 'int64', 'dem_houseseats': 'int64',
-             'rep_houseseats': 'int64', 'oth_houseseats': 'int64',
-             'tot_houseseats': 'int64'},
+    names=['Year', 'debt_gdp', 'cbo_forecast'],
+    dtype = {'Year': 'int64', 'debt_gdp': 'float64', 'cbo_forecast': 'int64'},
     parse_dates=['Year'], skiprows=4)
+debtgdp_df['min_plot_debtgdp'] = 0
 
 # Create Bokeh plot of Deficits/GDP by Democrat-held House seats
-fig_title = 'U.S. Deficits/GDP by Democrat-held House Seats: 1929-2020'
-filename = ('images/deficitimage_senate_demseats.html')
+fig_title = 'U.S. Federal Debt Held by the Public (percent of GDP): 1929-2050'
+filename = ('images/debt_gdp_image.html')
 output_file(filename, title=fig_title)
 
 # Format the tooltip
 tooltips = [('Year', '@Year{%Y}'),
-            ('Deficit/GDP', '@deficit_gdp{0.0 %}'),
-            ('Democrat Seats', '@dem_houseseats{0.}')]
+            ('Debt/GDP', '@debt_gdp{0.0 %}')]
 
 # Solve for minimum and maximum Democrat House seats and deficit/GDP for
 # plotting purposes
-min_demseats_val = alldata_df['dem_houseseats'].min()
-print('Minimum Democrat House seats:', min_demseats_val)
-max_demseats_val = alldata_df['dem_houseseats'].max()
-print('Maximum Democrat House seats:', max_demseats_val)
-min_defGDP_val = alldata_df['deficit_gdp'].min()
-print('Minimum deficit/GDP:', min_defGDP_val)
-max_defGDP_val = alldata_df['deficit_gdp'].max()
-print('Maximum deficit/GDP:', max_defGDP_val)
+min_year = debtgdp_df['Year'].min()
+print('Minimum data year:', min_year)
+max_year = debtgdp_df['Year'].max()
+print('Maximum data year:', max_year)
+min_debtGDP_val = debtgdp_df['defbt_gdp'].min()
+print('Minimum debt/GDP:', min_debtGDP_val)
+max_debtGDP_val = debtgdp_df['defbt_gdp'].max()
+print('Maximum debt/GDP:', max_debtGDP_val)
+datarange_debtGDP_vals = max_debtGDP_val - 0.0
 
-datarange_demseats_vals = max_demseats_val - min_demseats_val
-datarange_defGDP_vals = max_defGDP_val - min_defGDP_val
 fig_buffer_pct = 0.10
 fig = figure(plot_height=500,
              plot_width=800,
-             x_axis_label='Number of Democratic House Seats (out of 435)',
-             y_axis_label='Deficit/GDP',
-             y_range=(min_defGDP_val - fig_buffer_pct * datarange_defGDP_vals,
-                      max_defGDP_val + fig_buffer_pct * datarange_defGDP_vals),
-             x_range=((min_demseats_val -
-                       fig_buffer_pct * datarange_demseats_vals),
-                      (max_demseats_val +
-                       fig_buffer_pct * datarange_demseats_vals)),
+             x_axis_label='Year',
+             y_axis_label='Debt/GDP',
+             y_range=(0.0, max_debtGDP_val +
+                      fig_buffer_pct * datarange_debtGDP_vals),
+             x_range=(min_year, max_year),
              tools=['save', 'zoom_in', 'zoom_out', 'box_zoom',
                     'pan', 'undo', 'redo', 'reset', 'hover', 'help'],
              toolbar_location='left')
 
-deficit_house_df = alldata_df[['Year', 'deficit_gdp', 'dem_houseseats']]
-deficit_house_cds = ColumnDataSource(deficit_house_df)
+debtgdp_cds = ColumnDataSource(debtgdp_df)
+debt_gdp_histdata_view = \
+    CDSView(source=debtgdp_cds,
+            filters=[GroupFilter(column_name='cbo_forecast', group=0)])
+debt_gdp_cbofrcst_view = \
+    CDSView(source=debtgdp_cds,
+            filters=[GroupFilter(column_name='cbo_forecast', group=1)])
 fig.title.text_font_size = '18pt'
 fig.toolbar.logo = None
-fig.scatter(x='dem_houseseats', y='deficit_gdp', source=deficit_house_df,
-            line_color='black', fill_color='blue', size=12, alpha=0.7)
+l0 = fig.varea(x='Year', y1='debt_gdp', y2='min_plot_debtgdp',
+               source=debtgdp_cds, view=debt_gdp_histdata_view,
+               legend='Historical data', line_color='black', fill_color='blue',
+               size=12, alpha=0.7)
 
-# Dashed vertical line at 217 House seats representing the 50% mark
-fig.line(x=[217, 217], y=[-30, 10], color='black', line_width=2,
-         line_dash='dashed', alpha=0.5)
+# # Dashed vertical line at 217 House seats representing the 50% mark
+# fig.line(x=[217, 217], y=[-30, 10], color='black', line_width=2,
+#          line_dash='dashed', alpha=0.5)
 
-# Dashed horizontal line at deficit/GDP = 0
-fig.line(x=[0, 435], y=[0.0, 0.0], color='black', line_width=2,
-         line_dash='dashed', alpha=0.5)
+# # Dashed horizontal line at deficit/GDP = 0
+# fig.line(x=[0, 435], y=[0.0, 0.0], color='black', line_width=2,
+#          line_dash='dashed', alpha=0.5)
 
 # Create the tick marks for the x-axis and set x-axis labels
-major_tick_labels = ['150', '200', '217', '250', '300', '350']
-major_tick_list = [150, 200, 217, 250, 300, 350]
+major_tick_labels = ['1930', '1945', '1960', '1980', '2000', '2008', '2020',
+                     '2035', '2050']
+major_tick_list = [1930, 1945, 1960, 1980, 2000, 2008, 2020, 2035, 2050]
 
-minor_tick_list = [item for item in range(150, 351, 10)]
+minor_tick_list = [item for item in range(1929, 2051)]
 major_tick_dict = dict(zip(major_tick_list, major_tick_labels))
 fig.xaxis.ticker = major_tick_list
 fig.xaxis.major_label_overrides = major_tick_dict
 
-# # Add legend
-# legend = Legend(items=[(rec_label_yrmth_lst[0], [l0]),
-#                         (rec_label_yrmth_lst[1], [l1]),
-#                         (rec_label_yrmth_lst[2], [l2]),
-#                         (rec_label_yrmth_lst[3], [l3]),
-#                         (rec_label_yrmth_lst[4], [l4]),
-#                         (rec_label_yrmth_lst[5], [l5]),
-#                         (rec_label_yrmth_lst[6], [l6]),
-#                         (rec_label_yrmth_lst[7], [l7]),
-#                         (rec_label_yrmth_lst[8], [l8]),
-#                         (rec_label_yrmth_lst[9], [l9]),
-#                         (rec_label_yrmth_lst[10], [l10]),
-#                         (rec_label_yrmth_lst[11], [l11]),
-#                         (rec_label_yrmth_lst[12], [l12]),
-#                         (rec_label_yrmth_lst[13], [l13]),
-#                         (rec_label_yrmth_lst[14], [l14])],
-#                 location='center')
-# fig.add_layout(legend, 'right')
+rec_label_yr_lst = \
+#         ['1929-1933',  # (Aug 1929 - Mar 1933) Great Depression
+#          '1937-1938',  # (May 1937 - Jun 1938)
+#          '1945',       # (Feb 1945 - Oct 1945)
+#          '1948-1949',  # (Nov 1948 - Oct 1949)
+#          '1953-1954',  # (Jul 1953 - May 1954)
+#          '1957-1958',  # (Aug 1957 - Apr 1958)
+#          '1960-1961',  # (Apr 1960 - Feb 1961)
+#          '1969-1970',  # (Dec 1969 - Nov 1970)
+#          '1973-1975',  # (Nov 1973 - Mar 1975)
+#          '1980',       # (Jan 1980 - Jul 1980)
+#          '1981-1982',  # (Jul 1981 - Nov 1982)
+#          '1990-1991',  # (Jul 1990 - Mar 1991)
+#          '2001',       # (Mar 2001 - Nov 2001)
+#          '2007-2009',  # (Dec 2007 - Jun 2009) Great Recession
+#          '2020-pres']  # (Feb 2020 - present) Coronavirus recession
+
+# Add legend
+legend = Legend(items=[('Historical data 1929-2019', [l0])],
+                location='center')
+fig.add_layout(legend, 'bottom_right')
 
 # # # Add label to current recession low point
 # # fig.text(x=[12, 12, 12, 12], y=[0.63, 0.60, 0.57, 0.54],
@@ -141,22 +135,23 @@ fig.xaxis.major_label_overrides = major_tick_dict
 # fig.add_layout(Title(text=fig_title2, text_font_style='bold',
 #                         text_font_size='16pt', align='center'), 'above')
 
-# # Add source text below figure
-# updated_date_str = end_date.strftime('%B %-d, %Y')
-# fig.add_layout(Title(text='Source: Richard W. Evans (@RickEcon), ' +
-#                             'historical PAYEMS data from FRED and BLS, ' +
-#                             'updated ' + updated_date_str + '.',
-#                         align='left',
-#                         text_font_size='3mm',
-#                         text_font_style='italic'),
-#                 'below')
-# fig.legend.click_policy = 'mute'
+# Add source text below figure
+fig.add_layout(Title(text='Source: Richard W. Evans (@RickEcon), ' +
+                          'historical data from FRED FYFSGDA188S series. ' +
+                          'CBO forecast values from CBO extended baseline ' +
+                          'forecast of Revenues Minus Total Spending ' +
+                          '(Sep. 2020).',
+                        align='left',
+                        text_font_size='3mm',
+                        text_font_style='italic'),
+                'below')
+fig.legend.click_policy = 'mute'
 
-# # Add the HoverTool to the figure
-# fig.add_tools(HoverTool(tooltips=tooltips, toggleable=False,
-#                         formatters={'@Date': 'datetime'}))
+# Add the HoverTool to the figure
+fig.add_tools(HoverTool(tooltips=tooltips, toggleable=False,
+                        formatters={'@Year': 'datetime'}))
 
-# if html_show:
+# Show figure in browser upon executing this script
 show(fig)
 
 
