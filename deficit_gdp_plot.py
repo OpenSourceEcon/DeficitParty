@@ -1,7 +1,7 @@
 '''
-This plots the time series of U.S. debt as a percentage of GDP from 1929 to
-2019, then adds the CBO extended baseline forecast from 2020 to 2050 from the
-most recent Long-Term Budget Outlook report.
+This plots the time series of annual U.S. deficits as a percentage of GDP from
+1929 to 2019, then adds the CBO extended baseline forecast from 2020 to 2050
+from the most recent Long-Term Budget Outlook report.
 
 This module defines the following function(s):
 '''
@@ -12,66 +12,71 @@ import datetime as dt
 import os
 from bokeh.io import output_file
 from bokeh.plotting import figure, show
-from bokeh.models import ColumnDataSource, CDSView, Title, Legend, HoverTool
+from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
+                          Legend, HoverTool)
 # from bokeh.models import Label
 # from bokeh.palettes import Category20
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
-filename_data = ('data/debt_gdp.csv')
+filename_data = ('data/deficit_gdp.csv')
 data_file_path = os.path.join(cur_path, filename_data)
-debtgdp_df = pd.read_csv(
-    data_file_path,
-    names=['Year', 'debt_gdp', 'cbo_forecast'],
-    dtype = {'Year': 'int64', 'debt_gdp': 'float64', 'cbo_forecast': 'int64'},
+deficitgdp_df = pd.read_csv(
+    data_file_path, names=['Year', 'deficit_gdp', 'cbo_forecast'],
+    dtype = {'Year': 'int64', 'deficit_gdp': 'float64',
+             'cbo_forecast': 'int64'},
     parse_dates=['Year'], skiprows=4)
-debtgdp_df['min_plot_debtgdp'] = 0
+# Create boolean, see example at https://www.tutorialspoint.com/bokeh/bokeh_filtering_data.htm
+# cbo_forecast_bool = [True if deficitgdp_df['cbo_forecast'].values() == 1]
 
-# Create Bokeh plot of Deficits/GDP by Democrat-held House seats
-fig_title = 'U.S. Federal Debt Held by the Public (percent of GDP): 1929-2050'
-filename = ('images/debt_gdp_image.html')
+# Create Bokeh time series plot of Deficits/GDP
+fig_title = ('Annual U.S. Budget Balance (Surpluses and Deficits) as ' +
+             'percent of GDP: 1929-2050')
+filename = ('images/deficit_gdp_image.html')
 output_file(filename, title=fig_title)
 
 # Format the tooltip
 tooltips = [('Year', '@Year{%Y}'),
-            ('Debt/GDP', '@debt_gdp{0.0 %}')]
+            ('Deficit/GDP', '@deficit_gdp{0.0 %}')]
 
 # Solve for minimum and maximum Democrat House seats and deficit/GDP for
 # plotting purposes
-min_year = debtgdp_df['Year'].min()
+min_year = deficitgdp_df['Year'].min()
 print('Minimum data year:', min_year)
-max_year = debtgdp_df['Year'].max()
+max_year = deficitgdp_df['Year'].max()
 print('Maximum data year:', max_year)
-min_debtGDP_val = debtgdp_df['defbt_gdp'].min()
-print('Minimum debt/GDP:', min_debtGDP_val)
-max_debtGDP_val = debtgdp_df['defbt_gdp'].max()
-print('Maximum debt/GDP:', max_debtGDP_val)
-datarange_debtGDP_vals = max_debtGDP_val - 0.0
+min_deficitGDP_val = deficitgdp_df['deficit_gdp'].min()
+print('Minimum deficit/GDP:', min_deficitGDP_val)
+max_deficitGDP_val = deficitgdp_df['deficit_gdp'].max()
+print('Maximum deficit/GDP:', max_deficitGDP_val)
+datarange_deficitGDP_vals = max_deficitGDP_val - min_deficitGDP_val
 
 fig_buffer_pct = 0.10
 fig = figure(plot_height=500,
              plot_width=800,
              x_axis_label='Year',
              y_axis_label='Debt/GDP',
-             y_range=(0.0, max_debtGDP_val +
-                      fig_buffer_pct * datarange_debtGDP_vals),
+             y_range=(min_deficitGDP_val -
+                      fig_buffer_pct * datarange_deficitGDP_vals,
+                      max_deficitGDP_val +
+                      fig_buffer_pct * datarange_deficitGDP_vals),
              x_range=(min_year, max_year),
              tools=['save', 'zoom_in', 'zoom_out', 'box_zoom',
                     'pan', 'undo', 'redo', 'reset', 'hover', 'help'],
              toolbar_location='left')
 
-debtgdp_cds = ColumnDataSource(debtgdp_df)
-debt_gdp_histdata_view = \
-    CDSView(source=debtgdp_cds,
+deficitgdp_cds = ColumnDataSource(deficitgdp_df)
+deficit_gdp_histdata_view = \
+    CDSView(source=deficitgdp_cds,
             filters=[GroupFilter(column_name='cbo_forecast', group=0)])
-debt_gdp_cbofrcst_view = \
-    CDSView(source=debtgdp_cds,
+deficit_gdp_cbofrcst_view = \
+    CDSView(source=deficitgdp_cds,
             filters=[GroupFilter(column_name='cbo_forecast', group=1)])
 fig.title.text_font_size = '18pt'
 fig.toolbar.logo = None
-l0 = fig.varea(x='Year', y1='debt_gdp', y2='min_plot_debtgdp',
-               source=debtgdp_cds, view=debt_gdp_histdata_view,
-               legend='Historical data', line_color='black', fill_color='blue',
-               size=12, alpha=0.7)
+l0 = fig.line(x='Year', y='deficit_gdp', source=deficitgdp_cds,
+              view=deficit_gdp_histdata_view,
+              legend='Historical data 1929-2019', line_color='blue',
+              size=12, alpha=0.7)
 
 # # Dashed vertical line at 217 House seats representing the 50% mark
 # fig.line(x=[217, 217], y=[-30, 10], color='black', line_width=2,
@@ -91,27 +96,10 @@ major_tick_dict = dict(zip(major_tick_list, major_tick_labels))
 fig.xaxis.ticker = major_tick_list
 fig.xaxis.major_label_overrides = major_tick_dict
 
-rec_label_yr_lst = \
-#         ['1929-1933',  # (Aug 1929 - Mar 1933) Great Depression
-#          '1937-1938',  # (May 1937 - Jun 1938)
-#          '1945',       # (Feb 1945 - Oct 1945)
-#          '1948-1949',  # (Nov 1948 - Oct 1949)
-#          '1953-1954',  # (Jul 1953 - May 1954)
-#          '1957-1958',  # (Aug 1957 - Apr 1958)
-#          '1960-1961',  # (Apr 1960 - Feb 1961)
-#          '1969-1970',  # (Dec 1969 - Nov 1970)
-#          '1973-1975',  # (Nov 1973 - Mar 1975)
-#          '1980',       # (Jan 1980 - Jul 1980)
-#          '1981-1982',  # (Jul 1981 - Nov 1982)
-#          '1990-1991',  # (Jul 1990 - Mar 1991)
-#          '2001',       # (Mar 2001 - Nov 2001)
-#          '2007-2009',  # (Dec 2007 - Jun 2009) Great Recession
-#          '2020-pres']  # (Feb 2020 - present) Coronavirus recession
-
 # Add legend
 legend = Legend(items=[('Historical data 1929-2019', [l0])],
                 location='center')
-fig.add_layout(legend, 'bottom_right')
+fig.add_layout(legend, 'upper_right')
 
 # # # Add label to current recession low point
 # # fig.text(x=[12, 12, 12, 12], y=[0.63, 0.60, 0.57, 0.54],
