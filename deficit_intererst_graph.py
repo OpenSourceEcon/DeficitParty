@@ -25,23 +25,28 @@ from bokeh.plotting import figure, show
 from bokeh.models import ColumnDataSource, CDSView, GroupFilter, Title, Legend, HoverTool
 
 #Pull data from 
-deficit_gdp = pd.read_csv('data\deficit_gdp.csv',
-                            dtype = {'Year': 'int64', 'deficit_gdp': 'float64','cbo_forecast': 'int64'},
-                            skiprows=3)
-deficit_gdp_cds = ColumnDataSource(deficit_gdp)
+#deficit_gdp = pd.read_csv('data\deficit_gdp.csv',dtype = {'Year': 'int64', 'deficit_gdp': 'float64','cbo_forecast': 'int64'},skiprows=3)
+debt_over_gdp = pd.read_excel('data\Mar21-Data-Underlying-Figures.xlsx', 
+                                sheet_name=1,
+                                dtype = {'Year': 'int64', 'deficit_gdp': 'float64','cbo_forecast': 'int64'},
+                                skiprows=8)
+debt_cds = ColumnDataSource(debt_over_gdp)
 
-data_length = len(deficit_gdp['Year'])
-min_year = deficit_gdp['Year'].min()
-max_year = deficit_gdp['Year'].max()
+
+data_length = len(debt_over_gdp['Year'])
+min_year = debt_over_gdp['Year'].min()
+max_year = debt_over_gdp['Year'].max()
+'''
 percent_gdp_list = []
 for x in range(0,data_length):
     #print(deficit_gdp['deficit_gdp'][x])
-    if deficit_gdp['deficit_gdp'][x] > 0:
-        percent_gdp_list.append(deficit_gdp['deficit_gdp'][x]*10)
+    if debt_over_gdp['deficit_gdp'][x] > 0:
+        percent_gdp_list.append(debt_over_gdp['deficit_gdp'][x]*10)
     else:
-        percent_gdp_list.append(deficit_gdp['deficit_gdp'][x]*-10)
+        percent_gdp_list.append(debt_over_gdp['deficit_gdp'][x]*-10)
     print(percent_gdp_list[x])
-deficit_gdp_cds.add(percent_gdp_list,"gdp_percent")
+debt_cds.add(percent_gdp_list,"gdp_percent")
+'''
 
 #Output to HTML file titled: "federal_debt_image.html"
 fig_title = 'Federal Debt Held by the Public, 1900 to 2051'
@@ -63,7 +68,7 @@ major_tick_list = [1930, 1945, 1960, 1980, 2000, 2008, 2020, 2035, 2050]
 #Plotting the line
 fig.line(   x='Year',
             y='gdp_percent',
-            source=deficit_gdp_cds,
+            source=debt_cds,
             color='gray',
             line_width=1)
 fig.segment(x0=2021, y0=0,x1=2021,y1=300,color='gray',line_width=3)
