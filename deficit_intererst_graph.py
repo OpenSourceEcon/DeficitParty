@@ -1,20 +1,4 @@
-'''
-This graphs the federal debt held by the public as a percentage of GDP from
-1900 to 2021, then adds the CBO extended baseline forecast from 2022 to 2050
-from the most recent Long-Term Budget Outlook report.
 
-This module defines the following function(s):
-'''
-
-'''
-Steps:
-    Read in data from the csv
-    make sure data is printing to console
-    graph data to simple line
-    add in pretty lines and colors
-    add annotations
-    try to find data from web
-'''
 # Import packages
 import numpy as np
 import pandas as pd
@@ -23,55 +7,64 @@ import os
 from bokeh.io import output_file
 from bokeh.plotting import figure, show
 from bokeh.models import ColumnDataSource, CDSView, GroupFilter, Title, Legend, HoverTool
+from bokeh.models.annotations import Label, LabelSet
 
-#Pull data from 
-#deficit_gdp = pd.read_csv('data\deficit_gdp.csv',dtype = {'Year': 'int64', 'deficit_gdp': 'float64','cbo_forecast': 'int64'},skiprows=3)
-debt_over_gdp = pd.read_excel('data\Mar21-Data-Underlying-Figures.xlsx', 
-                                sheet_name=1,
-                                dtype = {'Year': 'int64', 'deficit_gdp': 'float64','cbo_forecast': 'int64'},
-                                skiprows=8)
-debt_cds = ColumnDataSource(debt_over_gdp)
+#Pull data from Excel Sheet "Mar21-Data-Underlying-Figures.xlsx"
+deficit_dataframe = pd.read_excel('data\Mar21-Data-Underlying-Figures.xlsx',
+                                sheet_name=2,
+                                usecols="A:D",
+                                nrows=46,
+                                dtype={'A':np.int64, 'B':np.float64,'C':np.float64,'D':np.float64},
+                                skiprows=7)
+deficit_dataframe.rename(columns={'Unnamed: 0':'Year'},inplace=True)
+deficit_cds = ColumnDataSource(deficit_dataframe)
 
-
-data_length = len(debt_over_gdp['Year'])
-min_year = debt_over_gdp['Year'].min()
-max_year = debt_over_gdp['Year'].max()
-'''
-percent_gdp_list = []
-for x in range(0,data_length):
-    #print(deficit_gdp['deficit_gdp'][x])
-    if debt_over_gdp['deficit_gdp'][x] > 0:
-        percent_gdp_list.append(debt_over_gdp['deficit_gdp'][x]*10)
-    else:
-        percent_gdp_list.append(debt_over_gdp['deficit_gdp'][x]*-10)
-    print(percent_gdp_list[x])
-debt_cds.add(percent_gdp_list,"gdp_percent")
-'''
+#Create Variables for min and max values
+data_length = len(deficit_dataframe['Year'])
+min_year = deficit_dataframe['Year'].min()
+max_year = deficit_dataframe['Year'].max()
+min_deficit = deficit_dataframe['Total Deficit'].min()
+max_deficit = deficit_dataframe['Total Deficit'].max()
 
 #Output to HTML file titled: "federal_debt_image.html"
-fig_title = 'Federal Debt Held by the Public, 1900 to 2051'
-output_file('images/federal_debt_image.html', title=fig_title)
+fig_title = 'Total Deficits, Primary Deficits, and Net Interest'
+output_file('images/deficit_interest_image.html', title=fig_title)
 
 #Create a figure with '% of GDP' as Y-axis and year as X-axis
 fig = figure(title=fig_title,
              plot_height=600, 
              plot_width=1200,
              x_axis_label='Year', 
-             x_range=(min_year,max_year),
+             x_range=(min_year-0.5,max_year+0.5),
              y_axis_label='Percent of Gross Domestic Product',
-             y_range=(0,225),
-             toolbar_location='right')
-major_tick_labels = ['1930', '1945', '1960', '1980', '2000', '2008', '2020','2035', '2050']
-major_tick_list = [1930, 1945, 1960, 1980, 2000, 2008, 2020, 2035, 2050]
+             y_range=(min_deficit-5,max_deficit+5),
+             toolbar_location=None)
 
+#Plotting data
+fig.segment(x0=-3000, y0=0,x1=3000,y1=0,color='gray',line_width=4)
+bar_width=0.5
+fig.vbar(x='Year',top='Primary Deficit',bottom='Total Deficit',source=deficit_cds,width=bar_width,fill_color='#758CE0',legend_label='Net Interest')#Bar graph for Net Interest
+fig.vbar(x='Year',top='Primary Deficit',source=deficit_cds,width=bar_width,fill_color='#8463BF',legend_label='Primary Deficit')#Bar Graph for Primary Deficit
+fig.line(x='Year',y='Total Deficit',source=deficit_cds,color='#68417D',line_width=5,legend_label='Total Deficit')#Line for Total Deficit
+fig.segment(x0=2020.5, y0=min_deficit-100,x1=2020.5,y1=max_deficit+100,color='gray',line_dash = '6 2',line_width=2)
+label_temp = Label(x=2021, y=2.5,
+                    x_units='data', y_units='data',
+                    text='Projected')
+fig.add_layout(label_temp)
 
-#Plotting the line
-fig.line(   x='Year',
-            y='gdp_percent',
-            source=debt_cds,
-            color='gray',
-            line_width=1)
-fig.segment(x0=2021, y0=0,x1=2021,y1=300,color='gray',line_width=3)
+#Add legend
+fig.legend.location = 'bottom_left'
+
+#Add information on hover
+tooltips = [ ('Year', '@Year'), 
+             ('Primary Deficit', '@{Primary Deficit}{0.0}'+'%'),
+             ('Net Interest', '@{Net Interest}{0.0}'+'%'),
+             ('Total Deficit', '@{Total Deficit}{0.0}'+'%')]
+hover_glyph = fig.circle(x='Year',y='Total Deficit', source=deficit_cds,size=10, alpha=0,hover_fill_color='gray', hover_alpha=0.5)
+fig.add_tools(HoverTool(tooltips=tooltips))
+
+#Turn off scrolling
+fig.toolbar.active_drag = None
 
 #Add source text below image
 fig.add_layout(Title(text='Source: Richard W. Evans (@RickEcon), ' +
@@ -83,7 +76,6 @@ fig.add_layout(Title(text='Source: Richard W. Evans (@RickEcon), ' +
                         text_font_size='3mm',
                         text_font_style='italic'),
                 'below')
-#fig.legend.click_policy = 'mute'
 
 #Display the generated figure
 show(fig)

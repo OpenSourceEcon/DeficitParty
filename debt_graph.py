@@ -36,15 +36,11 @@ fig = figure(title=fig_title,
              x_axis_label='Year', 
              x_range=(min_year,max_year),
              y_axis_label='Percent of Gross Domestic Product',
-             y_range=(min_debt,max_debt),
-             toolbar_location='right')
+             y_range=(0,max_debt+20),
+             toolbar_location=None)
 
 #Plotting the data line
-fig.line(   x='year',
-            y='debt',
-            source=debt_cds,
-            color='purple',
-            line_width=2)
+fig.varea(x='year',y1='debt',y2=0,source=debt_cds,color='#C584DB')
 #Vertical line showing start of forecast data
 fig.segment(x0=2021, y0=0,x1=2021,y1=300,color='gray',line_dash = '6 2',line_width=2)
 
@@ -83,9 +79,12 @@ label_temp = Label(x=2022, y=190,
 fig.add_layout(label_temp)
 
 #Add information on hover
-tooltips = [ ('Year', '@year'), ('Debt', '@debt')]
+tooltips = [ ('Year', '@year'), ('Debt', '@debt{0.0}'+'%')]
 hover_glyph = fig.circle(x='year',y='debt', source=debt_cds,size=10, alpha=0,hover_fill_color='gray', hover_alpha=0.5)
 fig.add_tools(HoverTool(tooltips=tooltips))
+
+#Turn off scrolling
+fig.toolbar.active_drag = None
 
 #Add source text below image
 fig.add_layout(Title(text='Source: Richard W. Evans (@RickEcon), ' +
@@ -97,7 +96,6 @@ fig.add_layout(Title(text='Source: Richard W. Evans (@RickEcon), ' +
                         text_font_size='3mm',
                         text_font_style='italic'),
                 'below')
-#fig.legend.click_policy = 'mute'
 
 #Display the generated figure
 show(fig)
