@@ -1,5 +1,7 @@
 # Import packages
+from bokeh.core.property.numeric import Interval
 from bokeh.models.annotations import Label, LabelSet
+from bokeh.models.tickers import SingleIntervalTicker
 import numpy as np
 import pandas as pd
 import datetime as dt
@@ -40,6 +42,12 @@ fig = figure(title=fig_title,
              y_range=(0,max_debt+20),
              toolbar_location=None)
 
+#Modify tick intervals for X-axis and Y-axis 
+fig.xaxis.ticker=SingleIntervalTicker(interval=10,num_minor_ticks=0)
+fig.xgrid.ticker=SingleIntervalTicker(interval=20)
+fig.yaxis.ticker=SingleIntervalTicker(interval=25,num_minor_ticks=0)
+fig.ygrid.ticker=SingleIntervalTicker(interval=50)
+
 #Plotting the data line
 fig.varea(x='year', y1='debt', y2=0, source=debt_cds, color='#C584DB')
 #Vertical line showing start of forecast data
@@ -50,7 +58,7 @@ fig.segment(x0=2021, y0=0, x1=2021, y1=300, color='gray', line_dash='6 2',
 label_temp = Label(x=1915, y=38, x_units='data', y_units='data',
                    text='World War I')
 fig.add_layout(label_temp)
-label_temp = Label(x=1933, y=55, x_units='data', y_units='data', text='Great')
+label_temp = Label(x=1931.5, y=55, x_units='data', y_units='data', text='Great')
 fig.add_layout(label_temp)
 label_temp = Label(x=1929, y=48, x_units='data', y_units='data',
                    text='Depression')
@@ -58,7 +66,7 @@ fig.add_layout(label_temp)
 label_temp = Label(x=1939, y=108, x_units='data', y_units='data',
                    text='World War II')
 fig.add_layout(label_temp)
-label_temp = Label(x=2005, y=78, x_units='data', y_units='data', text='Great')
+label_temp = Label(x=2005.5, y=78, x_units='data', y_units='data', text='Great')
 fig.add_layout(label_temp)
 label_temp = Label(x=2003, y=71, x_units='data', y_units='data',
                    text='Recession')
@@ -80,11 +88,11 @@ fig.add_tools(HoverTool(tooltips=tooltips))
 fig.toolbar.active_drag = None
 
 #Add source text below image
-fig.add_layout(Title(text='Source: Richard W. Evans (@RickEcon), ' +
+fig.add_layout(Title(text='Source: Congressional Budget Office, Richard W. Evans (@RickEcon), ' +
                           'historical data from FRED FYFSGDA188S series. ' +
                           'CBO forecast values from CBO extended baseline ' +
                           'forecast of Revenues Minus Total Spending ' +
-                          '(Sep. 2020).',
+                          '(Mar. 2021).',
                      align='left',
                      text_font_size='3mm',
                      text_font_style='italic'),

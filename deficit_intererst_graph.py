@@ -9,6 +9,7 @@ from bokeh.plotting import figure, show
 from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
                           Legend, HoverTool)
 from bokeh.models.annotations import Label, LabelSet
+from bokeh.models.tickers import SingleIntervalTicker
 
 #Pull data from Excel Sheet "Mar21-Data-Underlying-Figures.xlsx"
 deficit_dataframe = pd.read_excel('data\Mar21-Data-Underlying-Figures.xlsx',
@@ -28,7 +29,7 @@ min_deficit = deficit_dataframe['Total Deficit'].min()
 max_deficit = deficit_dataframe['Total Deficit'].max()
 
 #Output to HTML file titled: "federal_debt_image.html"
-fig_title = 'Total Deficits, Primary Deficits, and Net Interest'
+fig_title = 'Total Deficits, Primary Deficits, and Net Interest: 2006-2051'
 output_file('images/deficit_interest_image.html', title=fig_title)
 
 #Create a figure with '% of GDP' as Y-axis and year as X-axis
@@ -38,21 +39,27 @@ fig = figure(title=fig_title,
              x_axis_label='Year',
              x_range=(min_year-0.5,max_year+0.5),
              y_axis_label='Percent of Gross Domestic Product',
-             y_range=(min_deficit-5,max_deficit+5),
+             y_range=(min_deficit-3,max_deficit+3),
              toolbar_location=None)
+
+#Modify tick intervals for X-axis and Y-axis 
+fig.xaxis.ticker=SingleIntervalTicker(interval=5,num_minor_ticks=2)
+fig.xgrid.ticker=SingleIntervalTicker(interval=5)
+fig.yaxis.ticker=SingleIntervalTicker(interval=3,num_minor_ticks=3)
+fig.ygrid.ticker=SingleIntervalTicker(interval=3)
 
 #Plotting data
 fig.segment(x0=-3000, y0=0, x1=3000, y1=0, color='gray', line_width=4)
 bar_width=0.5
 #Bar graph for Net Interest
 fig.vbar(x='Year', top='Primary Deficit', bottom='Total Deficit',
-         source=deficit_cds, width=bar_width, fill_color='#758CE0',
+         source=deficit_cds, width=bar_width, fill_color='#6C9CB2',
          legend_label='Net Interest')
 #Bar Graph for Primary Deficit
 fig.vbar(x='Year', top='Primary Deficit', source=deficit_cds, width=bar_width,
-         fill_color='#8463BF', legend_label='Primary Deficit')
+         fill_color='#7D386E', legend_label='Primary Deficit')
 #Line for Total Deficit
-fig.line(x='Year', y='Total Deficit', source=deficit_cds, color='#68417D',
+fig.line(x='Year', y='Total Deficit', source=deficit_cds, color='#5D1950',
          line_width=5, legend_label='Total Deficit')
 fig.segment(x0=2020.5, y0=min_deficit-100, x1=2020.5, y1=max_deficit + 100,
             color='gray', line_dash='6 2', line_width=2)
@@ -77,12 +84,12 @@ fig.add_tools(HoverTool(tooltips=tooltips))
 fig.toolbar.active_drag = None
 
 #Add source text below image
-fig.add_layout(Title(text='Source: Congressional Budget Office,' +
+fig.add_layout(Title(text='Source: Congressional Budget Office, ' +
                           'Richard W. Evans (@RickEcon), ' +
                           'historical data from FRED FYFSGDA188S series. ' +
                           'CBO forecast values from CBO extended baseline ' +
                           'forecast of Revenues Minus Total Spending ' +
-                          '(Sep. 2020).',
+                          '(Mar. 2021).',
                      align='left',
                      text_font_size='3mm',
                      text_font_style='italic'),

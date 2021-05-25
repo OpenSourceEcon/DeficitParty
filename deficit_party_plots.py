@@ -7,6 +7,7 @@ observations begin in the fifth row.
 
 This module defines the following function(s):
 '''
+
 # Import packages
 import numpy as np
 import pandas as pd
@@ -18,6 +19,7 @@ from bokeh.models import ColumnDataSource, Title, Legend, HoverTool
 # from bokeh.models import Label
 # from bokeh.palettes import Category20
 
+'''
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 filename_data = ('data/deficit_party_data.csv')
 data_file_path = os.path.join(cur_path, filename_data)
@@ -37,6 +39,28 @@ alldata_df = pd.read_csv(
              'rep_houseseats': 'int64', 'oth_houseseats': 'int64',
              'tot_houseseats': 'int64'},
     parse_dates=['Year'], skiprows=4)
+'''
+
+#Reading data from CVS (deficit_party_data.csv)
+alldata_df = pd.read_csv(    'data\deficit_party_data.csv',
+                            dtype = {     'Year': np.int64, 
+                                          'deficit_gdp': np.float64, 
+                                          'president': 'str', 
+                                          'president_party': 'str',
+                                          'congress_num': np.int64, 
+                                          'congress_sess': np.int64,
+                                          'dem_whitehouse': np.int64, 
+                                          'dem_senateseats': np.int64,
+                                          'rep_senateseats': np.int64, 
+                                          'oth_senateseats': np.int64,
+                                          'tot_senateseats': np.int64, 
+                                          'dem_houseseats': np.int64,
+                                          'rep_houseseats': np.int64, 
+                                          'oth_houseseats': np.int64,
+                                          'tot_houseseats': np.int64},
+                            skiprows=3)
+#print(alldata_df)
+deficit_party_cds = ColumnDataSource(alldata_df)
 
 # Create Bokeh plot of Deficits/GDP by Democrat-held House seats
 fig_title = 'U.S. Deficits/GDP by Democrat-held House Seats: 1929-2020'
@@ -44,15 +68,16 @@ filename = ('images/deficitimage_senate_demseats.html')
 output_file(filename, title=fig_title)
 
 # Format the tooltip
-tooltips = [('Year', '@Year{%Y}'),
-            ('Deficit/GDP', '@deficit_gdp{0.0 %}'),
-            ('Democrat Seats', '@dem_houseseats{0.}')]
+tooltips = [('Year', '@Year{0.}'),
+            ('Deficit/GDP', '@deficit_gdp{0.0}'+'%'),
+            ('Democrat Seats', '@DemHouseSeats{0.}')]
+
 
 # Solve for minimum and maximum Democrat House seats and deficit/GDP for
 # plotting purposes
-min_demseats_val = alldata_df['dem_houseseats'].min()
+min_demseats_val = alldata_df['DemHouseSeats'].min()
 print('Minimum Democrat House seats:', min_demseats_val)
-max_demseats_val = alldata_df['dem_houseseats'].max()
+max_demseats_val = alldata_df['DemHouseSeats'].max()
 print('Maximum Democrat House seats:', max_demseats_val)
 min_defGDP_val = alldata_df['deficit_gdp'].min()
 print('Minimum deficit/GDP:', min_defGDP_val)
@@ -73,15 +98,16 @@ fig = figure(plot_height=500,
                       (max_demseats_val +
                        fig_buffer_pct * datarange_demseats_vals)),
              tools=['save', 'zoom_in', 'zoom_out', 'box_zoom',
-                    'pan', 'undo', 'redo', 'reset', 'hover', 'help'],
+                    'pan', 'undo', 'redo', 'reset', 'help'],
              toolbar_location='left')
 
-deficit_house_df = alldata_df[['Year', 'deficit_gdp', 'dem_houseseats']]
+deficit_house_df = alldata_df[['Year', 'deficit_gdp', 'DemHouseSeats']]
 deficit_house_cds = ColumnDataSource(deficit_house_df)
 fig.title.text_font_size = '18pt'
 fig.toolbar.logo = None
-fig.scatter(x='dem_houseseats', y='deficit_gdp', source=deficit_house_df,
+fig.scatter(x='DemHouseSeats', y='deficit_gdp', source=deficit_house_df,
             line_color='black', fill_color='blue', size=12, alpha=0.7)
+fig.add_tools(HoverTool(tooltips=tooltips))
 
 # Dashed vertical line at 217 House seats representing the 50% mark
 fig.line(x=[217, 217], y=[-30, 10], color='black', line_width=2,
@@ -99,6 +125,8 @@ minor_tick_list = [item for item in range(150, 351, 10)]
 major_tick_dict = dict(zip(major_tick_list, major_tick_labels))
 fig.xaxis.ticker = major_tick_list
 fig.xaxis.major_label_overrides = major_tick_dict
+
+show(fig)
 
 # # Add legend
 # legend = Legend(items=[(rec_label_yrmth_lst[0], [l0]),
@@ -157,7 +185,7 @@ fig.xaxis.major_label_overrides = major_tick_dict
 #                         formatters={'@Date': 'datetime'}))
 
 # if html_show:
-show(fig)
+#show(fig)
 
 
 
