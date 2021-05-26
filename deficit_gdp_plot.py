@@ -129,10 +129,10 @@ fig.add_layout(Title(text='Source: Richard W. Evans (@RickEcon), ' +
                           'CBO forecast values from CBO extended baseline ' +
                           'forecast of Revenues Minus Total Spending ' +
                           '(Sep. 2020).',
-                        align='left',
-                        text_font_size='3mm',
-                        text_font_style='italic'),
-                'below')
+                     align='left',
+                     text_font_size='3mm',
+                     text_font_style='italic'),
+               'below')
 fig.legend.click_policy = 'mute'
 
 # Add the HoverTool to the figure
