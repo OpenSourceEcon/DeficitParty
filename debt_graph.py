@@ -11,14 +11,21 @@ from bokeh.plotting import figure, show
 from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
                           Legend, HoverTool, NumeralTickFormatter)
 
+# Set paths to work across Mac/Windows/Linux platforms
+cur_path = os.path.split(os.path.abspath(__file__))[0]
+data_dir = os.path.join(cur_path, 'data')
+debt_data_path = os.path.join(data_dir, 'Mar21-Data-Underlying-Figures.xlsx')
+images_dir = os.path.join(cur_path, 'images')
+
+
 #Pull data from Excel Sheet "Mar21-Data-Underlying-Figures.xlsx"
-debt_df = pd.read_excel('data\Mar21-Data-Underlying-Figures.xlsx',
-                                sheet_name=1,
-                                usecols="A,B",
-                                nrows=152,
-                                dtype={'A':np.int64, 'B':np.float64},
-                                skiprows=7)
-debt_df.rename(columns={'Unnamed: 0':'year','Unnamed: 1':'debt'},inplace=True)
+debt_df = pd.read_excel(debt_data_path,
+                        sheet_name=1,
+                        usecols="A,B",
+                        nrows=152,
+                        dtype={'A': np.int64, 'B': np.float64},
+                        skiprows=7)
+debt_df.rename(columns={'Unnamed: 0':'year','Unnamed: 1':'debt'}, inplace=True)
 debt_cds = ColumnDataSource(debt_df)
 
 #Create Variables for min and max values
@@ -30,7 +37,8 @@ max_debt = debt_df['debt'].max()
 
 #Output to HTML file titled: "federal_debt_image.html"
 fig_title = 'Federal Debt Held by the Public, 1900 to 2051'
-output_file('images/federal_debt_image.html', title=fig_title)
+fig_path = os.path.join(images_dir, 'federal_debt_image.html')
+output_file(fig_path, title=fig_title)
 
 #Create a figure with '% of GDP' as Y-axis and year as X-axis
 fig = figure(title=fig_title,
@@ -42,10 +50,13 @@ fig = figure(title=fig_title,
              y_range=(0,max_debt+20),
              toolbar_location=None)
 
-#Modify tick intervals for X-axis and Y-axis 
-fig.xaxis.ticker=SingleIntervalTicker(interval=10,num_minor_ticks=0)
+# Set title font size
+fig.title.text_font_size = '20pt'
+
+#Modify tick intervals for X-axis and Y-axis
+fig.xaxis.ticker=SingleIntervalTicker(interval=10, num_minor_ticks=0)
 fig.xgrid.ticker=SingleIntervalTicker(interval=20)
-fig.yaxis.ticker=SingleIntervalTicker(interval=25,num_minor_ticks=0)
+fig.yaxis.ticker=SingleIntervalTicker(interval=25, num_minor_ticks=0)
 fig.ygrid.ticker=SingleIntervalTicker(interval=50)
 
 #Plotting the data line
@@ -93,7 +104,7 @@ fig.add_layout(Title(text='Source: Congressional Budget Office, Richard W. Evans
                           'CBO forecast values from CBO extended baseline ' +
                           'forecast of Revenues Minus Total Spending ' +
                           '(Mar. 2021).',
-                     align='left',
+                     align='center',
                      text_font_size='3mm',
                      text_font_style='italic'),
                'below')
