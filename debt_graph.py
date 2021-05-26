@@ -50,10 +50,13 @@ fig = figure(title=fig_title,
              y_range=(0,max_debt+20),
              toolbar_location=None)
 
+# Set title font size
+fig.title.text_font_size = '20pt'
+
 #Modify tick intervals for X-axis and Y-axis
-fig.xaxis.ticker=SingleIntervalTicker(interval=10,num_minor_ticks=0)
+fig.xaxis.ticker=SingleIntervalTicker(interval=10, num_minor_ticks=0)
 fig.xgrid.ticker=SingleIntervalTicker(interval=20)
-fig.yaxis.ticker=SingleIntervalTicker(interval=25,num_minor_ticks=0)
+fig.yaxis.ticker=SingleIntervalTicker(interval=25, num_minor_ticks=0)
 fig.ygrid.ticker=SingleIntervalTicker(interval=50)
 
 #Plotting the data line

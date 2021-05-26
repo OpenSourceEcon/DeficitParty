@@ -51,6 +51,9 @@ fig = figure(title=fig_title,
              y_range=(min_deficit - 2, max_deficit + 5),
              toolbar_location=None)
 
+# Set title font size
+fig.title.text_font_size = '20pt'
+
 #Modify tick intervals for X-axis and Y-axis
 fig.xaxis.ticker=SingleIntervalTicker(interval=5, num_minor_ticks=5)
 fig.xgrid.ticker=SingleIntervalTicker(interval=5)
