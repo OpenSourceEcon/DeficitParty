@@ -16,8 +16,6 @@ cur_path = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(cur_path, 'data')
 debt_data_path = os.path.join(data_dir, 'Mar21-Data-Underlying-Figures.xlsx')
 images_dir = os.path.join(cur_path, 'images')
-if os.access(images_dir, os.F_OK) is False:
-    os.makedirs(images_dir)
 
 
 #Pull data from Excel Sheet "Mar21-Data-Underlying-Figures.xlsx"
