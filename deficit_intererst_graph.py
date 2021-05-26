@@ -11,14 +11,22 @@ from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
 from bokeh.models.annotations import Label, LabelSet
 from bokeh.models.tickers import SingleIntervalTicker
 
+# Set paths to work across Mac/Windows/Linux platforms
+cur_path = os.path.split(os.path.abspath(__file__))[0]
+data_dir = os.path.join(cur_path, 'data')
+deficit_data_path = os.path.join(data_dir,
+                                 'Mar21-Data-Underlying-Figures.xlsx')
+images_dir = os.path.join(cur_path, 'images')
+
 #Pull data from Excel Sheet "Mar21-Data-Underlying-Figures.xlsx"
-deficit_dataframe = pd.read_excel('data\Mar21-Data-Underlying-Figures.xlsx',
+deficit_dataframe = pd.read_excel(deficit_data_path,
                                   sheet_name=2,
                                   usecols="A:D",
                                   nrows=46,
-                                  dtype={'A':np.int64, 'B':np.float64,'C':np.float64,'D':np.float64},
+                                  dtype={'A': np.int64, 'B': np.float64,
+                                         'C': np.float64, 'D': np.float64},
                                   skiprows=7)
-deficit_dataframe.rename(columns={'Unnamed: 0':'Year'},inplace=True)
+deficit_dataframe.rename(columns={'Unnamed: 0':'Year'}, inplace=True)
 deficit_cds = ColumnDataSource(deficit_dataframe)
 
 #Create Variables for min and max values
@@ -30,7 +38,8 @@ max_deficit = deficit_dataframe['Total Deficit'].max()
 
 #Output to HTML file titled: "federal_debt_image.html"
 fig_title = 'Total Deficits, Primary Deficits, and Net Interest: 2006-2051'
-output_file('images/deficit_interest_image.html', title=fig_title)
+fig_path = os.path.join(images_dir, 'deficit_interest_image.html')
+output_file(fig_path, title=fig_title)
 
 #Create a figure with '% of GDP' as Y-axis and year as X-axis
 fig = figure(title=fig_title,
@@ -42,7 +51,7 @@ fig = figure(title=fig_title,
              y_range=(min_deficit-3,max_deficit+3),
              toolbar_location=None)
 
-#Modify tick intervals for X-axis and Y-axis 
+#Modify tick intervals for X-axis and Y-axis
 fig.xaxis.ticker=SingleIntervalTicker(interval=5,num_minor_ticks=2)
 fig.xgrid.ticker=SingleIntervalTicker(interval=5)
 fig.yaxis.ticker=SingleIntervalTicker(interval=3,num_minor_ticks=3)
@@ -90,7 +99,7 @@ fig.add_layout(Title(text='Source: Congressional Budget Office, ' +
                           'CBO forecast values from CBO extended baseline ' +
                           'forecast of Revenues Minus Total Spending ' +
                           '(Mar. 2021).',
-                     align='left',
+                     align='center',
                      text_font_size='3mm',
                      text_font_style='italic'),
                'below')
