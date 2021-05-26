@@ -46,15 +46,15 @@ fig = figure(title=fig_title,
              plot_height=600,
              plot_width=1200,
              x_axis_label='Year',
-             x_range=(min_year-0.5,max_year+0.5),
+             x_range=(min_year - 0.5, max_year + 0.5),
              y_axis_label='Percent of Gross Domestic Product',
-             y_range=(min_deficit-3,max_deficit+3),
+             y_range=(min_deficit - 2, max_deficit + 5),
              toolbar_location=None)
 
 #Modify tick intervals for X-axis and Y-axis
-fig.xaxis.ticker=SingleIntervalTicker(interval=5,num_minor_ticks=2)
+fig.xaxis.ticker=SingleIntervalTicker(interval=5, num_minor_ticks=5)
 fig.xgrid.ticker=SingleIntervalTicker(interval=5)
-fig.yaxis.ticker=SingleIntervalTicker(interval=3,num_minor_ticks=3)
+fig.yaxis.ticker=SingleIntervalTicker(interval=3, num_minor_ticks=3)
 fig.ygrid.ticker=SingleIntervalTicker(interval=3)
 
 #Plotting data
@@ -72,7 +72,7 @@ fig.line(x='Year', y='Total Deficit', source=deficit_cds, color='#5D1950',
          line_width=5, legend_label='Total Deficit')
 fig.segment(x0=2020.5, y0=min_deficit-100, x1=2020.5, y1=max_deficit + 100,
             color='gray', line_dash='6 2', line_width=2)
-label_temp = Label(x=2021, y=2.5, x_units='data', y_units='data',
+label_temp = Label(x=2021, y=1.5, x_units='data', y_units='data',
                    text='Projected')
 fig.add_layout(label_temp)
 
