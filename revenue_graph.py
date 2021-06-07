@@ -116,20 +116,26 @@ for x in range(0,data_length):
             fig.circle(x=revenue_df["Year"][x],
                        y=revenue_df["receipts_gdp"][x],
                        size=10,
+                       line_width=0,
                        fill_color='red',
+                       muted_alpha=0.2,
                        legend_label = 'Republican control')
       elif (revenue_df["DemHouseSeats"][x] > 217 and
             revenue_df["DemWhitehouse"][x] == 1):
             fig.circle(x=revenue_df["Year"][x],
                        y=revenue_df["receipts_gdp"][x],
                        size=10,
+                       line_width=0,
                        fill_color='blue',
+                       muted_alpha=0.2,
                        legend_label = 'Democrat control')
       else:
             fig.circle(x=revenue_df["Year"][x],
                        y=revenue_df["receipts_gdp"][x],
                        size=10,
+                       line_width=0,
                        fill_color='green',
+                       muted_alpha=0.2,
                        legend_label = 'Split control')
 
 # Add information on hover
@@ -152,7 +158,8 @@ fig.legend.location = 'bottom_center'
 fig.legend.border_line_width = 2
 fig.legend.border_line_color = 'black'
 fig.legend.border_line_alpha = 1
-
+fig.legend.click_policy = 'mute'
+'''
 #Add notes below image
 words = 'Note: Republican control in a given year is defined as the President being Republican and Republicans holding more than 217 House seats for the majority of that year.'
 caption = Title(text=words,align='left',text_font_size='3mm')
@@ -169,6 +176,6 @@ fig.add_layout(caption,'below')
 words = 'History, Art, & Archives, "Party Divisions of the House of Representatives, 1789 to present, https://history.house.gov/Institution/Party-Divisions/Party-Divisions/, Richard W. Evans (@rickecon)'
 caption = Title(text=words,align='center',text_font_size='3mm',text_font_style='italic')
 fig.add_layout(caption,'below')
-
+'''
 #Display the generated figure
 show(fig)
