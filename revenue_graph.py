@@ -55,7 +55,7 @@ receipts_min = revenue_df['receipts_gdp'].min()
 receipts_max = revenue_df['receipts_gdp'].max()
 
 # Output to HTML file titled: "federal_debt_image.html"
-fig_title = ('Federal Receipts as Percent of Gross Domestic Product by ' +
+fig_title = ('U.S. Federal Receipts as Percent of Gross Domestic Product by ' +
              'Party Control: 1929-2020')
 fig_path = os.path.join(images_dir, 'federal_revenues_image.html')
 output_file(fig_path, title=fig_title)
@@ -84,7 +84,6 @@ fig.yaxis.ticker=SingleIntervalTicker(interval=5, num_minor_ticks=5)
 fig.ygrid.ticker=SingleIntervalTicker(interval=5)
 
 # Create recession bars
-recession_years_list =[]
 for x in range(0,recession_data_length):
       peak_year = recession_df['Peak'][x].year
       trough_year = recession_df['Trough'][x].year
@@ -158,24 +157,41 @@ fig.legend.location = 'bottom_center'
 fig.legend.border_line_width = 2
 fig.legend.border_line_color = 'black'
 fig.legend.border_line_alpha = 1
+fig.legend.label_text_font_size = '4mm'
+
+#Set legend muting click policy
 fig.legend.click_policy = 'mute'
-'''
+
 #Add notes below image
-words = 'Note: Republican control in a given year is defined as the President being Republican and Republicans holding more than 217 House seats for the majority of that year.'
-caption = Title(text=words,align='left',text_font_size='3mm')
-fig.add_layout(caption,'below')
-words = 'Democrat control is defined as the President being Democrat and Democrats holding more than 217 House seats for the majority of that year. '
-caption = Title(text=words,align='left',text_font_size='3mm')
-fig.add_layout(caption,'below')
-words = 'Split government as defined as one party holding the White House while the other party holds a majority of House seats.'
-caption = Title(text=words,align='left',text_font_size='3mm')
-fig.add_layout(caption,'below')
-words = 'Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), United States House of Representatives'
-caption = Title(text=words,align='center',text_font_size='3mm',text_font_style='italic')
-fig.add_layout(caption,'below')
-words = 'History, Art, & Archives, "Party Divisions of the House of Representatives, 1789 to present, https://history.house.gov/Institution/Party-Divisions/Party-Divisions/, Richard W. Evans (@rickecon)'
-caption = Title(text=words,align='center',text_font_size='3mm',text_font_style='italic')
-fig.add_layout(caption,'below')
-'''
+note_text_1 = ('Note: Republican control in a given year is defined as the ' +
+               'President being Republican and Republicans holding more ' +
+               'than 217 House seats for the majority of that year.')
+caption1 = Title(text=note_text_1, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption1, 'below')
+note_text_2 = ('   Democrat control is defined as the President being ' +
+               'Democrat and Democrats holding more than 217 House seats ' +
+               'for the majority of that year. Split government is')
+caption2 = Title(text=note_text_2, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption2, 'below')
+note_text_3 = ('   defined as one party holding the White ' +
+               'House while the other party holds a majority of House seats.')
+caption3 = Title(text=note_text_3, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption3, 'below')
+note_text_4 = ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), ' +
+               'United States House of Representatives History, Art, & ' +
+               'Archives, "Party Divisions of the House of')
+caption4 = Title(text=note_text_4, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption4, 'below')
+note_text_5 = ('   Representatives, 1789 to present", https://history.house.gov/' +
+               'Institution/Party-Divisions/Party-Divisions/, '+
+               'Richard W. Evans (@rickecon).')
+caption5 = Title(text=note_text_5, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption5, 'below')
+
 #Display the generated figure
 show(fig)
