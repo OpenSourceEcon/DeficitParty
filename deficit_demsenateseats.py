@@ -10,7 +10,7 @@ import os
 from bokeh.io import output_file
 from bokeh.plotting import figure, show
 from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
-                          Legend, HoverTool, NumeralTickFormatter)
+                          Legend, HoverTool, NumeralTickFormatter, Span)
 
 # Set paths to work across Mac/Windows/Linux platforms
 cur_path = os.path.split(os.path.abspath(__file__))[0]
@@ -58,7 +58,7 @@ output_file(fig_path, title=fig_title)
 fig = figure(title=fig_title,
              plot_height=600,
              plot_width=1200,
-             x_axis_label='Number of Democratic Senate Seats',
+             x_axis_label='Number of Democratic Senate Seats (out of 100)',
              x_range=(min_seats-10, max_seats+10),
              y_axis_label='Deficit / GDP',
              y_range=(min_deficit - 3, max_deficit + 3),
@@ -76,8 +76,12 @@ fig.yaxis.major_label_text_font_size = '12pt'
 # Modify tick intervals for X-axis and Y-axis
 fig.xaxis.ticker=SingleIntervalTicker(interval=10, num_minor_ticks=2)
 fig.xgrid.ticker=SingleIntervalTicker(interval=10)
-fig.yaxis.ticker=SingleIntervalTicker(interval=5, num_minor_ticks=5)
+fig.yaxis.ticker=SingleIntervalTicker(interval=5, num_minor_ticks=0)
 fig.ygrid.ticker=SingleIntervalTicker(interval=10)
+
+#Vertical black line noting half of senate seats
+halfLine = Span(location=50,dimension='height',line_color='black',line_width=2)
+fig.add_layout(halfLine)
 
 # Plotting the dots representing party control
 for x in range(0,data_length):
@@ -85,8 +89,8 @@ for x in range(0,data_length):
          deficit_df["DemWhitehouse"][x] == 0):
             fig.circle(x=deficit_df["DemSenateSeats"][x],
                        y=deficit_df["deficit_gdp"][x],
-                       size=20,
-                       line_width=2,
+                       size=10,
+                       line_width=1,
                        line_color='black',
                        fill_color='red',
                        alpha=0.7,
@@ -96,8 +100,8 @@ for x in range(0,data_length):
             deficit_df["DemWhitehouse"][x] == 1):
             fig.circle(x=deficit_df["DemSenateSeats"][x],
                        y=deficit_df["deficit_gdp"][x],
-                       size=20,
-                       line_width=2,
+                       size=10,
+                       line_width=1,
                        line_color='black',
                        fill_color='blue',
                        alpha=0.7,
@@ -106,8 +110,8 @@ for x in range(0,data_length):
       else:
             fig.circle(x=deficit_df["DemSenateSeats"][x],
                        y=deficit_df["deficit_gdp"][x],
-                       size=20,
-                       line_width=2,
+                       size=10,
+                       line_width=1,
                        line_color='black',
                        fill_color='green',
                        alpha=0.7,
@@ -136,10 +140,13 @@ fig.legend.location = 'bottom_right'
 fig.legend.border_line_width = 2
 fig.legend.border_line_color = 'black'
 fig.legend.border_line_alpha = 1
-fig.legend.label_text_font_size = '6mm'
+fig.legend.label_text_font_size = '4mm'
 
 #Set legend muting click policy
 fig.legend.click_policy = 'mute'
+
+#Remove Logo from toolbar
+fig.toolbar.logo = None
 
 #Add notes below image
 note_text_1 = ('Note: Republican control in a given year is defined as the ' +
