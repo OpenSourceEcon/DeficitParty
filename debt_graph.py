@@ -36,7 +36,7 @@ min_debt = debt_df['debt'].min()
 max_debt = debt_df['debt'].max()
 
 #Output to HTML file titled: "federal_debt_image.html"
-fig_title = 'Federal Debt Held by the Public, 1900 to 2051'
+fig_title = 'U.S. Federal Debt Held by the Public, 1900 to 2051'
 fig_path = os.path.join(images_dir, 'federal_debt_image.html')
 output_file(fig_path, title=fig_title)
 
@@ -45,13 +45,17 @@ fig = figure(title=fig_title,
              plot_height=600,
              plot_width=1200,
              x_axis_label='Year',
-             x_range=(min_year,max_year),
+             x_range=(min_year, max_year),
              y_axis_label='Percent of Gross Domestic Product',
              y_range=(0,max_debt+20),
              toolbar_location=None)
 
-# Set title font size
-fig.title.text_font_size = '20pt'
+# Set title font size and axes font sizes
+fig.title.text_font_size = '18pt'
+fig.xaxis.axis_label_text_font_size = '12pt'
+fig.xaxis.major_label_text_font_size = '12pt'
+fig.yaxis.axis_label_text_font_size = '12pt'
+fig.yaxis.major_label_text_font_size = '12pt'
 
 #Modify tick intervals for X-axis and Y-axis
 fig.xaxis.ticker=SingleIntervalTicker(interval=10, num_minor_ticks=0)
@@ -82,10 +86,10 @@ fig.add_layout(label_temp)
 label_temp = Label(x=2003, y=71, x_units='data', y_units='data',
                    text='Recession')
 fig.add_layout(label_temp)
-label_temp = Label(x=2018, y=105, x_units='data', y_units='data',
+label_temp = Label(x=2015.9, y=105, x_units='data', y_units='data',
                    text='Pandemic')
 fig.add_layout(label_temp)
-label_temp = Label(x=2022, y=190, x_units='data', y_units='data',
+label_temp = Label(x=2021.7, y=190, x_units='data', y_units='data',
                    text='Projected')
 fig.add_layout(label_temp)
 
@@ -99,15 +103,17 @@ fig.add_tools(HoverTool(tooltips=tooltips))
 fig.toolbar.active_drag = None
 
 #Add source text below image
-fig.add_layout(Title(text='Source: Congressional Budget Office, Richard W. Evans (@RickEcon), ' +
-                          'historical data from FRED FYFSGDA188S series. ' +
-                          'CBO forecast values from CBO extended baseline ' +
-                          'forecast of Revenues Minus Total Spending ' +
-                          '(Mar. 2021).',
-                     align='center',
-                     text_font_size='3mm',
-                     text_font_style='italic'),
-               'below')
+note_text_1 = ('Source: Congressional Budget Office, Richard W. Evans ' +
+               '(@RickEcon), historical data from FRED FYFSGDA188S series. ' +
+               'CBO forecast values from CBO extended')
+caption1 = Title(text=note_text_1, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption1, 'below')
+note_text_2 = ('   baseline forecast of Revenues Minus Total Spending ' +
+               '(Mar. 2021).')
+caption2 = Title(text=note_text_2, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption2, 'below')
 
 #Display the generated figure
 show(fig)
