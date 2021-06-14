@@ -16,7 +16,6 @@ from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(cur_path, 'data')
 party_data_path = os.path.join(data_dir, 'deficit_party_data.csv')
-recession_data_path = os.path.join(data_dir, 'recession_data.csv')
 images_dir = os.path.join(cur_path, 'images')
 
 #Reading data from CVS (deficit_party_data.csv)
@@ -42,13 +41,9 @@ deficit_df = pd.read_csv(party_data_path,
                                 'tot_houseseats': np.int64},
                          skiprows=3)
 deficit_cds = ColumnDataSource(deficit_df)
-recession_df = pd.read_csv(   recession_data_path,
-                              parse_dates=['Peak','Trough'])
-recession_cds = ColumnDataSource(recession_df)
 
 # Create Variables for min and max values
 data_length = len(deficit_df['Year'])
-recession_data_length = len(recession_df['Peak'])
 min_deficit = deficit_df['deficit_gdp'].min()
 max_deficit = deficit_df['deficit_gdp'].max()
 min_seats = deficit_df['DemSenateSeats'].min()
