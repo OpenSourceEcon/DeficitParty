@@ -50,7 +50,8 @@ min_seats = deficit_df['DemSenateSeats'].min()
 max_seats = deficit_df['DemSenateSeats'].max()
 
 # Output to HTML file titled: "federal_debt_image.html"
-fig_title = ('U.S. Federal Deficits as Percent of Gross Domestic Product by Democrat Senate Seats: 1929-2020')
+fig_title = ('U.S. Federal Deficits as Percent of Gross Domestic Product by ' +
+             'Democrat Senate Seats: 1929-2020')
 fig_path = os.path.join(images_dir, 'scatterplot_senate_image.html')
 output_file(fig_path, title=fig_title)
 
@@ -59,9 +60,9 @@ fig = figure(title=fig_title,
              plot_height=600,
              plot_width=1200,
              x_axis_label='Number of Democratic Senate Seats (out of 100)',
-             x_range=(min_seats-10, max_seats+10),
+             x_range=(min_seats - 5, max_seats + 5),
              y_axis_label='Deficit / GDP',
-             y_range=(min_deficit - 3, max_deficit + 3),
+             y_range=(min_deficit - 4, max_deficit + 4),
              tools=['zoom_in', 'zoom_out', 'box_zoom',
                     'pan', 'undo', 'redo', 'reset'],
              toolbar_location='right')
@@ -74,10 +75,10 @@ fig.yaxis.axis_label_text_font_size = '12pt'
 fig.yaxis.major_label_text_font_size = '12pt'
 
 # Modify tick intervals for X-axis and Y-axis
-fig.xaxis.ticker=SingleIntervalTicker(interval=10, num_minor_ticks=2)
-fig.xgrid.ticker=SingleIntervalTicker(interval=10)
-fig.yaxis.ticker=SingleIntervalTicker(interval=5, num_minor_ticks=0)
-fig.ygrid.ticker=SingleIntervalTicker(interval=10)
+fig.xaxis.ticker = SingleIntervalTicker(interval=5, num_minor_ticks=0)
+fig.xgrid.ticker = SingleIntervalTicker(interval=5)
+fig.yaxis.ticker = SingleIntervalTicker(interval=5, num_minor_ticks=0)
+fig.ygrid.ticker = SingleIntervalTicker(interval=10)
 
 #Vertical black line noting half of senate seats
 halfLine = Span(location=50,dimension='height',line_color='black',line_width=2)
@@ -119,7 +120,8 @@ for x in range(0,data_length):
                        legend_label = 'Split control')
 
 #Invisible scatter plot to give the hover tool something to register
-fig.scatter(x='DemSenateSeats', y='deficit_gdp', source=deficit_cds, size=20, alpha=0, name='hover_helper')
+fig.scatter(x='DemSenateSeats', y='deficit_gdp', source=deficit_cds, size=20,
+            alpha=0, name='hover_helper')
 
 # Add information on hover
 tooltips = [('Year', '@Year'),
@@ -130,7 +132,7 @@ tooltips = [('Year', '@Year'),
             ('Dem. House Seats', '@DemHouseSeats'),
             ('Rep. Senate Seats', '@RepSenateSeats'),
             ('Dem. Senate Seats', '@DemSenateSeats')]
-fig.add_tools(HoverTool(tooltips=tooltips,names=['hover_helper']))
+fig.add_tools(HoverTool(tooltips=tooltips, names=['hover_helper']))
 
 #Turn off scrolling
 fig.toolbar.active_drag = None
@@ -172,9 +174,9 @@ note_text_4 = ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), ' +
 caption4 = Title(text=note_text_4, align='left', text_font_size='4mm',
                  text_font_style='italic')
 fig.add_layout(caption4, 'below')
-note_text_5 = ('   Representatives, 1789 to present", https://history.house.gov/' +
-               'Institution/Party-Divisions/Party-Divisions/, '+
-               'Richard W. Evans (@rickecon).')
+note_text_5 = ('   Representatives, 1789 to present", ' +
+               'https://history.house.gov/Institution/Party-Divisions/' +
+               'Party-Divisions/, Richard W. Evans (@rickecon).')
 caption5 = Title(text=note_text_5, align='left', text_font_size='4mm',
                  text_font_style='italic')
 fig.add_layout(caption5, 'below')
