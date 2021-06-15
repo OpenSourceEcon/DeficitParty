@@ -55,8 +55,8 @@ min_deficit = deficit_df['deficit_gdp'].min()
 max_deficit = deficit_df['deficit_gdp'].max()
 
 # Output to HTML file titled: "federal_debt_image.html"
-fig_title = ('U.S. Federal Surplus (+) or Deficit (-) as Percent of Gross Domestic '+
-                'Product by Party Control: 1929-2020')
+fig_title = ('U.S. Federal Surplus (+) or Deficit (-) as Percent of Gross ' +
+             'Domestic Product by Party Control: 1929-2020')
 fig_path = os.path.join(images_dir, 'deficit_image.html')
 output_file(fig_path, title=fig_title)
 
@@ -71,7 +71,7 @@ fig = figure(title=fig_title,
              toolbar_location=None)
 
 # Set title font size and axes font sizes
-fig.title.text_font_size = '16pt'
+fig.title.text_font_size = '17pt'
 fig.xaxis.axis_label_text_font_size = '12pt'
 fig.xaxis.major_label_text_font_size = '12pt'
 fig.yaxis.axis_label_text_font_size = '12pt'
@@ -186,9 +186,9 @@ note_text_4 = ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), ' +
 caption4 = Title(text=note_text_4, align='left', text_font_size='4mm',
                  text_font_style='italic')
 fig.add_layout(caption4, 'below')
-note_text_5 = ('   Representatives, 1789 to present", https://history.house.gov/' +
-               'Institution/Party-Divisions/Party-Divisions/, '+
-               'Richard W. Evans (@rickecon).')
+note_text_5 = ('   Representatives, 1789 to present", ' +
+               'https://history.house.gov/Institution/Party-Divisions/' +
+               'Party-Divisions/, Richard W. Evans (@rickecon).')
 caption5 = Title(text=note_text_5, align='left', text_font_size='4mm',
                  text_font_style='italic')
 fig.add_layout(caption5, 'below')
