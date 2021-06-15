@@ -20,7 +20,7 @@ recession_data_path = os.path.join(data_dir, 'recession_data.csv')
 images_dir = os.path.join(cur_path, 'images')
 
 #Reading data from CVS (deficit_party_data.csv)
-revenue_df = pd.read_csv(party_data_path,
+deficit_df = pd.read_csv(party_data_path,
                          dtype={'Year': np.int64,
                                 'deficit_gdp': np.float64,
                                 'receipts_gdp': np.float64,
@@ -41,23 +41,23 @@ revenue_df = pd.read_csv(party_data_path,
                                 'oth_houseseats': np.int64,
                                 'tot_houseseats': np.int64},
                          skiprows=3)
-revenue_cds = ColumnDataSource(revenue_df)
+deficit_cds = ColumnDataSource(deficit_df)
 recession_df = pd.read_csv(   recession_data_path,
                               parse_dates=['Peak','Trough'])
 recession_cds = ColumnDataSource(recession_df)
 
 # Create Variables for min and max values
-data_length = len(revenue_df['Year'])
+data_length = len(deficit_df['Year'])
 recession_data_length = len(recession_df['Peak'])
-min_year = revenue_df['Year'].min()
-max_year = revenue_df['Year'].max()
-receipts_min = revenue_df['receipts_gdp'].min()
-receipts_max = revenue_df['receipts_gdp'].max()
+min_year = deficit_df['Year'].min()
+max_year = deficit_df['Year'].max()
+min_deficit = deficit_df['deficit_gdp'].min()
+max_deficit = deficit_df['deficit_gdp'].max()
 
 # Output to HTML file titled: "federal_debt_image.html"
-fig_title = ('U.S. Federal Receipts as Percent of Gross Domestic Product by ' +
-             'Party Control: 1929-2020')
-fig_path = os.path.join(images_dir, 'federal_revenues_image.html')
+fig_title = ('U.S. Federal Surplus (+) or Deficit (-) as Percent of Gross ' +
+             'Domestic Product by Party Control: 1929-2020')
+fig_path = os.path.join(images_dir, 'deficit_image.html')
 output_file(fig_path, title=fig_title)
 
 # Create a figure with '% of GDP' as Y-axis and year as X-axis
@@ -67,11 +67,11 @@ fig = figure(title=fig_title,
              x_axis_label='Year',
              x_range=(min_year - 1, max_year + 1),
              y_axis_label='Percent of Gross Domestic Product',
-             y_range=(receipts_min - 3, receipts_max + 3),
+             y_range=(min_deficit - 3, max_deficit + 3),
              toolbar_location=None)
 
 # Set title font size and axes font sizes
-fig.title.text_font_size = '18pt'
+fig.title.text_font_size = '17pt'
 fig.xaxis.axis_label_text_font_size = '12pt'
 fig.xaxis.major_label_text_font_size = '12pt'
 fig.yaxis.axis_label_text_font_size = '12pt'
@@ -89,7 +89,7 @@ for x in range(0,recession_data_length):
       trough_year = recession_df['Trough'][x].year
       if(peak_year >= min_year and trough_year >= min_year):
             fig.patch(  x=[peak_year, trough_year, trough_year,peak_year],
-                        y=[0, 0, receipts_max + 10, receipts_max + 10],
+                        y=[-100, -100, max_deficit + 10, max_deficit + 10],
                         fill_color='gray',
                         fill_alpha=0.4,
                         line_width=0,
@@ -98,39 +98,39 @@ for x in range(0,recession_data_length):
          trough_year >= min_year):
             fig.patch(x=[peak_year, trough_year + 1, trough_year + 1,
                          peak_year],
-                      y=[0, 0, receipts_max + 10, receipts_max + 10],
+                      y=[-100, -100, max_deficit + 10, max_deficit + 10],
                       fill_color='gray',
                       fill_alpha=0.4,
                       line_width=0,
                       legend_label = 'Recession')
 
 # Plotting the line
-fig.line(x='Year', y='receipts_gdp', source=revenue_cds, color='#423D3C',
+fig.line(x='Year', y='deficit_gdp', source=deficit_cds, color='#423D3C',
          line_width=2)
 
 # Plotting the dots representing party control
 for x in range(0,data_length):
-      if(revenue_df["RepHouseSeats"][x] > 217 and
-         revenue_df["DemWhitehouse"][x] == 0):
-            fig.circle(x=revenue_df["Year"][x],
-                       y=revenue_df["receipts_gdp"][x],
+      if(deficit_df["RepHouseSeats"][x] > 217 and
+         deficit_df["DemWhitehouse"][x] == 0):
+            fig.circle(x=deficit_df["Year"][x],
+                       y=deficit_df["deficit_gdp"][x],
                        size=10,
                        line_width=0,
                        fill_color='red',
                        muted_alpha=0.2,
                        legend_label = 'Republican control')
-      elif (revenue_df["DemHouseSeats"][x] > 217 and
-            revenue_df["DemWhitehouse"][x] == 1):
-            fig.circle(x=revenue_df["Year"][x],
-                       y=revenue_df["receipts_gdp"][x],
+      elif (deficit_df["DemHouseSeats"][x] > 217 and
+            deficit_df["DemWhitehouse"][x] == 1):
+            fig.circle(x=deficit_df["Year"][x],
+                       y=deficit_df["deficit_gdp"][x],
                        size=10,
                        line_width=0,
                        fill_color='blue',
                        muted_alpha=0.2,
                        legend_label = 'Democrat control')
       else:
-            fig.circle(x=revenue_df["Year"][x],
-                       y=revenue_df["receipts_gdp"][x],
+            fig.circle(x=deficit_df["Year"][x],
+                       y=deficit_df["deficit_gdp"][x],
                        size=10,
                        line_width=0,
                        fill_color='green',
@@ -144,7 +144,7 @@ tooltips = [('Year', '@Year'),
             ('White House', '@PresidentParty'),
             ('Rep. House Seats', '@RepHouseSeats'),
             ('Dem. House Seats', '@DemHouseSeats')]
-hover_glyph = fig.circle(x='Year', y='receipts_gdp', source=revenue_cds,
+hover_glyph = fig.circle(x='Year', y='deficit_gdp', source=deficit_cds,
                          size=10, alpha=0, hover_fill_color='gray',
                          hover_alpha=0.5)
 fig.add_tools(HoverTool(tooltips=tooltips))
