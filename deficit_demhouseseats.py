@@ -10,7 +10,7 @@ import os
 from bokeh.io import output_file
 from bokeh.plotting import figure, show
 from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
-                          Legend, HoverTool, NumeralTickFormatter)
+                          Legend, HoverTool, NumeralTickFormatter,Span)
 
 # Set paths to work across Mac/Windows/Linux platforms
 cur_path = os.path.split(os.path.abspath(__file__))[0]
@@ -50,7 +50,8 @@ min_seats = deficit_df['DemHouseSeats'].min()
 max_seats = deficit_df['DemHouseSeats'].max()
 
 # Output to HTML file titled: "federal_debt_image.html"
-fig_title = ('U.S. Federal Deficits as Percent of Gross Domestic Product by Democrat House Seats: 1929-2020')
+fig_title = ('U.S. Federal Deficits as Percent of Gross Domestic Product by '+
+              'Democrat House Seats: 1929-2020')
 fig_path = os.path.join(images_dir, 'scatterplot_house_image.html')
 output_file(fig_path, title=fig_title)
 
@@ -58,10 +59,10 @@ output_file(fig_path, title=fig_title)
 fig = figure(title=fig_title,
              plot_height=600,
              plot_width=1200,
-             x_axis_label='Number of Democratic House Seats',
-             x_range=(min_seats-10, max_seats+10),
+             x_axis_label='Number of Democratic House Seats (out of 435)',
+             x_range=(min_seats-5, max_seats+5),
              y_axis_label='Deficit / GDP',
-             y_range=(min_deficit - 3, max_deficit + 3),
+             y_range=(min_deficit - 4, max_deficit + 4),
              tools=['zoom_in', 'zoom_out', 'box_zoom',
                     'pan', 'undo', 'redo', 'reset'],
              toolbar_location='right')
@@ -74,10 +75,14 @@ fig.yaxis.axis_label_text_font_size = '12pt'
 fig.yaxis.major_label_text_font_size = '12pt'
 
 # Modify tick intervals for X-axis and Y-axis
-fig.xaxis.ticker=SingleIntervalTicker(interval=20, num_minor_ticks=2)
-fig.xgrid.ticker=SingleIntervalTicker(interval=20)
-fig.yaxis.ticker=SingleIntervalTicker(interval=5, num_minor_ticks=5)
+fig.xaxis.ticker=SingleIntervalTicker(interval=10, num_minor_ticks=0)
+fig.xgrid.ticker=SingleIntervalTicker(interval=10)
+fig.yaxis.ticker=SingleIntervalTicker(interval=5, num_minor_ticks=0)
 fig.ygrid.ticker=SingleIntervalTicker(interval=10)
+
+#Vertical black line noting half of senate seats
+halfLine = Span(location=217,dimension='height',line_color='black',line_width=2)
+fig.add_layout(halfLine)
 
 # Plotting the dots representing party control
 for x in range(0,data_length):
@@ -85,8 +90,8 @@ for x in range(0,data_length):
          deficit_df["DemWhitehouse"][x] == 0):
             fig.circle(x=deficit_df["DemHouseSeats"][x],
                        y=deficit_df["deficit_gdp"][x],
-                       size=20,
-                       line_width=2,
+                       size=10,
+                       line_width=1,
                        line_color='black',
                        fill_color='red',
                        alpha=0.7,
@@ -96,8 +101,8 @@ for x in range(0,data_length):
             deficit_df["DemWhitehouse"][x] == 1):
             fig.circle(x=deficit_df["DemHouseSeats"][x],
                        y=deficit_df["deficit_gdp"][x],
-                       size=20,
-                       line_width=2,
+                       size=10,
+                       line_width=1,
                        line_color='black',
                        fill_color='blue',
                        alpha=0.7,
@@ -106,8 +111,8 @@ for x in range(0,data_length):
       else:
             fig.circle(x=deficit_df["DemHouseSeats"][x],
                        y=deficit_df["deficit_gdp"][x],
-                       size=20,
-                       line_width=2,
+                       size=10,
+                       line_width=1,
                        line_color='black',
                        fill_color='green',
                        alpha=0.7,
@@ -115,7 +120,8 @@ for x in range(0,data_length):
                        legend_label = 'Split control')
 
 #Invisible scatter plot to give the hover tool something to register
-fig.scatter(x='DemHouseSeats', y='deficit_gdp', source=deficit_cds, size=20, alpha=0, name='hover_helper')
+fig.scatter(  x='DemHouseSeats', y='deficit_gdp', source=deficit_cds, 
+              size=20, alpha=0, name='hover_helper')
 
 # Add information on hover
 tooltips = [('Year', '@Year'),
@@ -126,7 +132,7 @@ tooltips = [('Year', '@Year'),
             ('Dem. House Seats', '@DemHouseSeats'),
             ('Rep. Senate Seats', '@RepSenateSeats'),
             ('Dem. Senate Seats', '@DemSenateSeats')]
-fig.add_tools(HoverTool(tooltips=tooltips,names=['hover_helper']))
+fig.add_tools(HoverTool(tooltips=tooltips, names=['hover_helper']))
 
 #Turn off scrolling
 fig.toolbar.active_drag = None
@@ -136,10 +142,13 @@ fig.legend.location = 'bottom_right'
 fig.legend.border_line_width = 2
 fig.legend.border_line_color = 'black'
 fig.legend.border_line_alpha = 1
-fig.legend.label_text_font_size = '6mm'
+fig.legend.label_text_font_size = '4mm'
 
 #Set legend muting click policy
 fig.legend.click_policy = 'mute'
+
+#Remove Logo from toolbar
+fig.toolbar.logo = None
 
 #Add notes below image
 note_text_1 = ('Note: Republican control in a given year is defined as the ' +
@@ -165,8 +174,8 @@ note_text_4 = ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), ' +
 caption4 = Title(text=note_text_4, align='left', text_font_size='4mm',
                  text_font_style='italic')
 fig.add_layout(caption4, 'below')
-note_text_5 = ('   Representatives, 1789 to present", https://history.house.gov/' +
-               'Institution/Party-Divisions/Party-Divisions/, '+
+note_text_5 = ('   Representatives, 1789 to present", '+ 
+               'https://history.house.gov/Institution/Party-Divisions/Party-Divisions/, '+
                'Richard W. Evans (@rickecon).')
 caption5 = Title(text=note_text_5, align='left', text_font_size='4mm',
                  text_font_style='italic')
