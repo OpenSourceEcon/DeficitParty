@@ -1,0 +1,202 @@
+# Import packages
+from bokeh.core.property.numeric import Interval
+from bokeh.models.annotations import Label, LabelSet
+from bokeh.models.glyphs import VArea
+from bokeh.models.tickers import SingleIntervalTicker
+import numpy as np
+import pandas as pd
+import datetime as dt
+import os
+from bokeh.io import output_file
+from bokeh.plotting import figure, show
+from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
+                          Legend, HoverTool, NumeralTickFormatter, Span)
+
+# Set paths to work across Mac/Windows/Linux platforms
+cur_path = os.path.split(os.path.abspath(__file__))[0]
+data_dir = os.path.join(cur_path, 'data')
+party_data_path = os.path.join(data_dir, 'deficit_party_data.csv')
+images_dir = os.path.join(cur_path, 'images')
+
+#Reading data from CVS (deficit_party_data.csv)
+nonint_df = pd.read_csv(party_data_path,
+                         dtype={'Year': np.int64,
+                                'deficit_gdp': np.float64,
+                                'receipts_gdp': np.float64,
+                                'spend_int_gdp': np.float64,
+                                'spend_nonint_gdp': np.float64,
+                                'spend_tot_gdp': np.float64,
+                                'president': 'str',
+                                'president_party': 'str',
+                                'congress_num': np.int64,
+                                'congress_sess': np.int64,
+                                'dem_whitehouse': np.int64,
+                                'dem_senateseats': np.int64,
+                                'rep_senateseats': np.int64,
+                                'oth_senateseats': np.int64,
+                                'tot_senateseats': np.int64,
+                                'dem_houseseats': np.int64,
+                                'rep_houseseats': np.int64,
+                                'oth_houseseats': np.int64,
+                                'tot_houseseats': np.int64},
+                         skiprows=3)
+nonint_cds = ColumnDataSource(nonint_df)
+
+#Finding the index for when the 'spend_nonint_gdp' column starts data
+data_length = len(nonint_df['Year'])
+starting_index = -1
+for x in range(0,data_length):
+    if(nonint_df['Year'][x]==1940):
+        starting_index = x
+        break
+
+# Create Variables for min and max values
+min_nonint = nonint_df['spend_nonint_gdp'][starting_index]
+max_nonint = nonint_df['spend_nonint_gdp'][starting_index]
+min_seats = nonint_df['DemSenateSeats'][starting_index]
+max_seats = nonint_df['DemSenateSeats'][starting_index]
+for x in range(starting_index, data_length):
+    if(min_nonint > nonint_df['spend_nonint_gdp'][x]):
+        min_nonint = nonint_df['spend_nonint_gdp'][x]
+    if(max_nonint < nonint_df['spend_nonint_gdp'][x]):
+        max_nonint = nonint_df['spend_nonint_gdp'][x]
+    if(min_seats > nonint_df['DemSenateSeats'][x]):
+        min_seats = nonint_df['DemSenateSeats'][x]
+    if(max_seats < nonint_df['DemSenateSeats'][x]):
+        max_seats = nonint_df['DemSenateSeats'][x]
+
+
+# Output to HTML file
+fig_title = ('U.S. Federal Noninterest Outlays as Percent of Gross Domestic Product by ' +
+             'Democrat Senate Seats: 1929-2020')
+fig_path = os.path.join(images_dir, 'nonint_senate_plot.html')
+output_file(fig_path, title=fig_title)
+
+# Create a figure with '% of GDP' as Y-axis and year as X-axis
+fig = figure(title=fig_title,
+             plot_height=600,
+             plot_width=1200,
+             x_axis_label='Number of Democratic Senate Seats (out of 100)',
+             x_range=(min_seats - 5, max_seats + 5),
+             y_axis_label='Noninterest Outlays / GDP',
+             y_range=(min_nonint - 4, max_nonint + 4),
+             tools=['zoom_in', 'zoom_out', 'box_zoom',
+                    'pan', 'undo', 'redo', 'reset'],
+             toolbar_location='right')
+
+# Set title font size and axes font sizes
+fig.title.text_font_size = '16pt'
+fig.xaxis.axis_label_text_font_size = '12pt'
+fig.xaxis.major_label_text_font_size = '12pt'
+fig.yaxis.axis_label_text_font_size = '12pt'
+fig.yaxis.major_label_text_font_size = '12pt'
+
+# Modify tick intervals for X-axis and Y-axis
+fig.xaxis.ticker = SingleIntervalTicker(interval=5, num_minor_ticks=0)
+fig.xgrid.ticker = SingleIntervalTicker(interval=5)
+fig.yaxis.ticker = SingleIntervalTicker(interval=5, num_minor_ticks=0)
+fig.ygrid.ticker = SingleIntervalTicker(interval=10)
+
+#Vertical black line noting half of senate seats
+halfLine = Span(location=50,dimension='height',line_color='black',line_width=2)
+fig.add_layout(halfLine)
+
+# Plotting the dots representing party control
+for x in range(starting_index, data_length):
+      if(nonint_df["RepSenateSeats"][x] > 50 and
+         nonint_df["DemWhitehouse"][x] == 0):
+            fig.circle(x=nonint_df["DemSenateSeats"][x],
+                       y=nonint_df["spend_nonint_gdp"][x],
+                       size=10,
+                       line_width=1,
+                       line_color='black',
+                       fill_color='red',
+                       alpha=0.7,
+                       muted_alpha=0.1,
+                       legend_label = 'Republican control')
+      elif (nonint_df["DemSenateSeats"][x] > 50 and
+            nonint_df["DemWhitehouse"][x] == 1):
+            fig.circle(x=nonint_df["DemSenateSeats"][x],
+                       y=nonint_df["spend_nonint_gdp"][x],
+                       size=10,
+                       line_width=1,
+                       line_color='black',
+                       fill_color='blue',
+                       alpha=0.7,
+                       muted_alpha=0.1,
+                       legend_label = 'Democrat control')
+      else:
+            fig.circle(x=nonint_df["DemSenateSeats"][x],
+                       y=nonint_df["spend_nonint_gdp"][x],
+                       size=10,
+                       line_width=1,
+                       line_color='black',
+                       fill_color='green',
+                       alpha=0.7,
+                       muted_alpha=0.1,
+                       legend_label = 'Split control')
+
+#Invisible scatter plot to give the hover tool something to register
+fig.scatter(x='DemSenateSeats', y='spend_nonint_gdp', source=nonint_cds, size=20,
+            alpha=0, name='hover_helper')
+
+# Add information on hover
+tooltips = [('Year', '@Year'),
+            ('Deficit over GDP', '@deficit_gdp{0.0}'+'%'),
+            ('President','@President'),
+            ('White House', '@PresidentParty'),
+            ('Rep. House Seats', '@RepHouseSeats'),
+            ('Dem. House Seats', '@DemHouseSeats'),
+            ('Rep. Senate Seats', '@RepSenateSeats'),
+            ('Dem. Senate Seats', '@DemSenateSeats')]
+fig.add_tools(HoverTool(tooltips=tooltips, names=['hover_helper']))
+
+#Turn off scrolling
+fig.toolbar.active_drag = None
+
+#Add legend
+fig.legend.location = 'top_right'
+fig.legend.border_line_width = 2
+fig.legend.border_line_color = 'black'
+fig.legend.border_line_alpha = 1
+fig.legend.label_text_font_size = '4mm'
+
+#Set legend muting click policy
+fig.legend.click_policy = 'mute'
+
+#Remove Logo from toolbar
+fig.toolbar.logo = None
+
+#Add notes below image
+note_text_1 = ('Note: Republican control in a given year is defined as the ' +
+               'President being Republican and Republicans holding more ' +
+               'than 50 Senate seats for the majority of that year.')
+caption1 = Title(text=note_text_1, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption1, 'below')
+note_text_2 = ('   Democrat control is defined as the President being ' +
+               'Democrat and Democrats holding more than 50 Senate seats ' +
+               'for the majority of that year. Split government is')
+caption2 = Title(text=note_text_2, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption2, 'below')
+note_text_3 = ('   defined as one party holding the White ' +
+               'House while the other party holds a majority of House seats.')
+caption3 = Title(text=note_text_3, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption3, 'below')
+note_text_4 = ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), ' +
+               'United States House of Representatives History, Art, & ' +
+               'Archives, "Party Divisions of the House of')
+caption4 = Title(text=note_text_4, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption4, 'below')
+note_text_5 = ('   Representatives, 1789 to present", ' +
+               'https://history.house.gov/Institution/Party-Divisions/' +
+               'Party-Divisions/, Richard W. Evans (@rickecon).')
+caption5 = Title(text=note_text_5, align='left', text_font_size='4mm',
+                 text_font_style='italic')
+fig.add_layout(caption5, 'below')
+
+#Display the generated figure
+show(fig)
