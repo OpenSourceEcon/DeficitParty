@@ -49,10 +49,10 @@ max_deficit = deficit_df['deficit_gdp'].max()
 min_seats = deficit_df['DemHouseSeats'].min()
 max_seats = deficit_df['DemHouseSeats'].max()
 
-# Output to HTML file titled: "federal_debt_image.html"
+# Output to HTML file
 fig_title = ('U.S. Federal Deficits as Percent of Gross Domestic Product by '+
               'Democrat House Seats: 1929-2020')
-fig_path = os.path.join(images_dir, 'scatterplot_house_image.html')
+fig_path = os.path.join(images_dir, 'deficit_house_plot.html')
 output_file(fig_path, title=fig_title)
 
 # Create a figure with '% of GDP' as Y-axis and year as X-axis
