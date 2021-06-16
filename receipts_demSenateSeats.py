@@ -19,7 +19,7 @@ party_data_path = os.path.join(data_dir, 'deficit_party_data.csv')
 images_dir = os.path.join(cur_path, 'images')
 
 #Reading data from CVS (deficit_party_data.csv)
-deficit_df = pd.read_csv(party_data_path,
+receipts_df = pd.read_csv(party_data_path,
                          dtype={'Year': np.int64,
                                 'deficit_gdp': np.float64,
                                 'receipts_gdp': np.float64,
@@ -40,19 +40,19 @@ deficit_df = pd.read_csv(party_data_path,
                                 'oth_houseseats': np.int64,
                                 'tot_houseseats': np.int64},
                          skiprows=3)
-deficit_cds = ColumnDataSource(deficit_df)
+receipts_cds = ColumnDataSource(receipts_df)
 
 # Create Variables for min and max values
-data_length = len(deficit_df['Year'])
-min_deficit = deficit_df['deficit_gdp'].min()
-max_deficit = deficit_df['deficit_gdp'].max()
-min_seats = deficit_df['DemSenateSeats'].min()
-max_seats = deficit_df['DemSenateSeats'].max()
+data_length = len(receipts_df['Year'])
+min_receipts = receipts_df['receipts_gdp'].min()
+max_receipts = receipts_df['receipts_gdp'].max()
+min_seats = receipts_df['DemSenateSeats'].min()
+max_seats = receipts_df['DemSenateSeats'].max()
 
 # Output to HTML file titled: "federal_debt_image.html"
-fig_title = ('U.S. Federal Deficits as Percent of Gross Domestic Product by ' +
+fig_title = ('U.S. Federal Receipts as Percent of Gross Domestic Product by ' +
              'Democrat Senate Seats: 1929-2020')
-fig_path = os.path.join(images_dir, 'deficit_senate_plot.html')
+fig_path = os.path.join(images_dir, 'receipts_senate_plot.html')
 output_file(fig_path, title=fig_title)
 
 # Create a figure with '% of GDP' as Y-axis and year as X-axis
@@ -61,8 +61,8 @@ fig = figure(title=fig_title,
              plot_width=1200,
              x_axis_label='Number of Democratic Senate Seats (out of 100)',
              x_range=(min_seats - 5, max_seats + 5),
-             y_axis_label='Deficit / GDP',
-             y_range=(min_deficit - 4, max_deficit + 4),
+             y_axis_label='Receipts / GDP',
+             y_range=(min_receipts - 5, max_receipts + 5),
              tools=['zoom_in', 'zoom_out', 'box_zoom',
                     'pan', 'undo', 'redo', 'reset'],
              toolbar_location='right')
@@ -86,10 +86,10 @@ fig.add_layout(halfLine)
 
 # Plotting the dots representing party control
 for x in range(0,data_length):
-      if(deficit_df["RepSenateSeats"][x] > 50 and
-         deficit_df["DemWhitehouse"][x] == 0):
-            fig.circle(x=deficit_df["DemSenateSeats"][x],
-                       y=deficit_df["deficit_gdp"][x],
+      if(receipts_df["RepSenateSeats"][x] > 50 and
+         receipts_df["DemWhitehouse"][x] == 0):
+            fig.circle(x=receipts_df["DemSenateSeats"][x],
+                       y=receipts_df["receipts_gdp"][x],
                        size=10,
                        line_width=1,
                        line_color='black',
@@ -97,10 +97,10 @@ for x in range(0,data_length):
                        alpha=0.7,
                        muted_alpha=0.1,
                        legend_label = 'Republican control')
-      elif (deficit_df["DemSenateSeats"][x] > 50 and
-            deficit_df["DemWhitehouse"][x] == 1):
-            fig.circle(x=deficit_df["DemSenateSeats"][x],
-                       y=deficit_df["deficit_gdp"][x],
+      elif (receipts_df["DemSenateSeats"][x] > 50 and
+            receipts_df["DemWhitehouse"][x] == 1):
+            fig.circle(x=receipts_df["DemSenateSeats"][x],
+                       y=receipts_df["receipts_gdp"][x],
                        size=10,
                        line_width=1,
                        line_color='black',
@@ -109,8 +109,8 @@ for x in range(0,data_length):
                        muted_alpha=0.1,
                        legend_label = 'Democrat control')
       else:
-            fig.circle(x=deficit_df["DemSenateSeats"][x],
-                       y=deficit_df["deficit_gdp"][x],
+            fig.circle(x=receipts_df["DemSenateSeats"][x],
+                       y=receipts_df["receipts_gdp"][x],
                        size=10,
                        line_width=1,
                        line_color='black',
@@ -120,7 +120,7 @@ for x in range(0,data_length):
                        legend_label = 'Split control')
 
 #Invisible scatter plot to give the hover tool something to register
-fig.scatter(x='DemSenateSeats', y='deficit_gdp', source=deficit_cds, size=20,
+fig.scatter(x='DemSenateSeats', y='receipts_gdp', source=receipts_cds, size=20,
             alpha=0, name='hover_helper')
 
 # Add information on hover
