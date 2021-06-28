@@ -2,6 +2,7 @@
 from bokeh.core.property.numeric import Interval
 from bokeh.models.annotations import Label, LabelSet
 from bokeh.models.glyphs import VArea
+from bokeh.models.layouts import Column, WidgetBox
 from bokeh.models.tickers import SingleIntervalTicker
 import numpy as np
 import pandas as pd
@@ -10,8 +11,9 @@ import os
 from bokeh.io import output_file
 from bokeh.plotting import figure, show
 from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
-                          Legend, HoverTool, NumeralTickFormatter, Span)
-
+                          Legend, HoverTool, NumeralTickFormatter, Span,
+                          CustomJS, RadioButtonGroup, callbacks)
+from party_control_callback import PARTY_CONTROL_CALLBACK
 # Set paths to work across Mac/Windows/Linux platforms
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(cur_path, 'data')
@@ -40,7 +42,14 @@ deficit_df = pd.read_csv(party_data_path,
                                 'oth_houseseats': np.int64,
                                 'tot_houseseats': np.int64},
                          skiprows=3)
-deficit_cds = ColumnDataSource(deficit_df)
+#deficit_cds = ColumnDataSource(deficit_df)
+color_list = ['black']*92
+deficit_cds = ColumnDataSource(data=dict( x=deficit_df['DemSenateSeats'], 
+                                          y=deficit_df['deficit_gdp'], 
+                                          demWhiteHouse=deficit_df['DemWhitehouse'],
+                                          demSenateSeats=deficit_df['DemSenateSeats'], 
+                                          demHouseSeats=deficit_df['DemHouseSeats'], 
+                                          color=color_list))
 
 # Create Variables for min and max values
 data_length = len(deficit_df['Year'])
@@ -52,7 +61,7 @@ max_seats = deficit_df['DemSenateSeats'].max()
 # Output to HTML file titled: "federal_debt_image.html"
 fig_title = ('U.S. Federal Deficits as Percent of Gross Domestic Product by ' +
              'Democrat Senate Seats: 1929-2020')
-fig_path = os.path.join(images_dir, 'scatterplot_senate_image.html')
+fig_path = os.path.join(images_dir, 'deficit_senate_plot.html')
 output_file(fig_path, title=fig_title)
 
 # Create a figure with '% of GDP' as Y-axis and year as X-axis
@@ -80,10 +89,66 @@ fig.xgrid.ticker = SingleIntervalTicker(interval=5)
 fig.yaxis.ticker = SingleIntervalTicker(interval=5, num_minor_ticks=0)
 fig.ygrid.ticker = SingleIntervalTicker(interval=10)
 
+# Create button options for changing plot colors
+LABELS = ['Full Control', 'Senate Control', 'House Control']
+radio_callback = CustomJS(args=dict(deficit_cds=deficit_cds),code=PARTY_CONTROL_CALLBACK)
+radio = RadioButtonGroup(labels=LABELS, active=0)
+radio_callback.args['radio'] = radio
+radio.js_on_click(radio_callback)
+
+
 #Vertical black line noting half of senate seats
 halfLine = Span(location=50,dimension='height',line_color='black',line_width=2)
 fig.add_layout(halfLine)
 
+# Create starting color values (Plot defaults to 'Full Control' option)
+for x in range(0,data_length):
+      if(deficit_df["RepSenateSeats"][x] > 50 and
+         deficit_df["DemWhitehouse"][x] == 0):
+            deficit_cds.data['color'][x]='red'
+      elif(deficit_df["DemSenateSeats"][x] > 50 and
+           deficit_df["DemWhitehouse"][x] == 1):
+              deficit_cds.data['color'][x]='blue'
+      else:
+            deficit_cds.data['color'][x]='green'
+
+# Plotting the dots representing party control
+for x in range(0,data_length):
+      if(deficit_cds.data['color'][x]=='red'):
+            fig.circle(x='x',
+                       y='y',
+                       size=10,
+                       line_width=1,
+                       line_color='black',
+                       fill_color='color',
+                       source=deficit_cds,
+                       alpha=0.7,
+                       muted_alpha=0.1,
+                       legend_label = 'Republican control')
+      elif(deficit_cds.data['color'][x]=='blue'):
+            fig.circle(x='x',
+                       y='y',
+                       size=10,
+                       line_width=1,
+                       line_color='black',
+                       fill_color='color',
+                       source=deficit_cds,
+                       alpha=0.7,
+                       muted_alpha=0.1,
+                       legend_label = 'Democrat control')
+      else:
+            fig.circle(x='x',
+                       y='y',
+                       size=10,
+                       line_width=1,
+                       line_color='black',
+                       fill_color='color',
+                       source=deficit_cds,
+                       alpha=0.7,
+                       muted_alpha=0.1,
+                       legend_label = 'Split control')
+
+'''
 # Plotting the dots representing party control
 for x in range(0,data_length):
       if(deficit_df["RepSenateSeats"][x] > 50 and
@@ -118,9 +183,9 @@ for x in range(0,data_length):
                        alpha=0.7,
                        muted_alpha=0.1,
                        legend_label = 'Split control')
-
+'''
 #Invisible scatter plot to give the hover tool something to register
-fig.scatter(x='DemSenateSeats', y='deficit_gdp', source=deficit_cds, size=20,
+fig.scatter('x', 'y', source=deficit_cds, size=20,
             alpha=0, name='hover_helper')
 
 # Add information on hover
@@ -182,4 +247,6 @@ caption5 = Title(text=note_text_5, align='left', text_font_size='4mm',
 fig.add_layout(caption5, 'below')
 
 #Display the generated figure
-show(fig)
+#show(fig)
+#show(Column(WidgetBox(radio),fig))
+show(Column(radio,fig))
