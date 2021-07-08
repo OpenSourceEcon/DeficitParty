@@ -120,6 +120,7 @@ def deficitPlots(deficit_component, seat_type, src):
         x_value = 'DemHouseSeats'
         min_seats = source[src][x_value].min()
         max_seats = source[src][x_value].max()
+        footnotes = "217 House seats"
         if(deficit_component=='deficit'):
             fig_title='U.S. Federal Deficits as Percent of Gross Domestic Product by Democrat House Seats: 1929-2020'
             file_name="house_deficit_plot.html"
@@ -148,6 +149,7 @@ def deficitPlots(deficit_component, seat_type, src):
         x_value = 'DemSenateSeats'
         min_seats = source[src][x_value].min()
         max_seats = source[src][x_value].max()
+        footnotes = "50 Senate seats"
         if(deficit_component=='deficit'):
             fig_title='U.S. Federal Deficits as Percent of Gross Domestic Product by Democrat Senate Seats: 1929-2020'
             file_name="senate_deficit_plot.html"
@@ -170,6 +172,9 @@ def deficitPlots(deficit_component, seat_type, src):
             y_value = 'receipts_gdp' 
             min_y = source[src][y_value].min()
             max_y = source[src][y_value].max()   
+
+    # Console start notification
+    print("Generating "+file_name)
 
     # Generate Figures
     fig_list=[]
@@ -234,13 +239,13 @@ def deficitPlots(deficit_component, seat_type, src):
         #Add notes below image
         note_text_1 = ('Note: Republican control in a given year is defined as the ' +
                     'President being Republican and Republicans holding more ' +
-                    'than 217 House seats for the majority of that year.')
+                    'than '+footnotes+' for the majority of that year.')
         caption1 = Title(text=note_text_1, align='left', text_font_size='4mm',
                         text_font_style='italic')
         fig_list[i].add_layout(caption1, 'below')
         note_text_2 = ('   Democrat control is defined as the President being ' +
-                    'Democrat and Democrats holding more than 217 House seats ' +
-                    'for the majority of that year. Split government is')
+                    'Democrat and Democrats holding more than '+footnotes+
+                    ' for the majority of that year. Split government is')
         caption2 = Title(text=note_text_2, align='left', text_font_size='4mm',
                         text_font_style='italic')
         fig_list[i].add_layout(caption2, 'below')
@@ -271,7 +276,8 @@ def deficitPlots(deficit_component, seat_type, src):
     panel_list.append(Panel(child=fig_list[2], title='House Control'))
 
     save(Tabs(tabs=panel_list))
-
+    # Console start notification
+    print(file_name+" Complete")
 
 #________________________________________
 #Function Calls
