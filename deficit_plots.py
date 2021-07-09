@@ -2,7 +2,7 @@
 The deficit_plots.py module prints plots of deficit/GDP for United States
 across years, by number of Democrat-held Senate seats and House seats, and by
 three different measures of party control. If a user runs this module as a
-script, it will create all six plots
+script, it will create all six plots.
 '''
 
 # Import packages
@@ -32,28 +32,28 @@ images_dir = os.path.join(cur_path, 'images')
 source=[]
 cds_list=[]
 for i in range(6):
-    source.append(
-        pd.read_csv(party_data_path,
-                    dtype={'Year': np.int64,
-                           'deficit_gdp': np.float64,
-                           'receipts_gdp': np.float64,
-                           'spend_int_gdp': np.float64,
-                           'spend_nonint_gdp': np.float64,
-                           'spend_tot_gdp': np.float64,
-                           'president': 'str',
-                           'president_party': 'str',
-                           'congress_num': np.int64,
-                           'congress_sess': np.int64,
-                           'dem_whitehouse': np.int64,
-                           'dem_senateseats': np.int64,
-                           'rep_senateseats': np.int64,
-                           'oth_senateseats': np.int64,
-                           'tot_senateseats': np.int64,
-                           'dem_houseseats': np.int64,
-                           'rep_houseseats': np.int64,
-                           'oth_houseseats': np.int64,
-                           'tot_houseseats': np.int64},
-                    skiprows=3))
+    df = pd.read_csv(party_data_path,
+                     dtype={'Year': np.int64,
+                            'deficit_gdp': np.float64,
+                            'receipts_gdp': np.float64,
+                            'spend_int_gdp': np.float64,
+                            'spend_nonint_gdp': np.float64,
+                            'spend_tot_gdp': np.float64,
+                            'president': 'str',
+                            'president_party': 'str',
+                            'congress_num': np.int64,
+                            'congress_sess': np.int64,
+                            'dem_whitehouse': np.int64,
+                            'dem_senateseats': np.int64,
+                            'rep_senateseats': np.int64,
+                            'oth_senateseats': np.int64,
+                            'tot_senateseats': np.int64,
+                            'dem_houseseats': np.int64,
+                            'rep_houseseats': np.int64,
+                            'oth_houseseats': np.int64,
+                            'tot_houseseats': np.int64},
+                     skiprows=3)
+    source.append(df)
     cds_list.append(ColumnDataSource(source[i]))
 
 def output(title, file_name):
@@ -123,15 +123,16 @@ def plotCircle(i, x_value, y_value, fig, color, src):
     else:
         LEGEND_LABEL = 'Split Control'
 
-    fig.circle( x=source[src][x_value][i],
-                y=source[src][y_value][i],
-                size=10,
-                line_width=1,
-                line_color='black',
-                fill_color=color,
-                alpha=0.7,
-                muted_alpha=0.1,
-                legend_label = LEGEND_LABEL)
+    fig.circle(x=source[src][x_value][i],
+               y=source[src][y_value][i],
+               size=10,
+               line_width=1,
+               line_color='black',
+               fill_color=color,
+               alpha=0.7,
+               muted_alpha=0.1,
+               legend_label = LEGEND_LABEL)
+
 
 def deficitPlots(deficit_component, seat_type, src):
     r'''
@@ -157,62 +158,72 @@ def deficitPlots(deficit_component, seat_type, src):
 
     # Define variables for plot
     data_length = len(source[src]['Year'])
-    starting_index=0
-    if(seat_type=='house'):
+    starting_index = 0
+    if seat_type == 'house':
         half_line = 217
         x_label='Number of Democratic House Seats (out of 435)'
         x_value = 'DemHouseSeats'
         min_seats = source[src][x_value].min()
         max_seats = source[src][x_value].max()
-        footnotes = "217 House seats"
-        if(deficit_component=='deficit'):
-            fig_title='U.S. Federal Deficits as Percent of Gross Domestic Product by Democrat House Seats: 1929-2020'
-            file_name="house_deficit_plot.html"
-            y_label='Deficit / GDP'
+        footnotes = '217 House seats'
+        if deficit_component == 'deficit':
+            fig_title = ('U.S. Federal Deficits as Percent of Gross ' +
+                         'Domestic Product by Democrat House Seats: 1929-2020')
+            file_name = 'deficitGDP_HouseSeats.html'
+            y_label = 'Deficit / GDP'
             y_value = 'deficit_gdp'
             min_y = source[src][y_value].min()
             max_y = source[src][y_value].max()
-        elif(deficit_component=='spending'):
-            fig_title='U.S. Federal Noninterest Spending as Percent of Gross Domestic Product by Democrat House Seats: 1929-2020'
-            file_name="house_noninterest-spending_plot.html"
-            y_label='Noninterest Spending / GDP'
+        elif deficit_component == 'spending':
+            fig_title = ('U.S. Federal Noninterest Spending as Percent of ' +
+                         'Gross Domestic Product by Democrat House Seats: ' +
+                         '1929-2020')
+            file_name = 'spending_HouseSeats.html'
+            y_label = 'Noninterest Spending / GDP'
             y_value = 'spend_nonint_gdp'
             min_y = source[src][y_value].min()
             max_y = source[src][y_value].max()
-            starting_index=11
-        elif(deficit_component=='revenues'):
-            fig_title='U.S. Federal Receipts as Percent of Gross Domestic Product by Democrat House Seats: 1929-2020'
-            file_name="house_revenues_plot.html"
-            y_label='Receipts / GDP'
+            starting_index = 11
+        elif deficit_component == 'revenues':
+            fig_title = ('U.S. Federal Receipts as Percent of Gross ' +
+                         'Domestic Product by Democrat House Seats: 1929-2020')
+            file_name = 'revenues_HouseSeats.html'
+            y_label = 'Receipts / GDP'
             y_value = 'receipts_gdp'
             min_y = source[src][y_value].min()
             max_y = source[src][y_value].max()
-    else:
+    elif seat_type == 'senate':
         half_line=50
-        x_label='Number of Democratic Senate Seats (out of 100)'
+        x_label = 'Number of Democratic Senate Seats (out of 100)'
         x_value = 'DemSenateSeats'
         min_seats = source[src][x_value].min()
         max_seats = source[src][x_value].max()
-        footnotes = "50 Senate seats"
-        if(deficit_component=='deficit'):
-            fig_title='U.S. Federal Deficits as Percent of Gross Domestic Product by Democrat Senate Seats: 1929-2020'
-            file_name="senate_deficit_plot.html"
-            y_label='Deficit / GDP'
+        footnotes = '50 Senate seats'
+        if deficit_component == 'deficit':
+            fig_title = ('U.S. Federal Deficits as Percent of Gross ' +
+                         'Domestic Product by Democrat Senate Seats: ' +
+                         '1929-2020')
+            file_name = 'deficit_SenateSeats.html'
+            y_label = 'Deficit / GDP'
             y_value = 'deficit_gdp'
             min_y = source[src][y_value].min()
             max_y = source[src][y_value].max()
-        elif(deficit_component=='spending'):
-            fig_title='U.S. Federal Noninterest Spending as Percent of Gross Domestic Product by Democrat Senate Seats: 1929-2020'
-            file_name="senate_noninterest-spending_plot.html"
-            y_label='Noninterest Spending / GDP'
+        elif deficit_component=='spending':
+            fig_title = ('U.S. Federal Noninterest Spending as Percent of ' +
+                         'Gross Domestic Product by Democrat Senate Seats: ' +
+                         '1929-2020')
+            file_name = 'spending_SenateSeats.html'
+            y_label = 'Noninterest Spending / GDP'
             y_value = 'spend_nonint_gdp'
             min_y = source[src][y_value].min()
             max_y = source[src][y_value].max()
-            starting_index=11
-        elif(deficit_component=='revenues'):
-            fig_title='U.S. Federal Receipts as Percent of Gross Domestic Product by Democrat Senate Seats: 1929-2020'
-            file_name="senate_revenues_plot.html"
-            y_label='Receipts / GDP'
+            starting_index = 11
+        elif deficit_component=='revenues':
+            fig_title = ('U.S. Federal Receipts as Percent of Gross ' +
+                         'Domestic Product by Democrat Senate Seats: ' +
+                         '1929-2020')
+            file_name = 'revenues_SenateSeats.html'
+            y_label = 'Receipts / GDP'
             y_value = 'receipts_gdp'
             min_y = source[src][y_value].min()
             max_y = source[src][y_value].max()
@@ -234,7 +245,7 @@ def deficitPlots(deficit_component, seat_type, src):
     # Plot data points
     for n in range(3):
         for i in range(starting_index, data_length):
-            if(n==0):
+            if n == 0:
                 if(source[src]["DemHouseSeats"][i] < 217 and source[src]["DemSenateSeats"][i] < 50 and source[src]["DemWhitehouse"][i] == 0):
                     plotCircle(i,x_value, y_value, fig_list[n], 'red',src)
                 elif (source[src]["DemHouseSeats"][i] > 217 and source[src]["DemSenateSeats"][i] > 50 and source[src]["DemWhitehouse"][i] == 1):
@@ -317,13 +328,16 @@ def deficitPlots(deficit_component, seat_type, src):
     output(fig_title, file_name)
 
     panel_list=[]
-    panel_list.append(Panel(child=fig_list[0], title='Full Control'))
-    panel_list.append(Panel(child=fig_list[1], title='Senate Control'))
-    panel_list.append(Panel(child=fig_list[2], title='House Control'))
+    title_str_full = 'Full control: White House + Senate + House'
+    title_str_senate = 'Senate control: White House + Senate'
+    title_str_house = 'House control: White House + House'
+    panel_list.append(Panel(child=fig_list[0], title=title_str_full))
+    panel_list.append(Panel(child=fig_list[1], title=title_str_senate))
+    panel_list.append(Panel(child=fig_list[2], title=title_str_house))
 
     save(Tabs(tabs=panel_list))
     # Console start notification
-    print(file_name+" Complete")
+    print(file_name + ' Complete')
 
 
 if __name__ == "__main__":
