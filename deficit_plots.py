@@ -28,7 +28,8 @@ data_dir = os.path.join(cur_path, 'data')
 party_data_path = os.path.join(data_dir, 'deficit_party_data.csv')
 images_dir = os.path.join(cur_path, 'images')
 
-# Reading data from CVS (deficit_party_data.csv)
+# Reading data from CVS (deficit_party_data.csv). We make six copies of the
+# DataFram and the Column Data Source to get around an error we were getting
 source=[]
 cds_list=[]
 for i in range(6):
@@ -60,7 +61,7 @@ def output(title, file_name):
     fig_path = os.path.join(images_dir, file_name)
     output_file(fig_path, title=title)
 
-# Returns a list of 3 figures with the given title
+
 def generateFigures(title, x_label, y_label, min_seats, max_seats, min_y,
                     max_y):
     r'''
@@ -83,19 +84,25 @@ def generateFigures(title, x_label, y_label, min_seats, max_seats, min_y,
     '''
     fig_list=[]
     for i in range(3):
+        x_spread = max_seats - min_seats
+        x_buffer = 0.1
+        y_spread = max_y - min_y
+        y_buffer = 0.1
         fig = figure(title=title,
-             plot_height=600,
-             plot_width=1200,
-             x_axis_label=x_label,
-             x_range=(min_seats - 3, max_seats + 3),
-             y_axis_label=y_label,
-             y_range=(min_y - 4, max_y + 4),
-             tools=['zoom_in', 'zoom_out', 'box_zoom', 'pan', 'undo', 'redo',
-                    'reset'],
-             toolbar_location='right')
+                     plot_height=600,
+                     plot_width=1000,
+                     x_axis_label=x_label,
+                     x_range=(min_seats - x_buffer * x_spread,
+                              max_seats + x_buffer * x_spread),
+                     y_axis_label=y_label,
+                     y_range=(min_y - y_buffer * y_spread,
+                              max_y + y_buffer * y_spread),
+                     tools=['zoom_in', 'zoom_out', 'box_zoom', 'pan', 'undo',
+                            'redo', 'reset'],
+                     toolbar_location='right')
 
         # Set title font size and axes font sizes
-        fig.title.text_font_size = '18pt'
+        fig.title.text_font_size = '16pt'
         fig.xaxis.axis_label_text_font_size = '12pt'
         fig.xaxis.major_label_text_font_size = '12pt'
         fig.yaxis.axis_label_text_font_size = '12pt'
@@ -105,8 +112,6 @@ def generateFigures(title, x_label, y_label, min_seats, max_seats, min_y,
         fig.xgrid.ticker=SingleIntervalTicker(interval=10)
         fig.yaxis.ticker=SingleIntervalTicker(interval=5, num_minor_ticks=0)
         fig.ygrid.ticker=SingleIntervalTicker(interval=10)
-        # Disable Scrolling
-        fig.toolbar.active_drag = None
         # Remove Logo from toolbar
         fig.toolbar.logo = None
 
@@ -149,10 +154,11 @@ def deficitPlots(deficit_component, seat_type, src):
 
     '''
     # Check input
-    if(not(deficit_component == 'deficit' or
-           deficit_component == 'spending' or
-           deficit_component == 'revenues')
-       or not(seat_type == 'house' or seat_type == 'senate')):
+    if (not (deficit_component == 'deficit' or
+             deficit_component == 'spending' or
+             deficit_component == 'revenues')
+        or not (seat_type == 'house' or seat_type == 'senate')):
+
         print('invalid input')
         return
 
@@ -167,8 +173,8 @@ def deficitPlots(deficit_component, seat_type, src):
         max_seats = source[src][x_value].max()
         footnotes = '217 House seats'
         if deficit_component == 'deficit':
-            fig_title = ('U.S. Federal Deficits as Percent of Gross ' +
-                         'Domestic Product by Democrat House Seats: 1929-2020')
+            fig_title = ('U.S. Federal Deficits as Percent of GDP by ' +
+                         'Democrat House Seats: 1929-2020')
             file_name = 'deficitGDP_HouseSeats.html'
             y_label = 'Deficit / GDP'
             y_value = 'deficit_gdp'
@@ -176,18 +182,17 @@ def deficitPlots(deficit_component, seat_type, src):
             max_y = source[src][y_value].max()
         elif deficit_component == 'spending':
             fig_title = ('U.S. Federal Noninterest Spending as Percent of ' +
-                         'Gross Domestic Product by Democrat House Seats: ' +
-                         '1929-2020')
-            file_name = 'spending_HouseSeats.html'
+                         'GDP by Democrat House Seats: 1929-2020')
+            file_name = 'spendingGDP_HouseSeats.html'
             y_label = 'Noninterest Spending / GDP'
             y_value = 'spend_nonint_gdp'
             min_y = source[src][y_value].min()
             max_y = source[src][y_value].max()
             starting_index = 11
         elif deficit_component == 'revenues':
-            fig_title = ('U.S. Federal Receipts as Percent of Gross ' +
-                         'Domestic Product by Democrat House Seats: 1929-2020')
-            file_name = 'revenues_HouseSeats.html'
+            fig_title = ('U.S. Federal Receipts as Percent of GDP by ' +
+                         'Democrat House Seats: 1929-2020')
+            file_name = 'revenuesGDP_HouseSeats.html'
             y_label = 'Receipts / GDP'
             y_value = 'receipts_gdp'
             min_y = source[src][y_value].min()
@@ -200,29 +205,26 @@ def deficitPlots(deficit_component, seat_type, src):
         max_seats = source[src][x_value].max()
         footnotes = '50 Senate seats'
         if deficit_component == 'deficit':
-            fig_title = ('U.S. Federal Deficits as Percent of Gross ' +
-                         'Domestic Product by Democrat Senate Seats: ' +
-                         '1929-2020')
-            file_name = 'deficit_SenateSeats.html'
+            fig_title = ('U.S. Federal Deficits as Percent of GDP by ' +
+                         'Democrat Senate Seats: 1929-2020')
+            file_name = 'deficitGDP_SenateSeats.html'
             y_label = 'Deficit / GDP'
             y_value = 'deficit_gdp'
             min_y = source[src][y_value].min()
             max_y = source[src][y_value].max()
         elif deficit_component=='spending':
             fig_title = ('U.S. Federal Noninterest Spending as Percent of ' +
-                         'Gross Domestic Product by Democrat Senate Seats: ' +
-                         '1929-2020')
-            file_name = 'spending_SenateSeats.html'
+                         'GDP by Democrat Senate Seats: 1929-2020')
+            file_name = 'spendingGDP_SenateSeats.html'
             y_label = 'Noninterest Spending / GDP'
             y_value = 'spend_nonint_gdp'
             min_y = source[src][y_value].min()
             max_y = source[src][y_value].max()
             starting_index = 11
         elif deficit_component=='revenues':
-            fig_title = ('U.S. Federal Receipts as Percent of Gross ' +
-                         'Domestic Product by Democrat Senate Seats: ' +
-                         '1929-2020')
-            file_name = 'revenues_SenateSeats.html'
+            fig_title = ('U.S. Federal Receipts as Percent of GDP by ' +
+                         'Democrat Senate Seats: 1929-2020')
+            file_name = 'revenuesGDP_SenateSeats.html'
             y_label = 'Receipts / GDP'
             y_value = 'receipts_gdp'
             min_y = source[src][y_value].min()
