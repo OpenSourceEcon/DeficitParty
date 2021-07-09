@@ -30,32 +30,27 @@ images_dir = os.path.join(cur_path, 'images')
 
 # Reading data from CVS (deficit_party_data.csv). We make six copies of the
 # DataFram and the Column Data Source to get around an error we were getting
-source=[]
-cds_list=[]
-for i in range(6):
-    df = pd.read_csv(party_data_path,
-                     dtype={'Year': np.int64,
-                            'deficit_gdp': np.float64,
-                            'receipts_gdp': np.float64,
-                            'spend_int_gdp': np.float64,
-                            'spend_nonint_gdp': np.float64,
-                            'spend_tot_gdp': np.float64,
-                            'president': 'str',
-                            'president_party': 'str',
-                            'congress_num': np.int64,
-                            'congress_sess': np.int64,
-                            'dem_whitehouse': np.int64,
-                            'dem_senateseats': np.int64,
-                            'rep_senateseats': np.int64,
-                            'oth_senateseats': np.int64,
-                            'tot_senateseats': np.int64,
-                            'dem_houseseats': np.int64,
-                            'rep_houseseats': np.int64,
-                            'oth_houseseats': np.int64,
-                            'tot_houseseats': np.int64},
-                     skiprows=3)
-    source.append(df)
-    cds_list.append(ColumnDataSource(source[i]))
+df = pd.read_csv(party_data_path,
+                    dtype={'Year': np.int64,
+                        'deficit_gdp': np.float64,
+                        'receipts_gdp': np.float64,
+                        'spend_int_gdp': np.float64,
+                        'spend_nonint_gdp': np.float64,
+                        'spend_tot_gdp': np.float64,
+                        'president': 'str',
+                        'president_party': 'str',
+                        'congress_num': np.int64,
+                        'congress_sess': np.int64,
+                        'dem_whitehouse': np.int64,
+                        'dem_senateseats': np.int64,
+                        'rep_senateseats': np.int64,
+                        'oth_senateseats': np.int64,
+                        'tot_senateseats': np.int64,
+                        'dem_houseseats': np.int64,
+                        'rep_houseseats': np.int64,
+                        'oth_houseseats': np.int64,
+                        'tot_houseseats': np.int64},
+                    skiprows=3)
 
 def output(title, file_name):
     fig_path = os.path.join(images_dir, file_name)
@@ -120,7 +115,7 @@ def generateFigures(title, x_label, y_label, min_seats, max_seats, min_y,
     return fig_list
 
 
-def plotCircle(i, x_value, y_value, fig, color, src):
+def plotCircle(i, x_value, y_value, fig, color, df):
     if(color == 'red'):
         LEGEND_LABEL = 'Republican Control'
     elif(color == 'blue'):
@@ -128,8 +123,8 @@ def plotCircle(i, x_value, y_value, fig, color, src):
     else:
         LEGEND_LABEL = 'Split Control'
 
-    fig.circle(x=source[src][x_value][i],
-               y=source[src][y_value][i],
+    fig.circle(x=df[x_value][i],
+               y=df[y_value][i],
                size=10,
                line_width=1,
                line_color='black',
@@ -139,7 +134,7 @@ def plotCircle(i, x_value, y_value, fig, color, src):
                legend_label = LEGEND_LABEL)
 
 
-def deficitPartyPlots(deficit_component, seat_type, src):
+def deficitPartyPlots(deficit_component, seat_type, df=df):
     r'''
     Generates one of six different plot types of U.S. deficit/GDP by year, by
     Democrat held Senate seats or House seats, and by three different measures
@@ -148,11 +143,14 @@ def deficitPartyPlots(deficit_component, seat_type, src):
     Args:
         deficit_component (string): either "deficit", "spending", or "revenues"
         seat_type (string): either "house" or "senate"
+        df (DataFrame): input data
 
     Returns:
         Y (array_like): aggregate output
 
     '''
+    cds = ColumnDataSource(df)
+
     # Check input
     if (not (deficit_component == 'deficit' or
              deficit_component == 'spending' or
@@ -163,14 +161,14 @@ def deficitPartyPlots(deficit_component, seat_type, src):
         return
 
     # Define variables for plot
-    data_length = len(source[src]['Year'])
+    data_length = len(df['Year'])
     starting_index = 0
     if seat_type == 'house':
         half_line = 217
         x_label='Number of Democratic House Seats (out of 435)'
         x_value = 'DemHouseSeats'
-        min_seats = source[src][x_value].min()
-        max_seats = source[src][x_value].max()
+        min_seats = df[x_value].min()
+        max_seats = df[x_value].max()
         footnotes = '217 House seats'
         if deficit_component == 'deficit':
             fig_title = ('U.S. Federal Deficits as Percent of GDP by ' +
@@ -178,16 +176,16 @@ def deficitPartyPlots(deficit_component, seat_type, src):
             file_name = 'deficitGDP_HouseSeats.html'
             y_label = 'Deficit / GDP'
             y_value = 'deficit_gdp'
-            min_y = source[src][y_value].min()
-            max_y = source[src][y_value].max()
+            min_y = df[y_value].min()
+            max_y = df[y_value].max()
         elif deficit_component == 'spending':
             fig_title = ('U.S. Federal Noninterest Spending as Percent of ' +
                          'GDP by Democrat House Seats: 1929-2020')
             file_name = 'spendingGDP_HouseSeats.html'
             y_label = 'Noninterest Spending / GDP'
             y_value = 'spend_nonint_gdp'
-            min_y = source[src][y_value].min()
-            max_y = source[src][y_value].max()
+            min_y = df[y_value].min()
+            max_y = df[y_value].max()
             starting_index = 11
         elif deficit_component == 'revenues':
             fig_title = ('U.S. Federal Receipts as Percent of GDP by ' +
@@ -195,14 +193,14 @@ def deficitPartyPlots(deficit_component, seat_type, src):
             file_name = 'revenuesGDP_HouseSeats.html'
             y_label = 'Receipts / GDP'
             y_value = 'receipts_gdp'
-            min_y = source[src][y_value].min()
-            max_y = source[src][y_value].max()
+            min_y = df[y_value].min()
+            max_y = df[y_value].max()
     elif seat_type == 'senate':
         half_line=50
         x_label = 'Number of Democratic Senate Seats (out of 100)'
         x_value = 'DemSenateSeats'
-        min_seats = source[src][x_value].min()
-        max_seats = source[src][x_value].max()
+        min_seats = df[x_value].min()
+        max_seats = df[x_value].max()
         footnotes = '50 Senate seats'
         if deficit_component == 'deficit':
             fig_title = ('U.S. Federal Deficits as Percent of GDP by ' +
@@ -210,16 +208,16 @@ def deficitPartyPlots(deficit_component, seat_type, src):
             file_name = 'deficitGDP_SenateSeats.html'
             y_label = 'Deficit / GDP'
             y_value = 'deficit_gdp'
-            min_y = source[src][y_value].min()
-            max_y = source[src][y_value].max()
+            min_y = df[y_value].min()
+            max_y = df[y_value].max()
         elif deficit_component=='spending':
             fig_title = ('U.S. Federal Noninterest Spending as Percent of ' +
                          'GDP by Democrat Senate Seats: 1929-2020')
             file_name = 'spendingGDP_SenateSeats.html'
             y_label = 'Noninterest Spending / GDP'
             y_value = 'spend_nonint_gdp'
-            min_y = source[src][y_value].min()
-            max_y = source[src][y_value].max()
+            min_y = df[y_value].min()
+            max_y = df[y_value].max()
             starting_index = 11
         elif deficit_component=='revenues':
             fig_title = ('U.S. Federal Receipts as Percent of GDP by ' +
@@ -227,8 +225,8 @@ def deficitPartyPlots(deficit_component, seat_type, src):
             file_name = 'revenuesGDP_SenateSeats.html'
             y_label = 'Receipts / GDP'
             y_value = 'receipts_gdp'
-            min_y = source[src][y_value].min()
-            max_y = source[src][y_value].max()
+            min_y = df[y_value].min()
+            max_y = df[y_value].max()
 
     # Console start notification
     print('Generating ' + file_name)
@@ -248,26 +246,34 @@ def deficitPartyPlots(deficit_component, seat_type, src):
     for n in range(3):
         for i in range(starting_index, data_length):
             if n == 0:
-                if(source[src]["DemHouseSeats"][i] < 217 and source[src]["DemSenateSeats"][i] < 50 and source[src]["DemWhitehouse"][i] == 0):
-                    plotCircle(i,x_value, y_value, fig_list[n], 'red',src)
-                elif (source[src]["DemHouseSeats"][i] > 217 and source[src]["DemSenateSeats"][i] > 50 and source[src]["DemWhitehouse"][i] == 1):
-                    plotCircle(i,x_value, y_value, fig_list[n], 'blue',src)
+                if(df['DemHouseSeats'][i] < 217 and
+                   df['DemSenateSeats'][i] < 50 and
+                   df['DemWhitehouse'][i] == 0):
+                    plotCircle(i, x_value, y_value, fig_list[n], 'red', df)
+                elif (df['DemHouseSeats'][i] > 217 and
+                      df['DemSenateSeats'][i] > 50 and
+                      df['DemWhitehouse'][i] == 1):
+                    plotCircle(i, x_value, y_value, fig_list[n], 'blue', df)
                 else:
-                    plotCircle(i,x_value, y_value, fig_list[n], 'green',src)
-            elif(n==1):
-                if(source[src]["DemSenateSeats"][i] < 50 and source[src]["DemWhitehouse"][i] == 0):
-                    plotCircle(i,x_value, y_value, fig_list[n], 'red',src)
-                elif (source[src]["DemSenateSeats"][i] > 50 and source[src]["DemWhitehouse"][i] == 1):
-                    plotCircle(i,x_value, y_value, fig_list[n], 'blue',src)
+                    plotCircle(i,x_value, y_value, fig_list[n], 'green', df)
+            elif n == 1:
+                if (df['DemSenateSeats'][i] < 50 and
+                    df['DemWhitehouse'][i] == 0):
+                    plotCircle(i, x_value, y_value, fig_list[n], 'red', df)
+                elif (df['DemSenateSeats'][i] > 50 and
+                      df['DemWhitehouse'][i] == 1):
+                    plotCircle(i, x_value, y_value, fig_list[n], 'blue', df)
                 else:
-                    plotCircle(i,x_value, y_value, fig_list[n], 'green',src)
-            elif(n==2):
-                if(source[src]["DemHouseSeats"][i] < 217 and source[src]["DemWhitehouse"][i] == 0):
-                    plotCircle(i,x_value, y_value, fig_list[n], 'red',src)
-                elif (source[src]["DemHouseSeats"][i] > 217 and source[src]["DemWhitehouse"][i] == 1):
-                    plotCircle(i,x_value, y_value, fig_list[n], 'blue',src)
+                    plotCircle(i, x_value, y_value, fig_list[n], 'green', df)
+            elif n == 2:
+                if (df['DemHouseSeats'][i] < 217 and
+                    df['DemWhitehouse'][i] == 0):
+                    plotCircle(i, x_value, y_value, fig_list[n], 'red', df)
+                elif (df['DemHouseSeats'][i] > 217 and
+                      df['DemWhitehouse'][i] == 1):
+                    plotCircle(i, x_value, y_value, fig_list[n], 'blue', df)
                 else:
-                    plotCircle(i,x_value, y_value, fig_list[n], 'green',src)
+                    plotCircle(i, x_value, y_value, fig_list[n], 'green', df)
 
     # Set up hover tool for each figure
     TOOLTIPS = [('Year', '@Year'),
@@ -279,9 +285,10 @@ def deficitPartyPlots(deficit_component, seat_type, src):
                 ('Rep. Senate Seats', '@RepSenateSeats'),
                 ('Dem. Senate Seats', '@DemSenateSeats')]
     for i in range(3):
-        fig_list[i].scatter(x=x_value, y=y_value, source=cds_list[src],
-                size=20, alpha=0, name='hover_trigger')
-        fig_list[i].add_tools(HoverTool(tooltips=TOOLTIPS, names=['hover_trigger']))
+        fig_list[i].scatter(x=x_value, y=y_value, source=cds, size=20, alpha=0,
+                            name='hover_trigger')
+        fig_list[i].add_tools(HoverTool(tooltips=TOOLTIPS,
+                                        names=['hover_trigger']))
 
    # Set up legend for each figure
     for i in range(3):
@@ -296,9 +303,9 @@ def deficitPartyPlots(deficit_component, seat_type, src):
     # Add notes below plot
     for i in range(3):
         #Add notes below image
-        note_text_1 = ('Note: Republican control in a given year is defined as the ' +
-                    'President being Republican and Republicans holding more ' +
-                    'than '+footnotes+' for the majority of that year.')
+        note_text_1 = ('Note: Republican control in a given year is defined ' +
+                       'as the President being Republican and Republicans ' +
+                       'holding more than ' + footnotes + ' for the majority of that year.')
         caption1 = Title(text=note_text_1, align='left', text_font_size='4mm',
                         text_font_style='italic')
         fig_list[i].add_layout(caption1, 'below')
@@ -331,8 +338,8 @@ def deficitPartyPlots(deficit_component, seat_type, src):
 
     panel_list=[]
     title_str_full = 'Full control: White House + Senate + House'
-    title_str_senate = 'Senate control: White House + Senate'
-    title_str_house = 'House control: White House + House'
+    title_str_senate = 'White House and Senate control'
+    title_str_house = 'White House and House control'
     panel_list.append(Panel(child=fig_list[0], title=title_str_full))
     panel_list.append(Panel(child=fig_list[1], title=title_str_senate))
     panel_list.append(Panel(child=fig_list[2], title=title_str_house))
@@ -346,9 +353,9 @@ if __name__ == "__main__":
     '''
     Execute all six plots if user runs the module as a script
     '''
-    deficitPartyPlots('deficit', 'senate', 0)
-    deficitPartyPlots('revenues', 'senate', 1)
-    deficitPartyPlots('spending', 'senate', 2)
-    deficitPartyPlots('deficit', 'house', 3)
-    deficitPartyPlots('revenues', 'house', 4)
-    deficitPartyPlots('spending', 'house', 5)
+    deficitPartyPlots('deficit', 'senate')
+    deficitPartyPlots('revenues', 'senate')
+    deficitPartyPlots('spending', 'senate')
+    deficitPartyPlots('deficit', 'house')
+    deficitPartyPlots('revenues', 'house')
+    deficitPartyPlots('spending', 'house')
