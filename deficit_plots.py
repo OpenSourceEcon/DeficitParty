@@ -1,3 +1,10 @@
+'''
+The deficit_plots.py module prints plots of deficit/GDP for United States
+across years, by number of Democrat-held Senate seats and House seats, and by
+three different measures of party control. If a user runs this module as a
+script, it will create all six plots
+'''
+
 # Import packages
 from bokeh.core.property.numeric import Interval
 from bokeh.io.output import reset_output
@@ -12,61 +19,81 @@ import os
 from bokeh.io import output_file, save
 from bokeh.plotting import figure, show
 from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
-                          Legend, HoverTool, NumeralTickFormatter,Span, Tabs, Panel)
+                          Legend, HoverTool, NumeralTickFormatter, Span, Tabs,
+                          Panel)
 
 # Set paths to work across Mac/Windows/Linux platforms
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(cur_path, 'data')
 party_data_path = os.path.join(data_dir, 'deficit_party_data.csv')
 images_dir = os.path.join(cur_path, 'images')
-deficit_plots_dir = os.path.join(images_dir, 'deficit_plots')
 
-#Reading data from CVS (deficit_party_data.csv)
+# Reading data from CVS (deficit_party_data.csv)
 source=[]
 cds_list=[]
 for i in range(6):
-    source.append(pd.read_csv(party_data_path,
-                         dtype={'Year': np.int64,
-                                'deficit_gdp': np.float64,
-                                'receipts_gdp': np.float64,
-                                'spend_int_gdp': np.float64,
-                                'spend_nonint_gdp': np.float64,
-                                'spend_tot_gdp': np.float64,
-                                'president': 'str',
-                                'president_party': 'str',
-                                'congress_num': np.int64,
-                                'congress_sess': np.int64,
-                                'dem_whitehouse': np.int64,
-                                'dem_senateseats': np.int64,
-                                'rep_senateseats': np.int64,
-                                'oth_senateseats': np.int64,
-                                'tot_senateseats': np.int64,
-                                'dem_houseseats': np.int64,
-                                'rep_houseseats': np.int64,
-                                'oth_houseseats': np.int64,
-                                'tot_houseseats': np.int64},
-                         skiprows=3))
+    source.append(
+        pd.read_csv(party_data_path,
+                    dtype={'Year': np.int64,
+                           'deficit_gdp': np.float64,
+                           'receipts_gdp': np.float64,
+                           'spend_int_gdp': np.float64,
+                           'spend_nonint_gdp': np.float64,
+                           'spend_tot_gdp': np.float64,
+                           'president': 'str',
+                           'president_party': 'str',
+                           'congress_num': np.int64,
+                           'congress_sess': np.int64,
+                           'dem_whitehouse': np.int64,
+                           'dem_senateseats': np.int64,
+                           'rep_senateseats': np.int64,
+                           'oth_senateseats': np.int64,
+                           'tot_senateseats': np.int64,
+                           'dem_houseseats': np.int64,
+                           'rep_houseseats': np.int64,
+                           'oth_houseseats': np.int64,
+                           'tot_houseseats': np.int64},
+                    skiprows=3))
     cds_list.append(ColumnDataSource(source[i]))
 
 def output(title, file_name):
-    fig_path = os.path.join(deficit_plots_dir, file_name)
+    fig_path = os.path.join(images_dir, file_name)
     output_file(fig_path, title=title)
 
 # Returns a list of 3 figures with the given title
-def generateFigures(title, x_label, y_label, min_seats, max_seats, min_y, max_y):
+def generateFigures(title, x_label, y_label, min_seats, max_seats, min_y,
+                    max_y):
+    r'''
+    Returns a list of three empty figures for a given plot type with property
+    values to be used as the figures are filled in. This figures will become
+    the three tabs for the unified three-tab unified figure.
+
+    Args:
+        title (string): title text for figures
+        x_label (string): x-axis label for figures
+        y_label (string): y-axis label for figures
+        min_seats (scalar): minimum number of Senate or House seats in the data
+        max_seats (scalar): maximum number of Senate or House seats in the data
+        min_y (scalar): minimum y-data value
+        max_y (scalar): maximum y-data value
+
+    Returns:
+        fig_list (list): three-element list of blank Bokeh figures
+
+    '''
     fig_list=[]
     for i in range(3):
         fig = figure(title=title,
              plot_height=600,
              plot_width=1200,
              x_axis_label=x_label,
-             x_range=(min_seats-3, max_seats+3),
+             x_range=(min_seats - 3, max_seats + 3),
              y_axis_label=y_label,
-             y_range=(min_y-4, max_y+4),
-             tools=['zoom_in', 'zoom_out', 'box_zoom',
-                    'pan', 'undo', 'redo', 'reset'],
+             y_range=(min_y - 4, max_y + 4),
+             tools=['zoom_in', 'zoom_out', 'box_zoom', 'pan', 'undo', 'redo',
+                    'reset'],
              toolbar_location='right')
-        
+
         # Set title font size and axes font sizes
         fig.title.text_font_size = '18pt'
         fig.xaxis.axis_label_text_font_size = '12pt'
@@ -84,9 +111,11 @@ def generateFigures(title, x_label, y_label, min_seats, max_seats, min_y, max_y)
         fig.toolbar.logo = None
 
         fig_list.append(fig)
+
     return fig_list
 
-def plotCircle(i, x_value, y_value, fig, color,src):
+
+def plotCircle(i, x_value, y_value, fig, color, src):
     if(color == 'red'):
         LEGEND_LABEL = 'Republican Control'
     elif(color == 'blue'):
@@ -105,9 +134,24 @@ def plotCircle(i, x_value, y_value, fig, color,src):
                 legend_label = LEGEND_LABEL)
 
 def deficitPlots(deficit_component, seat_type, src):
+    r'''
+    Generates one of six different plot types of U.S. deficit/GDP by year, by
+    Democrat held Senate seats or House seats, and by three different measures
+    of political control
+
+    Args:
+        deficit_component (string): either "deficit", "spending", or "revenues"
+        seat_type (string): either "house" or "senate"
+
+    Returns:
+        Y (array_like): aggregate output
+
+    '''
     # Check input
-    if(not(deficit_component == 'deficit' or deficit_component == 'spending' or deficit_component == 'revenues')
-        or not(seat_type == 'house' or seat_type == 'senate')):
+    if(not(deficit_component == 'deficit' or
+           deficit_component == 'spending' or
+           deficit_component == 'revenues')
+       or not(seat_type == 'house' or seat_type == 'senate')):
         print('invalid input')
         return
 
@@ -168,23 +212,25 @@ def deficitPlots(deficit_component, seat_type, src):
         elif(deficit_component=='revenues'):
             fig_title='U.S. Federal Receipts as Percent of Gross Domestic Product by Democrat Senate Seats: 1929-2020'
             file_name="senate_revenues_plot.html"
-            y_label='Receipts / GDP'  
-            y_value = 'receipts_gdp' 
+            y_label='Receipts / GDP'
+            y_value = 'receipts_gdp'
             min_y = source[src][y_value].min()
-            max_y = source[src][y_value].max()   
+            max_y = source[src][y_value].max()
 
     # Console start notification
-    print("Generating "+file_name)
+    print('Generating ' + file_name)
 
     # Generate Figures
-    fig_list=[]
-    fig_list = generateFigures(fig_title, x_label, y_label, min_seats, max_seats, min_y, max_y)
+    fig_list = []
+    fig_list = generateFigures(fig_title, x_label, y_label, min_seats,
+                               max_seats, min_y, max_y)
 
     # Vertical black line noting half of senate seats
-    halfLine = Span(location=half_line,dimension='height',line_color='black',line_width=2)
+    halfLine = Span(location=half_line, dimension='height', line_color='black',
+                    line_width=2)
     for i in range(3):
         fig_list[i].add_layout(halfLine)
-    
+
     # Plot data points
     for n in range(3):
         for i in range(starting_index, data_length):
@@ -209,7 +255,7 @@ def deficitPlots(deficit_component, seat_type, src):
                     plotCircle(i,x_value, y_value, fig_list[n], 'blue',src)
                 else:
                     plotCircle(i,x_value, y_value, fig_list[n], 'green',src)
-                    
+
     # Set up hover tool for each figure
     TOOLTIPS = [('Year', '@Year'),
                 ('Deficit over GDP', '@deficit_gdp{0.0}'+'%'),
@@ -220,10 +266,10 @@ def deficitPlots(deficit_component, seat_type, src):
                 ('Rep. Senate Seats', '@RepSenateSeats'),
                 ('Dem. Senate Seats', '@DemSenateSeats')]
     for i in range(3):
-        fig_list[i].scatter(x=x_value, y=y_value, source=cds_list[src], 
+        fig_list[i].scatter(x=x_value, y=y_value, source=cds_list[src],
                 size=20, alpha=0, name='hover_trigger')
         fig_list[i].add_tools(HoverTool(tooltips=TOOLTIPS, names=['hover_trigger']))
-    
+
    # Set up legend for each figure
     for i in range(3):
         fig_list[i].legend.location = 'bottom_right'
@@ -260,13 +306,13 @@ def deficitPlots(deficit_component, seat_type, src):
         caption4 = Title(text=note_text_4, align='left', text_font_size='4mm',
                         text_font_style='italic')
         fig_list[i].add_layout(caption4, 'below')
-        note_text_5 = ('   Representatives, 1789 to present", '+ 
+        note_text_5 = ('   Representatives, 1789 to present", '+
                     'https://history.house.gov/Institution/Party-Divisions/Party-Divisions/, '+
                     'Richard W. Evans (@rickecon).')
         caption5 = Title(text=note_text_5, align='left', text_font_size='4mm',
                         text_font_style='italic')
         fig_list[i].add_layout(caption5, 'below')
-    
+
     # Output figures to an HTML file
     output(fig_title, file_name)
 
@@ -279,12 +325,14 @@ def deficitPlots(deficit_component, seat_type, src):
     # Console start notification
     print(file_name+" Complete")
 
-#________________________________________
-#Function Calls
-#________________________________________
-deficitPlots('deficit','senate',0)
-deficitPlots('revenues','senate',1)
-deficitPlots('spending','senate',2)
-deficitPlots('deficit','house',3)
-deficitPlots('revenues','house',4)
-deficitPlots('spending','house',5)
+
+if __name__ == "__main__":
+    '''
+    Execute all six plots if user runs the module as a script
+    '''
+    deficitPlots('deficit', 'senate', 0)
+    deficitPlots('revenues', 'senate', 1)
+    deficitPlots('spending', 'senate', 2)
+    deficitPlots('deficit', 'house', 3)
+    deficitPlots('revenues', 'house', 4)
+    deficitPlots('spending', 'house', 5)
