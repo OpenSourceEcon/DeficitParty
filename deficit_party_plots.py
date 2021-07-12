@@ -28,8 +28,7 @@ data_dir = os.path.join(cur_path, 'data')
 party_data_path = os.path.join(data_dir, 'deficit_party_data.csv')
 images_dir = os.path.join(cur_path, 'images')
 
-# Reading data from CVS (deficit_party_data.csv). We make six copies of the
-# DataFram and the Column Data Source to get around an error we were getting
+# Reading data from CVS (deficit_party_data.csv)
 df = pd.read_csv(party_data_path,
                     dtype={'Year': np.int64,
                         'deficit_gdp': np.float64,
@@ -51,6 +50,12 @@ df = pd.read_csv(party_data_path,
                         'oth_houseseats': np.int64,
                         'tot_houseseats': np.int64},
                     skiprows=3)
+
+# Create list of three tabs of political control definitions
+control_type_list = ['wh_sen_hou', 'wh_sen', 'wh_hou']
+control_type_labels = ['Full control: White House + Senate + House',
+                       'White House and Senate control',
+                       'White House and House control']
 
 def output(title, file_name):
     fig_path = os.path.join(images_dir, file_name)
@@ -87,11 +92,11 @@ def generateFigures(title, x_label, y_label, min_seats, max_seats, min_y,
                      plot_height=600,
                      plot_width=1000,
                      x_axis_label=x_label,
-                     x_range=(min_seats - x_buffer * x_spread,
-                              max_seats + x_buffer * x_spread),
+                     x_range=(min_seats - (x_buffer * x_spread),
+                              max_seats + (x_buffer * x_spread)),
                      y_axis_label=y_label,
-                     y_range=(min_y - y_buffer * y_spread,
-                              max_y + y_buffer * y_spread),
+                     y_range=(min_y - (y_buffer * y_spread),
+                              max_y + (y_buffer * y_spread)),
                      tools=['zoom_in', 'zoom_out', 'box_zoom', 'pan', 'undo',
                             'redo', 'reset'],
                      toolbar_location='right')
@@ -134,7 +139,9 @@ def plotCircle(i, x_value, y_value, fig, color, df):
                legend_label = LEGEND_LABEL)
 
 
-def deficitPartyPlots(deficit_component, seat_type, df=df):
+def deficitPartyPlots(deficit_component, seat_type, df=df,
+                      control_type_list=control_type_list,
+                      control_type_labels=control_type_labels, show_fig=False):
     r'''
     Generates one of six different plot types of U.S. deficit/GDP by year, by
     Democrat held Senate seats or House seats, and by three different measures
@@ -144,6 +151,7 @@ def deficitPartyPlots(deficit_component, seat_type, df=df):
         deficit_component (string): either "deficit", "spending", or "revenues"
         seat_type (string): either "house" or "senate"
         df (DataFrame): input data
+        show (boolean): =True shows figure by opening browser page
 
     Returns:
         Y (array_like): aggregate output
@@ -154,10 +162,11 @@ def deficitPartyPlots(deficit_component, seat_type, df=df):
     # Check input
     if (not (deficit_component == 'deficit' or
              deficit_component == 'spending' or
-             deficit_component == 'revenues')
-        or not (seat_type == 'house' or seat_type == 'senate')):
-
-        print('invalid input')
+             deficit_component == 'revenues')):
+        raise ValueError('deficit_component input invalid')
+        return
+    if (not (seat_type == 'house' or seat_type == 'senate')):
+        raise ValueError('seat_type input invalid')
         return
 
     # Define variables for plot
@@ -344,9 +353,15 @@ def deficitPartyPlots(deficit_component, seat_type, df=df):
     panel_list.append(Panel(child=fig_list[1], title=title_str_senate))
     panel_list.append(Panel(child=fig_list[2], title=title_str_house))
 
-    save(Tabs(tabs=panel_list))
+    tabs = Tabs(tabs=panel_list)
+    save(tabs)
     # Console start notification
     print(file_name + ' Complete')
+
+    if show_fig:  # Show figure by opening browser page
+        show(tabs)
+
+    return tabs
 
 
 if __name__ == "__main__":
