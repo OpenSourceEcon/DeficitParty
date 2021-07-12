@@ -30,26 +30,26 @@ images_dir = os.path.join(cur_path, 'images')
 
 # Reading data from CVS (deficit_party_data.csv)
 df = pd.read_csv(party_data_path,
-                    dtype={'Year': np.int64,
-                        'deficit_gdp': np.float64,
-                        'receipts_gdp': np.float64,
-                        'spend_int_gdp': np.float64,
-                        'spend_nonint_gdp': np.float64,
-                        'spend_tot_gdp': np.float64,
-                        'president': 'str',
-                        'president_party': 'str',
-                        'congress_num': np.int64,
-                        'congress_sess': np.int64,
-                        'dem_whitehouse': np.int64,
-                        'dem_senateseats': np.int64,
-                        'rep_senateseats': np.int64,
-                        'oth_senateseats': np.int64,
-                        'tot_senateseats': np.int64,
-                        'dem_houseseats': np.int64,
-                        'rep_houseseats': np.int64,
-                        'oth_houseseats': np.int64,
-                        'tot_houseseats': np.int64},
-                    skiprows=3)
+                 dtype={'Year': np.int64,
+                     'deficit_gdp': np.float64,
+                     'receipts_gdp': np.float64,
+                     'spend_int_gdp': np.float64,
+                     'spend_nonint_gdp': np.float64,
+                     'spend_tot_gdp': np.float64,
+                     'president': 'str',
+                     'president_party': 'str',
+                     'congress_num': np.int64,
+                     'congress_sess': np.int64,
+                     'dem_whitehouse': np.int64,
+                     'dem_senateseats': np.int64,
+                     'rep_senateseats': np.int64,
+                     'oth_senateseats': np.int64,
+                     'tot_senateseats': np.int64,
+                     'dem_houseseats': np.int64,
+                     'rep_houseseats': np.int64,
+                     'oth_houseseats': np.int64,
+                     'tot_houseseats': np.int64},
+                 skiprows=3)
 
 # Create list of three tabs of political control definitions
 control_type_list = ['wh_sen_hou', 'wh_sen', 'wh_hou']
@@ -136,7 +136,7 @@ def plotCircle(i, x_value, y_value, fig, color, df):
                fill_color=color,
                alpha=0.7,
                muted_alpha=0.1,
-               legend_label = LEGEND_LABEL)
+               legend_label=LEGEND_LABEL)
 
 
 def deficitPartyPlots(deficit_component, seat_type, df=df,
@@ -164,10 +164,9 @@ def deficitPartyPlots(deficit_component, seat_type, df=df,
              deficit_component == 'spending' or
              deficit_component == 'revenues')):
         raise ValueError('deficit_component input invalid')
-        return
+
     if (not (seat_type == 'house' or seat_type == 'senate')):
         raise ValueError('seat_type input invalid')
-        return
 
     # Define variables for plot
     data_length = len(df['Year'])
