@@ -56,6 +56,10 @@ control_type_list = ['wh_sen_hou', 'wh_sen', 'wh_hou']
 control_type_labels = ['Full control: White House + Senate + House',
                        'White House and Senate control',
                        'White House and House control']
+footnotes1_list = \
+    ['217 seats in the House and more than 50 seats in the Senate',
+     '50 seats in the Senate', '217 seats in the House']
+footnotes2_list = ['Senate and House', 'Senate', 'House']
 
 def output(title, file_name):
     fig_path = os.path.join(images_dir, file_name)
