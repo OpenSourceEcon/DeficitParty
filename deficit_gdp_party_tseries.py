@@ -25,8 +25,11 @@ images_dir = os.path.join(cur_path, 'images')
 Create pandas DataFrames and Column Data Source data objects
 -------------------------------------------------------------------------------
 '''
+# Create recession data column data source object
+recession_df = pd.read_csv(recession_data_path, parse_dates=['Peak','Trough'])
+recession_cds = ColumnDataSource(recession_df)
 
-#Reading data from CVS (deficit_party_data.csv)
+# Reading data from CVS (deficit_party_data.csv)
 deficit_df = pd.read_csv(party_data_path,
                          dtype={'Year': np.int64,
                                 'deficit_gdp': np.float64,
@@ -131,9 +134,6 @@ deficit_cntrl_whhou_split_df = \
                 (deficit_df['dem_houseseats'] <
                  0.5 * deficit_df['total_houseseats']))]
 dfct_cntrl_whhou_split_cds = ColumnDataSource(deficit_cntrl_whhou_split_df)
-
-recession_df = pd.read_csv(recession_data_path, parse_dates=['Peak','Trough'])
-recession_cds = ColumnDataSource(recession_df)
 
 # Create Variables for min and max values
 data_length = len(deficit_df['Year'])
@@ -245,38 +245,45 @@ fig_all.legend.click_policy = 'mute'
 #Add notes below image
 note_text_all_1 = \
     ('Note: Republican control in a given year is defined as the President ' +
-     'being Republican and Republicans holding more than 217 House seats ' +
-     'for the majority of that year.')
+     'being Republican and Republicans holding at least half of Senate ' +
+     'seats (50 or more) and at least')
 caption_all_1 = Title(text=note_text_all_1, align='left', text_font_size='4mm',
                       text_font_style='italic')
 fig_all.add_layout(caption_all_1, 'below')
 note_text_all_2 = \
-    ('   Democrat control is defined as the President being Democrat and ' +
-     'Democrats holding more than 217 House seats for the majority of that ' +
-     'year. Split government is')
+    ('   half of House seats (usually 217 or more) for the majority of that ' +
+     'year. Democrat control is defined as the President being Democrat and ' +
+     'Democrats holding at least')
 caption_all_2 = Title(text=note_text_all_2, align='left', text_font_size='4mm',
                       text_font_style='italic')
 fig_all.add_layout(caption_all_2, 'below')
 note_text_all_3 = \
-    ('   defined as one party holding the White House while the other party ' +
-     'holds a majority of House seats.')
+    ('   half of the Senate seats and at least half of the House seats for ' +
+     'the majority of that year. Split government is defined as one party ' +
+     'holding the White House while')
 caption_all_3 = Title(text=note_text_all_3, align='left', text_font_size='4mm',
                       text_font_style='italic')
 fig_all.add_layout(caption_all_3, 'below')
 note_text_all_4 = \
-    ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), United ' +
-     'States House of Representatives History, Art, & Archives, "Party ' +
-     'Divisions of the House of')
+    ('   either not holding a majority of Senate seates or not holding a ' +
+     'majority of House seats.')
 caption_all_4 = Title(text=note_text_all_4, align='left', text_font_size='4mm',
                       text_font_style='italic')
 fig_all.add_layout(caption_all_4, 'below')
 note_text_all_5 = \
-    ('   Representatives, 1789 to present", ' +
-     'https://history.house.gov/Institution/Party-Divisions/' +
-     'Party-Divisions/, Richard W. Evans (@rickecon).')
+    ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), United ' +
+     'States House of Representatives History, Art, & Archives, "Party ' +
+     'Divisions of the House of')
 caption_all_5 = Title(text=note_text_all_5, align='left', text_font_size='4mm',
                       text_font_style='italic')
 fig_all.add_layout(caption_all_5, 'below')
+note_text_all_6 = \
+    ('   Representatives, 1789 to present", ' +
+     'https://history.house.gov/Institution/Party-Divisions/' +
+     'Party-Divisions/, Richard W. Evans (@rickecon).')
+caption_all_6 = Title(text=note_text_all_6, align='left', text_font_size='4mm',
+                      text_font_style='italic')
+fig_all.add_layout(caption_all_6, 'below')
 
 '''
 -------------------------------------------------------------------------------
@@ -374,21 +381,21 @@ fig_whsen.legend.click_policy = 'mute'
 #Add notes below image
 note_text_whsen_1 = \
     ('Note: Republican control in a given year is defined as the President ' +
-     'being Republican and Republicans holding more than 217 House seats ' +
-     'for the majority of that year.')
+     'being Republican and Republicans holding at least half of the Senate ' +
+     'seats (50 or more) for the')
 caption_whsen_1 = Title(text=note_text_whsen_1, align='left',
                         text_font_size='4mm', text_font_style='italic')
 fig_whsen.add_layout(caption_whsen_1, 'below')
 note_text_whsen_2 = \
-    ('   Democrat control is defined as the President being Democrat and ' +
-     'Democrats holding more than 217 House seats for the majority of that ' +
-     'year. Split government is')
+    ('   majority of that year. Democrat control is defined as the ' +
+     'President being Democrat and Democrats holding at least half of the ' +
+     'Senate seats for the majority of that')
 caption_whsen_2 = Title(text=note_text_whsen_2, align='left',
                         text_font_size='4mm', text_font_style='italic')
 fig_whsen.add_layout(caption_whsen_2, 'below')
 note_text_whsen_3 = \
-    ('   defined as one party holding the White House while the other party ' +
-     'holds a majority of House seats.')
+    ('   year. Split government is defined as one party holding the White ' +
+     'House while not holding a majority of Senate seats.')
 caption_whsen_3 = Title(text=note_text_whsen_3, align='left',
                         text_font_size='4mm', text_font_style='italic')
 fig_whsen.add_layout(caption_whsen_3, 'below')
@@ -555,5 +562,5 @@ cntrl_whhou_panel = Panel(child=fig_whhou, title=cntrl_whhou_panel_title)
 # Assign the panels to Tabs
 tabs = Tabs(tabs=[cntrl_all_panel, cntrl_whsen_panel, cntrl_whhou_panel])
 
-#Display the generated figure
+# Display the generated figure
 show(tabs)
