@@ -57,7 +57,7 @@ max_deficit = deficit_df['deficit_gdp'].max()
 # Output to HTML file titled: "federal_debt_image.html"
 fig_title = ('U.S. Federal Surplus (+) or Deficit (-) as Percent of Gross ' +
              'Domestic Product by Party Control: 1929-2020')
-fig_path = os.path.join(images_dir, 'deficit_image.html')
+fig_path = os.path.join(images_dir, 'deficit_gdp_party_tseries.html')
 output_file(fig_path, title=fig_title)
 
 # Create a figure with '% of GDP' as Y-axis and year as X-axis
