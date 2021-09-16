@@ -30,118 +30,118 @@ recession_df = pd.read_csv(recession_data_path, parse_dates=['Peak','Trough'])
 recession_cds = ColumnDataSource(recession_df)
 
 # Reading data from CVS (deficit_party_data.csv)
-deficit_df = pd.read_csv(party_data_path,
-                         dtype={'Year': np.int64,
-                                'deficit_gdp': np.float64,
-                                'receipts_gdp': np.float64,
-                                'spend_int_gdp': np.float64,
-                                'spend_nonint_gdp': np.float64,
-                                'spend_tot_gdp': np.float64,
-                                'president': 'str',
-                                'president_party': 'str',
-                                'congress_number': np.int64,
-                                'congress_session': np.int64,
-                                'dem_whitehouse': np.int64,
-                                'dem_senateseats': np.int64,
-                                'rep_senateseats': np.int64,
-                                'other_senateseats': np.int64,
-                                'total_senateseats': np.int64,
-                                'dem_houseseats': np.int64,
-                                'rep_houseseats': np.int64,
-                                'other_houseseats': np.int64,
-                                'total_houseseats': np.int64},
-                         skiprows=3)
+main_df = pd.read_csv(party_data_path,
+                      dtype={'Year': np.int64,
+                             'deficit_gdp': np.float64,
+                             'receipts_gdp': np.float64,
+                             'spend_int_gdp': np.float64,
+                             'spend_nonint_gdp': np.float64,
+                             'spend_tot_gdp': np.float64,
+                             'president': 'str',
+                             'president_party': 'str',
+                             'congress_number': np.int64,
+                             'congress_session': np.int64,
+                             'dem_whitehouse': np.int64,
+                             'dem_senateseats': np.int64,
+                             'rep_senateseats': np.int64,
+                             'other_senateseats': np.int64,
+                             'total_senateseats': np.int64,
+                             'dem_houseseats': np.int64,
+                             'rep_houseseats': np.int64,
+                             'other_houseseats': np.int64,
+                             'total_houseseats': np.int64},
+                      skiprows=3)
 
 # Create entire time series column data source
-deficit_cds = ColumnDataSource(deficit_df)
+main_cds = ColumnDataSource(main_df)
 
 # Create Full control (WH + Sen + HouseRep) Republican control elements
 deficit_cntrl_all_rep_df = \
-    deficit_df[(deficit_df['president_party'] == 'Republican') &
-               (deficit_df['rep_senateseats'] >=
-                0.5 * deficit_df['total_senateseats']) &
-               (deficit_df['rep_houseseats'] >=
-                0.5 * deficit_df['total_houseseats'])]
+    main_df[(main_df['president_party'] == 'Republican') &
+            (main_df['rep_senateseats'] >=
+             0.5 * main_df['total_senateseats']) &
+            (main_df['rep_houseseats'] >=
+             0.5 * main_df['total_houseseats'])]
 dfct_cntrl_all_rep_cds = ColumnDataSource(deficit_cntrl_all_rep_df)
 
 # Create Full control (WH + Sen + HouseRep) Democrat control elements
 deficit_cntrl_all_dem_df = \
-    deficit_df[(deficit_df['president_party'] == 'Democrat') &
-               (deficit_df['dem_senateseats'] >=
-                0.5 * deficit_df['total_senateseats']) &
-               (deficit_df['dem_houseseats'] >=
-                0.5 * deficit_df['total_houseseats'])]
+    main_df[(main_df['president_party'] == 'Democrat') &
+            (main_df['dem_senateseats'] >=
+             0.5 * main_df['total_senateseats']) &
+            (main_df['dem_houseseats'] >=
+             0.5 * main_df['total_houseseats'])]
 dfct_cntrl_all_dem_cds = ColumnDataSource(deficit_cntrl_all_dem_df)
 
 # Create Full control (WH + Sen + HouseRep) split control elements
 deficit_cntrl_all_split_df = \
-    deficit_df[((deficit_df['president_party'] == 'Republican') &
-                ((deficit_df['rep_senateseats'] <
-                  0.5 * deficit_df['total_senateseats']) |
-                 (deficit_df['rep_houseseats'] <
-                  0.5 * deficit_df['total_houseseats']))) |
-               ((deficit_df['president_party'] == 'Democrat') &
-                ((deficit_df['dem_senateseats'] <
-                  0.5 * deficit_df['total_senateseats']) |
-                 (deficit_df['dem_houseseats'] <
-                  0.5 * deficit_df['total_houseseats'])))]
+    main_df[((main_df['president_party'] == 'Republican') &
+             ((main_df['rep_senateseats'] <
+               0.5 * main_df['total_senateseats']) |
+              (main_df['rep_houseseats'] <
+               0.5 * main_df['total_houseseats']))) |
+            ((main_df['president_party'] == 'Democrat') &
+             ((main_df['dem_senateseats'] <
+               0.5 * main_df['total_senateseats']) |
+              (main_df['dem_houseseats'] <
+               0.5 * main_df['total_houseseats'])))]
 dfct_cntrl_all_split_cds = ColumnDataSource(deficit_cntrl_all_split_df)
 
 # Create Senate control (WH + Sen) Republican control elements
 deficit_cntrl_whsen_rep_df = \
-    deficit_df[(deficit_df['president_party'] == 'Republican') &
-               (deficit_df['rep_senateseats'] >=
-                0.5 * deficit_df['total_senateseats'])]
+    main_df[(main_df['president_party'] == 'Republican') &
+            (main_df['rep_senateseats'] >=
+             0.5 * main_df['total_senateseats'])]
 dfct_cntrl_whsen_rep_cds = ColumnDataSource(deficit_cntrl_whsen_rep_df)
 
 # Create Senate control (WH + Sen) Democrat control elements
 deficit_cntrl_whsen_dem_df = \
-    deficit_df[(deficit_df['president_party'] == 'Democrat') &
-               (deficit_df['dem_senateseats'] >=
-                0.5 * deficit_df['total_senateseats'])]
+    main_df[(main_df['president_party'] == 'Democrat') &
+            (main_df['dem_senateseats'] >=
+             0.5 * main_df['total_senateseats'])]
 dfct_cntrl_whsen_dem_cds = ColumnDataSource(deficit_cntrl_whsen_dem_df)
 
 # Create Senate control (WH + Sen) split control elements
 deficit_cntrl_whsen_split_df = \
-    deficit_df[((deficit_df['president_party'] == 'Republican') &
-                (deficit_df['rep_senateseats'] <
-                 0.5 * deficit_df['total_senateseats'])) |
-               ((deficit_df['president_party'] == 'Democrat') &
-                (deficit_df['dem_senateseats'] <
-                 0.5 * deficit_df['total_senateseats']))]
+    main_df[((main_df['president_party'] == 'Republican') &
+             (main_df['rep_senateseats'] <
+              0.5 * main_df['total_senateseats'])) |
+            ((main_df['president_party'] == 'Democrat') &
+             (main_df['dem_senateseats'] <
+              0.5 * main_df['total_senateseats']))]
 dfct_cntrl_whsen_split_cds = ColumnDataSource(deficit_cntrl_whsen_split_df)
 
 # Create House control (WH + HouseRep) Republican control elements
 deficit_cntrl_whhou_rep_df = \
-    deficit_df[(deficit_df['president_party'] == 'Republican') &
-               (deficit_df['rep_houseseats'] >=
-                0.5 * deficit_df['total_houseseats'])]
+    main_df[(main_df['president_party'] == 'Republican') &
+            (main_df['rep_houseseats'] >=
+             0.5 * main_df['total_houseseats'])]
 dfct_cntrl_whhou_rep_cds = ColumnDataSource(deficit_cntrl_whhou_rep_df)
 
 # Create House control (WH + HouseRep) Democrat control elements
 deficit_cntrl_whhou_dem_df = \
-    deficit_df[(deficit_df['president_party'] == 'Democrat') &
-               (deficit_df['dem_houseseats'] >=
-                0.5 * deficit_df['total_houseseats'])]
+    main_df[(main_df['president_party'] == 'Democrat') &
+            (main_df['dem_houseseats'] >=
+             0.5 * main_df['total_houseseats'])]
 dfct_cntrl_whhou_dem_cds = ColumnDataSource(deficit_cntrl_whhou_dem_df)
 
 # Create House control (WH + HouseRep) split control elements
 deficit_cntrl_whhou_split_df = \
-    deficit_df[((deficit_df['president_party'] == 'Republican') &
-                (deficit_df['rep_houseseats'] <
-                 0.5 * deficit_df['total_houseseats'])) |
-               ((deficit_df['president_party'] == 'Democrat') &
-                (deficit_df['dem_houseseats'] <
-                 0.5 * deficit_df['total_houseseats']))]
+    main_df[((main_df['president_party'] == 'Republican') &
+             (main_df['rep_houseseats'] <
+              0.5 * main_df['total_houseseats'])) |
+            ((main_df['president_party'] == 'Democrat') &
+             (main_df['dem_houseseats'] <
+              0.5 * main_df['total_houseseats']))]
 dfct_cntrl_whhou_split_cds = ColumnDataSource(deficit_cntrl_whhou_split_df)
 
 # Create Variables for min and max values
-data_length = len(deficit_df['Year'])
+data_length = len(main_df['Year'])
 recession_data_length = len(recession_df['Peak'])
-min_year = deficit_df['Year'].min()
-max_year = deficit_df['Year'].max()
-min_deficit = deficit_df['deficit_gdp'].min()
-max_deficit = deficit_df['deficit_gdp'].max()
+min_year = main_df['Year'].min()
+max_year = main_df['Year'].max()
+min_deficit = main_df['deficit_gdp'].min()
+max_deficit = main_df['deficit_gdp'].max()
 
 # Output to HTML file titled: "federal_debt_image.html"
 fig_title = ('U.S. Federal Surplus (+) or Deficit (-) as Percent of Gross ' +
@@ -200,7 +200,7 @@ for x in range(0,recession_data_length):
                       legend_label='Recession')
 
 # Plotting the line and scatter point circles
-fig_all.line(x='Year', y='deficit_gdp', source=deficit_cds, color='#423D3C',
+fig_all.line(x='Year', y='deficit_gdp', source=main_cds, color='#423D3C',
              line_width=2)
 
 fig_all.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_all_rep_cds,
@@ -224,7 +224,7 @@ tooltips = [('Year', '@Year'),
             ('Dem. House Seats', '@dem_houseseats'),
             ('Rep. Senate Seats', '@rep_senateseats'),
             ('Dem. Senate Seats', '@dem_senateseats')]
-hover_glyph = fig_all.circle(x='Year', y='deficit_gdp', source=deficit_cds,
+hover_glyph = fig_all.circle(x='Year', y='deficit_gdp', source=main_cds,
                              size=10, alpha=0, hover_fill_color='gray',
                              hover_alpha=0.5)
 fig_all.add_tools(HoverTool(tooltips=tooltips))
@@ -336,7 +336,7 @@ for x in range(0,recession_data_length):
                         legend_label='Recession')
 
 # Plotting the line and scatter point circles
-fig_whsen.line(x='Year', y='deficit_gdp', source=deficit_cds, color='#423D3C',
+fig_whsen.line(x='Year', y='deficit_gdp', source=main_cds, color='#423D3C',
                line_width=2)
 
 fig_whsen.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_whsen_rep_cds,
@@ -360,7 +360,7 @@ tooltips = [('Year', '@Year'),
             ('Dem. House Seats', '@dem_houseseats'),
             ('Rep. Senate Seats', '@rep_senateseats'),
             ('Dem. Senate Seats', '@dem_senateseats')]
-hover_glyph = fig_whsen.circle(x='Year', y='deficit_gdp', source=deficit_cds,
+hover_glyph = fig_whsen.circle(x='Year', y='deficit_gdp', source=main_cds,
                                size=10, alpha=0, hover_fill_color='gray',
                                hover_alpha=0.5)
 fig_whsen.add_tools(HoverTool(tooltips=tooltips))
@@ -465,7 +465,7 @@ for x in range(0,recession_data_length):
                         legend_label='Recession')
 
 # Plotting the line and scatter point circles
-fig_whhou.line(x='Year', y='deficit_gdp', source=deficit_cds, color='#423D3C',
+fig_whhou.line(x='Year', y='deficit_gdp', source=main_cds, color='#423D3C',
                line_width=2)
 
 fig_whhou.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_whhou_rep_cds,
@@ -489,7 +489,7 @@ tooltips = [('Year', '@Year'),
             ('Dem. House Seats', '@dem_houseseats'),
             ('Rep. Senate Seats', '@rep_senateseats'),
             ('Dem. Senate Seats', '@dem_senateseats')]
-hover_glyph = fig_whhou.circle(x='Year', y='deficit_gdp', source=deficit_cds,
+hover_glyph = fig_whhou.circle(x='Year', y='deficit_gdp', source=main_cds,
                                size=10, alpha=0, hover_fill_color='gray',
                                hover_alpha=0.5)
 fig_whhou.add_tools(HoverTool(tooltips=tooltips))
