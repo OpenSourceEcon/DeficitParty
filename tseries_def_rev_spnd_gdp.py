@@ -296,95 +296,104 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
     return tabs
 
 
-'''
--------------------------------------------------------------------------------
-Create time series for deficit_gdp by party control
--------------------------------------------------------------------------------
-'''
-note_text_list = \
-    [
+if __name__ == "__main__":
+    '''
+    ---------------------------------------------------------------------------
+    Create time series for deficit_gdp by party control
+    ---------------------------------------------------------------------------
+    '''
+    note_text_list = \
         [
-            ('Note: Republican control in a given year is defined as the ' +
-             'President being Republican and Republicans holding at least ' +
-             'half of Senate seats (50 or more) and at least'),
-            ('   half of House seats (usually 217 or more) for the majority ' +
-             'of that year. Democrat control is defined as the President ' +
-             'being Democrat and Democrats holding at least'),
-            ('   half of the Senate seats and at least half of the House ' +
-             'seats for the majority of that year. Split government is ' +
-             'defined as one party holding the White House while'),
-            ('   either not holding a majority of Senate seates or not ' +
-             'holding a majority of House seats.'),
-            ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), ' +
-             'United States House of Representatives History, Art, & ' +
-             'Archives, "Party Divisions of the House of'),
-            ('   Representatives, 1789 to present", ' +
-             'https://history.house.gov/Institution/Party-Divisions/' +
-             'Party-Divisions/, Richard W. Evans (@rickecon).')
-        ],
-        [
-            ('Note: Republican control in a given year is defined as the ' +
-             'President being Republican and Republicans holding at least ' +
-             'half of the Senate seats (50 or more) for the'),
-            ('   majority of that year. Democrat control is defined as the ' +
-             'President being Democrat and Democrats holding at least half ' +
-             'of the Senate seats for the majority of that'),
-            ('   year. Split government is defined as one party holding the ' +
-             'White House while not holding a majority of Senate seats.'),
-            ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), ' +
-             'United States House of Representatives History, Art, & ' +
-             'Archives, "Party Divisions of the House of'),
-            ('   Representatives, 1789 to present", ' +
-             'https://history.house.gov/Institution/Party-Divisions/' +
-             'Party-Divisions/, Richard W. Evans (@rickecon).')
-        ],
-        [
-            ('Note: Republican control in a given year is defined as the ' +
-             'President being Republican and Republicans holding at least ' +
-             'half of the House seats (usually 217 or more)'),
-            ('   for the majority of that year. Democrat control is defined ' +
-             'as the President being Democrat and Democrats holding at ' +
-             'least half of the House seats for the majority of'),
-            ('   that year. Split government is defined as one party ' +
-             'holding the White House while not holding a majority of House ' +
-             'seats.'),
-            ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), ' +
-             'United States House of Representatives History, Art, & ' +
-             'Archives, "Party Divisions of the House of'),
-            ('   Representatives, 1789 to present", ' +
-             'https://history.house.gov/Institution/Party-Divisions/' +
-             'Party-Divisions/, Richard W. Evans (@rickecon).')
+            [
+                ('Note: Republican control in a given year is defined as ' +
+                'the President being Republican and Republicans holding at ' +
+                'least half of Senate seats (50 or more) and at least'),
+                ('   half of House seats (usually 217 or more) for the ' +
+                'majority of that year. Democrat control is defined as the ' +
+                'President being Democrat and Democrats holding at least'),
+                ('   half of the Senate seats and at least half of the ' +
+                'House seats for the majority of that year. Split ' +
+                'government is defined as one party holding the White House ' +
+                'while'),
+                ('   either not holding a majority of Senate seates or not ' +
+                'holding a majority of House seats.'),
+                ('Source: Federal Reserve Economic Data (FRED, ' +
+                 'FYFRGDA188S), United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of the House of'),
+                ('   Representatives, 1789 to present", ' +
+                 'https://history.house.gov/Institution/Party-Divisions/' +
+                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+            ],
+            [
+                ('Note: Republican control in a given year is defined as ' +
+                'the President being Republican and Republicans holding at ' +
+                'least half of the Senate seats (50 or more) for the'),
+                ('   majority of that year. Democrat control is defined as ' +
+                'the President being Democrat and Democrats holding at ' +
+                'least half of the Senate seats for the majority of that'),
+                ('   year. Split government is defined as one party holding ' +
+                 'the White House while not holding a majority of Senate ' +
+                 'seats.'),
+                ('Source: Federal Reserve Economic Data (FRED, ' +
+                 'FYFRGDA188S), United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of the House of'),
+                ('   Representatives, 1789 to present", ' +
+                 'https://history.house.gov/Institution/Party-Divisions/' +
+                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+            ],
+            [
+                ('Note: Republican control in a given year is defined as ' +
+                'the President being Republican and Republicans holding at ' +
+                'least half of the House seats (usually 217 or more)'),
+                ('   for the majority of that year. Democrat control is ' +
+                'defined as the President being Democrat and Democrats ' +
+                'holding at least half of the House seats for the majority ' +
+                'of'),
+                ('   that year. Split government is defined as one party ' +
+                'holding the White House while not holding a majority of ' +
+                'House seats.'),
+                ('Source: Federal Reserve Economic Data (FRED, ' +
+                 'FYFRGDA188S), United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of the House of'),
+                ('   Representatives, 1789 to present", ' +
+                 'https://history.house.gov/Institution/Party-Divisions/' +
+                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+            ]
         ]
-    ]
 
-# Create deficits-to-GDP time series by party control figure
-fig_title_deficit = ('U.S. Federal Surplus (+) or Deficit (-) as Percent of ' +
-                     'Gross Domestic Product by Party Control: 1929-2020')
-fig_path_deficit = os.path.join(images_dir, 'tseries_deficit_gdp_party.html')
-deficit_gdp_party_tseries = \
-    gen_tseries(yvar_str='deficit_gdp', start_year=1947,
-                note_text_list=note_text_list,
-                fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
-show(deficit_gdp_party_tseries)
+    # Create deficits-to-GDP time series by party control figure
+    fig_title_deficit = ('U.S. Federal Surplus (+) or Deficit (-) as ' +
+                        'Percent of Gross Domestic Product by Party ' +
+                        'Control: 1929-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'tseries_deficit_gdp_party.html')
+    deficit_gdp_party_tseries = \
+        gen_tseries(yvar_str='deficit_gdp', start_year=1947,
+                    note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
+    show(deficit_gdp_party_tseries)
 
-# Create receipts-to-GDP time series by party control figure
-fig_title_receipts = ('U.S. Federal Receipts as Percent of Gross Domestic ' +
-                      'Product by Party Control: 1929-2020')
-fig_path_receipts = os.path.join(images_dir, 'tseries_receipts_gdp_party.html')
-receipts_gdp_party_tseries = \
-    gen_tseries(yvar_str='receipts_gdp', start_year=1947,
-                note_text_list=note_text_list,
-                fig_title_str=fig_title_receipts, fig_path=fig_path_receipts)
-show(receipts_gdp_party_tseries )
+    # Create receipts-to-GDP time series by party control figure
+    fig_title_receipts = ('U.S. Federal Receipts as Percent of Gross ' +
+                          'Domestic Product by Party Control: 1929-2020')
+    fig_path_receipts = os.path.join(images_dir,
+                                     'tseries_receipts_gdp_party.html')
+    receipts_gdp_party_tseries = \
+        gen_tseries(yvar_str='receipts_gdp', start_year=1947,
+                    note_text_list=note_text_list,
+                    fig_title_str=fig_title_receipts,
+                    fig_path=fig_path_receipts)
+    show(receipts_gdp_party_tseries )
 
-# Create noninterest speinding-to-GDP time series by party control figure
-fig_title_nonintspend = ('U.S. Federal Noninterest Spending as Percent of ' +
-                         'Gross Domestic Product by Party Control: 1929-2020')
-fig_path_nonintspend = os.path.join(images_dir,
-                                    'tseries_nonintspend_gdp_party.html')
-nonintspend_gdp_party_tseries = \
-    gen_tseries(yvar_str='spend_nonint_gdp', start_year = 1947,
-                note_text_list=note_text_list,
-                fig_title_str=fig_title_nonintspend,
-                fig_path=fig_path_nonintspend)
-show(nonintspend_gdp_party_tseries )
+    # Create noninterest speinding-to-GDP time series by party control figure
+    fig_title_nonintspend = ('U.S. Federal Noninterest Spending as Percent ' +
+                             'of Gross Domestic Product by Party Control: ' +
+                             '1929-2020')
+    fig_path_nonintspend = os.path.join(images_dir,
+                                        'tseries_nonintspend_gdp_party.html')
+    nonintspend_gdp_party_tseries = \
+        gen_tseries(yvar_str='spend_nonint_gdp', start_year = 1947,
+                    note_text_list=note_text_list,
+                    fig_title_str=fig_title_nonintspend,
+                    fig_path=fig_path_nonintspend)
+    show(nonintspend_gdp_party_tseries )
