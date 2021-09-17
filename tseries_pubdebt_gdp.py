@@ -37,7 +37,7 @@ max_debt = debt_df['debt'].max()
 
 #Output to HTML file titled: "federal_debt_image.html"
 fig_title = 'U.S. Federal Debt Held by the Public, 1900 to 2051'
-fig_path = os.path.join(images_dir, 'pubdebt_gdp_tseries.html')
+fig_path = os.path.join(images_dir, 'tseries_pubdebt_gdp.html')
 output_file(fig_path, title=fig_title)
 
 #Create a figure with '% of GDP' as Y-axis and year as X-axis
