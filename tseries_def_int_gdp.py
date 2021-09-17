@@ -38,7 +38,7 @@ max_deficit = deficit_dataframe['Total Deficit'].max()
 
 #Output to HTML file titled: "federal_debt_image.html"
 fig_title = 'Total Deficits, Primary Deficits, and Net Interest: 2006-2051'
-fig_path = os.path.join(images_dir, 'deficit_interest_image.html')
+fig_path = os.path.join(images_dir, 'tseries_def_int_gdp.html')
 output_file(fig_path, title=fig_title)
 
 #Create a figure with '% of GDP' as Y-axis and year as X-axis
