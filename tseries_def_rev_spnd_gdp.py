@@ -364,7 +364,7 @@ if __name__ == "__main__":
     # Create deficits-to-GDP time series by party control figure
     fig_title_deficit = ('U.S. Federal Surplus (+) or Deficit (-) as ' +
                         'Percent of Gross Domestic Product by Party ' +
-                        'Control: 1929-2020')
+                        'Control: 1947-2020')
     fig_path_deficit = os.path.join(images_dir,
                                     'tseries_deficit_gdp_party.html')
     deficit_gdp_party_tseries = \
@@ -375,7 +375,7 @@ if __name__ == "__main__":
 
     # Create receipts-to-GDP time series by party control figure
     fig_title_receipts = ('U.S. Federal Receipts as Percent of Gross ' +
-                          'Domestic Product by Party Control: 1929-2020')
+                          'Domestic Product by Party Control: 1947-2020')
     fig_path_receipts = os.path.join(images_dir,
                                      'tseries_receipts_gdp_party.html')
     receipts_gdp_party_tseries = \
@@ -388,11 +388,11 @@ if __name__ == "__main__":
     # Create noninterest speinding-to-GDP time series by party control figure
     fig_title_nonintspend = ('U.S. Federal Noninterest Spending as Percent ' +
                              'of Gross Domestic Product by Party Control: ' +
-                             '1929-2020')
+                             '1947-2020')
     fig_path_nonintspend = os.path.join(images_dir,
                                         'tseries_nonintspend_gdp_party.html')
     nonintspend_gdp_party_tseries = \
-        gen_tseries(yvar_str='spend_nonint_gdp', start_year = 1947,
+        gen_tseries(yvar_str='spend_nonint_gdp', start_year=1947,
                     note_text_list=note_text_list,
                     fig_title_str=fig_title_nonintspend,
                     fig_path=fig_path_nonintspend)
