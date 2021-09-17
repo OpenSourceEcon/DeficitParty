@@ -56,25 +56,25 @@ main_df = pd.read_csv(party_data_path,
 main_cds = ColumnDataSource(main_df)
 
 # Create Full control (WH + Sen + HouseRep) Republican control elements
-deficit_cntrl_all_rep_df = \
+cntrl_all_rep_df = \
     main_df[(main_df['president_party'] == 'Republican') &
             (main_df['rep_senateseats'] >=
              0.5 * main_df['total_senateseats']) &
             (main_df['rep_houseseats'] >=
              0.5 * main_df['total_houseseats'])]
-dfct_cntrl_all_rep_cds = ColumnDataSource(deficit_cntrl_all_rep_df)
+cntrl_all_rep_cds = ColumnDataSource(cntrl_all_rep_df)
 
 # Create Full control (WH + Sen + HouseRep) Democrat control elements
-deficit_cntrl_all_dem_df = \
+cntrl_all_dem_df = \
     main_df[(main_df['president_party'] == 'Democrat') &
             (main_df['dem_senateseats'] >=
              0.5 * main_df['total_senateseats']) &
             (main_df['dem_houseseats'] >=
              0.5 * main_df['total_houseseats'])]
-dfct_cntrl_all_dem_cds = ColumnDataSource(deficit_cntrl_all_dem_df)
+cntrl_all_dem_cds = ColumnDataSource(cntrl_all_dem_df)
 
 # Create Full control (WH + Sen + HouseRep) split control elements
-deficit_cntrl_all_split_df = \
+cntrl_all_split_df = \
     main_df[((main_df['president_party'] == 'Republican') &
              ((main_df['rep_senateseats'] <
                0.5 * main_df['total_senateseats']) |
@@ -85,55 +85,55 @@ deficit_cntrl_all_split_df = \
                0.5 * main_df['total_senateseats']) |
               (main_df['dem_houseseats'] <
                0.5 * main_df['total_houseseats'])))]
-dfct_cntrl_all_split_cds = ColumnDataSource(deficit_cntrl_all_split_df)
+cntrl_all_split_cds = ColumnDataSource(cntrl_all_split_df)
 
 # Create Senate control (WH + Sen) Republican control elements
-deficit_cntrl_whsen_rep_df = \
+cntrl_whsen_rep_df = \
     main_df[(main_df['president_party'] == 'Republican') &
             (main_df['rep_senateseats'] >=
              0.5 * main_df['total_senateseats'])]
-dfct_cntrl_whsen_rep_cds = ColumnDataSource(deficit_cntrl_whsen_rep_df)
+cntrl_whsen_rep_cds = ColumnDataSource(cntrl_whsen_rep_df)
 
 # Create Senate control (WH + Sen) Democrat control elements
-deficit_cntrl_whsen_dem_df = \
+cntrl_whsen_dem_df = \
     main_df[(main_df['president_party'] == 'Democrat') &
             (main_df['dem_senateseats'] >=
              0.5 * main_df['total_senateseats'])]
-dfct_cntrl_whsen_dem_cds = ColumnDataSource(deficit_cntrl_whsen_dem_df)
+cntrl_whsen_dem_cds = ColumnDataSource(cntrl_whsen_dem_df)
 
 # Create Senate control (WH + Sen) split control elements
-deficit_cntrl_whsen_split_df = \
+cntrl_whsen_split_df = \
     main_df[((main_df['president_party'] == 'Republican') &
              (main_df['rep_senateseats'] <
               0.5 * main_df['total_senateseats'])) |
             ((main_df['president_party'] == 'Democrat') &
              (main_df['dem_senateseats'] <
               0.5 * main_df['total_senateseats']))]
-dfct_cntrl_whsen_split_cds = ColumnDataSource(deficit_cntrl_whsen_split_df)
+cntrl_whsen_split_cds = ColumnDataSource(cntrl_whsen_split_df)
 
 # Create House control (WH + HouseRep) Republican control elements
-deficit_cntrl_whhou_rep_df = \
+cntrl_whhou_rep_df = \
     main_df[(main_df['president_party'] == 'Republican') &
             (main_df['rep_houseseats'] >=
              0.5 * main_df['total_houseseats'])]
-dfct_cntrl_whhou_rep_cds = ColumnDataSource(deficit_cntrl_whhou_rep_df)
+cntrl_whhou_rep_cds = ColumnDataSource(cntrl_whhou_rep_df)
 
 # Create House control (WH + HouseRep) Democrat control elements
-deficit_cntrl_whhou_dem_df = \
+cntrl_whhou_dem_df = \
     main_df[(main_df['president_party'] == 'Democrat') &
             (main_df['dem_houseseats'] >=
              0.5 * main_df['total_houseseats'])]
-dfct_cntrl_whhou_dem_cds = ColumnDataSource(deficit_cntrl_whhou_dem_df)
+cntrl_whhou_dem_cds = ColumnDataSource(cntrl_whhou_dem_df)
 
 # Create House control (WH + HouseRep) split control elements
-deficit_cntrl_whhou_split_df = \
+cntrl_whhou_split_df = \
     main_df[((main_df['president_party'] == 'Republican') &
              (main_df['rep_houseseats'] <
               0.5 * main_df['total_houseseats'])) |
             ((main_df['president_party'] == 'Democrat') &
              (main_df['dem_houseseats'] <
               0.5 * main_df['total_houseseats']))]
-dfct_cntrl_whhou_split_cds = ColumnDataSource(deficit_cntrl_whhou_split_df)
+cntrl_whhou_split_cds = ColumnDataSource(cntrl_whhou_split_df)
 
 # Create Variables for min and max values
 data_length = len(main_df['Year'])
@@ -203,17 +203,17 @@ for x in range(0,recession_data_length):
 fig_all.line(x='Year', y='deficit_gdp', source=main_cds, color='#423D3C',
              line_width=2)
 
-fig_all.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_all_rep_cds,
-               size=10, line_width=1, line_color='black', fill_color='red',
-               alpha=0.7, muted_alpha=0.2, legend_label='Republican control')
+fig_all.circle(x='Year', y='deficit_gdp', source=cntrl_all_rep_cds, size=10,
+               line_width=1, line_color='black', fill_color='red', alpha=0.7,
+               muted_alpha=0.2, legend_label='Republican control')
 
-fig_all.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_all_dem_cds,
-               size=10, line_width=1, line_color='black', fill_color='blue',
-               alpha=0.7, muted_alpha=0.2, legend_label='Democrat control')
+fig_all.circle(x='Year', y='deficit_gdp', source=cntrl_all_dem_cds, size=10,
+               line_width=1, line_color='black', fill_color='blue', alpha=0.7,
+               muted_alpha=0.2, legend_label='Democrat control')
 
-fig_all.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_all_split_cds,
-               size=10, line_width=1, line_color='black', fill_color='green',
-               alpha=0.7, muted_alpha=0.2, legend_label='Split control')
+fig_all.circle(x='Year', y='deficit_gdp', source=cntrl_all_split_cds, size=10,
+               line_width=1, line_color='black', fill_color='green', alpha=0.7,
+               muted_alpha=0.2, legend_label='Split control')
 
 # Add information on hover
 tooltips = [('Year', '@Year'),
@@ -339,15 +339,15 @@ for x in range(0,recession_data_length):
 fig_whsen.line(x='Year', y='deficit_gdp', source=main_cds, color='#423D3C',
                line_width=2)
 
-fig_whsen.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_whsen_rep_cds,
+fig_whsen.circle(x='Year', y='deficit_gdp', source=cntrl_whsen_rep_cds,
                  size=10, line_width=1, line_color='black', fill_color='red',
                  alpha=0.7, muted_alpha=0.2, legend_label='Republican control')
 
-fig_whsen.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_whsen_dem_cds,
+fig_whsen.circle(x='Year', y='deficit_gdp', source=cntrl_whsen_dem_cds,
                  size=10, line_width=1, line_color='black', fill_color='blue',
                  alpha=0.7, muted_alpha=0.2, legend_label='Democrat control')
 
-fig_whsen.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_whsen_split_cds,
+fig_whsen.circle(x='Year', y='deficit_gdp', source=cntrl_whsen_split_cds,
                  size=10, line_width=1, line_color='black', fill_color='green',
                  alpha=0.7, muted_alpha=0.2, legend_label='Split control')
 
@@ -468,15 +468,15 @@ for x in range(0,recession_data_length):
 fig_whhou.line(x='Year', y='deficit_gdp', source=main_cds, color='#423D3C',
                line_width=2)
 
-fig_whhou.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_whhou_rep_cds,
+fig_whhou.circle(x='Year', y='deficit_gdp', source=cntrl_whhou_rep_cds,
                  size=10, line_width=1, line_color='black', fill_color='red',
                  alpha=0.7, muted_alpha=0.2, legend_label='Republican control')
 
-fig_whhou.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_whhou_dem_cds,
+fig_whhou.circle(x='Year', y='deficit_gdp', source=cntrl_whhou_dem_cds,
                  size=10, line_width=1, line_color='black', fill_color='blue',
                  alpha=0.7, muted_alpha=0.2, legend_label='Democrat control')
 
-fig_whhou.circle(x='Year', y='deficit_gdp', source=dfct_cntrl_whhou_split_cds,
+fig_whhou.circle(x='Year', y='deficit_gdp', source=cntrl_whhou_split_cds,
                  size=10, line_width=1, line_color='black', fill_color='green',
                  alpha=0.7, muted_alpha=0.2, legend_label='Split control')
 
