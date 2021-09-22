@@ -57,32 +57,42 @@ main_df = pd.read_csv(data_path, header=5,
 
 
 def gen_tseries_frcst(frcst_var_list, legend_label_list, df=main_df,
-                      start_year='min', end_year='max', note_text_list=[],
-                      fig_title_str='', fig_path=''):
+                      main_start_year='min', main_end_year='max',
+                      full_start_year='min', full_end_year='max',
+                      note_text_list=[], fig_title_str='', fig_path=''):
     """
     This function creates a plot of multiple time series of CBO forecasts of
     U.S. publicly held national debt.
     """
     # Create Variables for min and max values
-    if start_year == 'min':
-        min_year = df['year'].min()
+    if main_start_year == 'min':
+        main_min_year = df['year'].min()
     else:
-        min_year = int(start_year)
-    if end_year == 'max':
-        max_year = df['year'].max()
+        main_min_year = int(main_start_year)
+    if full_start_year == 'min':
+        full_min_year = df['year'].min()
     else:
-        max_year = int(end_year)
-    df = df[(df['year'] >= min_year) & (df['year'] <= max_year)]
+        full_min_year = int(full_start_year)
+    if main_end_year == 'max':
+        main_max_year = df['year'].max()
+    else:
+        main_max_year = int(main_end_year)
+    if full_end_year == 'max':
+        full_max_year = df['year'].max()
+    else:
+        full_max_year = int(full_end_year)
+    df_full = df[(df['year'] >= full_min_year) & (df['year'] <= full_max_year)]
+    df_main = df[(df['year'] >= main_min_year) & (df['year'] <= main_max_year)]
     # Find the min and max yvar values across the list of yvars and create
     # separate ColumnDataSource objects for each forecast series (this helps
     # with the hovertools)
-    min_yvar = 100
-    max_yvar = 0
+    main_min_yvar = 100
+    main_max_yvar = 0
     cds_list = []
     for k, yvar in enumerate(frcst_var_list):
-        min_yvar = np.minimum(min_yvar, df[yvar].min())
-        max_yvar = np.maximum(max_yvar, df[yvar].max())
-        frcst_df = df[['year', yvar, yvar + '_frcst']].dropna()
+        main_min_yvar = np.minimum(main_min_yvar, df_main[yvar].min())
+        main_max_yvar = np.maximum(main_max_yvar, df_main[yvar].max())
+        frcst_df = df_full[['year', yvar, yvar + '_frcst']].dropna()
         frcst_df['frcst'] = frcst_df[yvar + '_frcst'] = 1
         frcst_df['frcst_label'] = legend_label_list[k]
         frcst_df.rename(columns={yvar: 'debt_gdp'}, inplace=True)
@@ -98,16 +108,16 @@ def gen_tseries_frcst(frcst_var_list, legend_label_list, df=main_df,
                  plot_height=600,
                  plot_width=1100,
                  x_axis_label='Year',
-                 x_range=(min_year - 1, max_year + 1),
+                 x_range=(main_min_year - 1, main_max_year + 1),
                  y_axis_label='Percent of Gross Domestic Product',
-                 y_range=(min_yvar - 5, max_yvar + 5),
+                 y_range=(main_min_yvar - 5, main_max_yvar + 5),
                  tools=['save', 'zoom_in', 'zoom_out', 'box_zoom',
-                        'pan', 'undo', 'redo', 'reset', 'hover', 'help'],
+                        'pan', 'undo', 'redo', 'reset', 'help'],
                  toolbar_location='left')
     fig.toolbar.logo = None
 
     # Set title font size and axes font sizes
-    fig.title.text_font_size = '17pt'
+    fig.title.text_font_size = '15pt'
     fig.xaxis.axis_label_text_font_size = '12pt'
     fig.xaxis.major_label_text_font_size = '12pt'
     fig.yaxis.axis_label_text_font_size = '12pt'
@@ -120,7 +130,7 @@ def gen_tseries_frcst(frcst_var_list, legend_label_list, df=main_df,
     fig.ygrid.ticker = SingleIntervalTicker(interval=20)
 
     min_256_color_ind = 0
-    max_256_color_ind = 195
+    max_256_color_ind = 200
     intercept = max_256_color_ind
     slope = (min_256_color_ind - intercept) / (len(frcst_var_list) - 1)
 
@@ -174,21 +184,24 @@ if __name__ == "__main__":
         'Mar. 2021']
     note_text_list = \
         [
-            ('Source: U.S. publicly held debt-to-GDP forecasts from ' +
-             'Congressional Budget Office Long-term Budget Outlook reports ' +
-             'in data associated with'),
-            ('    underlying figures, Long-term Budget Projections Data ' +
-             '(https://www.cbo.gov/data/budget-economic-data#1), and ' +
-             'Historical Budget Data'),
-            ('   (https://www.cbo.gov/data/budget-economic-data#2). Richard ' +
-             'W. Evans (@rickecon).')
+            ('Source: U.S. publicly held debt-to-GDP forecasts (extended ' +
+             'baseline) from Congressional Budget Office Long-term Budget ' +
+             'Outlook reports in'),
+            ('   data associated with underlying figures, Long-term Budget ' +
+             'Projections Data (https://www.cbo.gov/data/budget-economic-' +
+             'data#1), and'),
+            ('   Historical Budget Data (https://www.cbo.gov/data/budget-' +
+             'economic-data#2). Richard W. Evans (@rickecon).')
         ]
 
     # Create publicly held debt forecasts figure
-    fig_title = ('')
+    fig_title = ('Comparison of 16 CBO Forecasts of U.S. Publicly Held Debt ' +
+                 'as Percent of GDP: 2009-2021 forecasts')
     fig_path = os.path.join(images_dir, 'tseries_pubdebt_gdp_frcsts.html')
     pubdebt_gdp_frcsts_tseries = \
-        gen_tseries_frcst(frcst_var_list, legend_label_list, start_year=1910,
-                          end_year=2050, note_text_list=note_text_list,
+        gen_tseries_frcst(frcst_var_list, legend_label_list,
+                          main_start_year=1915, main_end_year=2050,
+                          full_start_year='min', full_end_year='max',
+                          note_text_list=note_text_list,
                           fig_title_str=fig_title, fig_path=fig_path)
     show(pubdebt_gdp_frcsts_tseries)
