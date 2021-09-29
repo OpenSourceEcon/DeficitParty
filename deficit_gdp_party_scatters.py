@@ -28,8 +28,13 @@ data_dir = os.path.join(cur_path, 'data')
 party_data_path = os.path.join(data_dir, 'deficit_party_data.csv')
 images_dir = os.path.join(cur_path, 'images')
 
+
+# -------------------------------------------------------------------------------
+#  Create pandas DataFrames and Column Data Source data objects
+# -------------------------------------------------------------------------------
+
 # Reading data from CVS (deficit_party_data.csv)
-df = pd.read_csv(party_data_path,
+main_df = pd.read_csv(party_data_path,
                  dtype={'Year': np.int64,
                      'deficit_gdp': np.float64,
                      'receipts_gdp': np.float64,
@@ -51,102 +56,8 @@ df = pd.read_csv(party_data_path,
                      'tot_houseseats': np.int64},
                  skiprows=3)
 
-# Create list of three tabs of political control definitions
-control_type_list = ['wh_sen_hou', 'wh_sen', 'wh_hou']
-control_type_labels = ['Full control: White House + Senate + House',
-                       'White House and Senate control',
-                       'White House and House control']
-footnotes1_list = \
-    ['217 seats in the House and more than 50 seats in the Senate',
-     '50 seats in the Senate', '217 seats in the House']
-footnotes2_list = ['Senate and House', 'Senate', 'House']
-
-def output(title, file_name):
-    fig_path = os.path.join(images_dir, file_name)
-    output_file(fig_path, title=title)
-
-
-def generateFigures(title, x_label, y_label, min_seats, max_seats, min_y,
-                    max_y):
-    r'''
-    Returns a list of three empty figures for a given plot type with property
-    values to be used as the figures are filled in. This figures will become
-    the three tabs for the unified three-tab unified figure.
-
-    Args:
-        title (string): title text for figures
-        x_label (string): x-axis label for figures
-        y_label (string): y-axis label for figures
-        min_seats (scalar): minimum number of Senate or House seats in the data
-        max_seats (scalar): maximum number of Senate or House seats in the data
-        min_y (scalar): minimum y-data value
-        max_y (scalar): maximum y-data value
-
-    Returns:
-        fig_list (list): three-element list of blank Bokeh figures
-
+def deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats', main_df=main_df, note_text_list=[], fig_title_str='',fig_path=''):
     '''
-    fig_list=[]
-    for i in range(3):
-        x_spread = max_seats - min_seats
-        x_buffer = 0.1
-        y_spread = max_y - min_y
-        y_buffer = 0.1
-        fig = figure(title=title,
-                     plot_height=600,
-                     plot_width=1000,
-                     x_axis_label=x_label,
-                     x_range=(min_seats - (x_buffer * x_spread),
-                              max_seats + (x_buffer * x_spread)),
-                     y_axis_label=y_label,
-                     y_range=(min_y - (y_buffer * y_spread),
-                              max_y + (y_buffer * y_spread)),
-                     tools=['zoom_in', 'zoom_out', 'box_zoom', 'pan', 'undo',
-                            'redo', 'reset'],
-                     toolbar_location='right')
-
-        # Set title font size and axes font sizes
-        fig.title.text_font_size = '16pt'
-        fig.xaxis.axis_label_text_font_size = '12pt'
-        fig.xaxis.major_label_text_font_size = '12pt'
-        fig.yaxis.axis_label_text_font_size = '12pt'
-        fig.yaxis.major_label_text_font_size = '12pt'
-        # Modify tick intervals for X-axis and Y-axis
-        fig.xaxis.ticker=SingleIntervalTicker(interval=10, num_minor_ticks=0)
-        fig.xgrid.ticker=SingleIntervalTicker(interval=10)
-        fig.yaxis.ticker=SingleIntervalTicker(interval=5, num_minor_ticks=0)
-        fig.ygrid.ticker=SingleIntervalTicker(interval=10)
-        # Remove Logo from toolbar
-        fig.toolbar.logo = None
-
-        fig_list.append(fig)
-
-    return fig_list
-
-
-def plotCircle(i, x_value, y_value, fig, color, df):
-    if(color == 'red'):
-        LEGEND_LABEL = 'Republican Control'
-    elif(color == 'blue'):
-        LEGEND_LABEL = 'Democrat Control'
-    else:
-        LEGEND_LABEL = 'Split Control'
-
-    fig.circle(x=df[x_value][i],
-               y=df[y_value][i],
-               size=10,
-               line_width=1,
-               line_color='black',
-               fill_color=color,
-               alpha=0.7,
-               muted_alpha=0.1,
-               legend_label=LEGEND_LABEL)
-
-
-def deficitPartyPlots(deficit_component, seat_type, df=df,
-                      control_type_list=control_type_list,
-                      control_type_labels=control_type_labels, show_fig=False):
-    r'''
     Generates one of six different plot types of U.S. deficit/GDP by year, by
     Democrat held Senate seats or House seats, and by three different measures
     of political control
@@ -161,219 +72,354 @@ def deficitPartyPlots(deficit_component, seat_type, df=df,
         Y (array_like): aggregate output
 
     '''
-    cds = ColumnDataSource(df)
+    # Output to HTML file
+    fig_title = fig_title_str
+    fig_path = fig_path
+    output_file(fig_path, title=fig_title)
 
-    # Check input
-    if (not (deficit_component == 'deficit' or
-             deficit_component == 'spending' or
-             deficit_component == 'revenues')):
-        raise ValueError('deficit_component input invalid')
+    # Create variables
+    min_seat = main_df[xvar_str].min()
+    max_seat = main_df[xvar_str].max()
+    min_yvar = main_df[yvar_str].min()
+    max_yvar = main_df[yvar_str].max()
+    xy_buffer = (max_seat - min_seat) * .1
+    if(xvar_str == 'dem_senateseats'):
+        seat_type = 'Senate'
+    else:
+        seat_type = 'House'
+    if(yvar_str == 'deficit_gdp'):
+        legend_location = 'bottom_right'
+    elif(yvar_str == 'spend_nonint_gdp'):
+        legend_location = 'bottom_right'
+    else:
+        legend_location = 'top_right'
 
-    if (not (seat_type == 'house' or seat_type == 'senate')):
-        raise ValueError('seat_type input invalid')
+    #------------------------------------------------------------------
+    # Create Column Data Sources for each definition of party control
+    #------------------------------------------------------------------
 
-    # Define variables for plot
-    data_length = len(df['Year'])
-    starting_index = 0
-    if seat_type == 'house':
-        half_line = 217
-        x_label='Number of Democratic House Seats (out of 435)'
-        x_value = 'DemHouseSeats'
-        min_seats = df[x_value].min()
-        max_seats = df[x_value].max()
-        footnotes = '217 House seats'
-        if deficit_component == 'deficit':
-            fig_title = ('U.S. Federal Deficits as Percent of GDP by ' +
-                         'Democrat House Seats: 1929-2020')
-            file_name = 'deficitGDP_HouseSeats.html'
-            y_label = 'Deficit / GDP'
-            y_value = 'deficit_gdp'
-            min_y = df[y_value].min()
-            max_y = df[y_value].max()
-        elif deficit_component == 'spending':
-            fig_title = ('U.S. Federal Noninterest Spending as Percent of ' +
-                         'GDP by Democrat House Seats: 1929-2020')
-            file_name = 'spendingGDP_HouseSeats.html'
-            y_label = 'Noninterest Spending / GDP'
-            y_value = 'spend_nonint_gdp'
-            min_y = df[y_value].min()
-            max_y = df[y_value].max()
-            starting_index = 11
-        elif deficit_component == 'revenues':
-            fig_title = ('U.S. Federal Receipts as Percent of GDP by ' +
-                         'Democrat House Seats: 1929-2020')
-            file_name = 'revenuesGDP_HouseSeats.html'
-            y_label = 'Receipts / GDP'
-            y_value = 'receipts_gdp'
-            min_y = df[y_value].min()
-            max_y = df[y_value].max()
-    elif seat_type == 'senate':
-        half_line=50
-        x_label = 'Number of Democratic Senate Seats (out of 100)'
-        x_value = 'DemSenateSeats'
-        min_seats = df[x_value].min()
-        max_seats = df[x_value].max()
-        footnotes = '50 Senate seats'
-        if deficit_component == 'deficit':
-            fig_title = ('U.S. Federal Deficits as Percent of GDP by ' +
-                         'Democrat Senate Seats: 1929-2020')
-            file_name = 'deficitGDP_SenateSeats.html'
-            y_label = 'Deficit / GDP'
-            y_value = 'deficit_gdp'
-            min_y = df[y_value].min()
-            max_y = df[y_value].max()
-        elif deficit_component=='spending':
-            fig_title = ('U.S. Federal Noninterest Spending as Percent of ' +
-                         'GDP by Democrat Senate Seats: 1929-2020')
-            file_name = 'spendingGDP_SenateSeats.html'
-            y_label = 'Noninterest Spending / GDP'
-            y_value = 'spend_nonint_gdp'
-            min_y = df[y_value].min()
-            max_y = df[y_value].max()
-            starting_index = 11
-        elif deficit_component=='revenues':
-            fig_title = ('U.S. Federal Receipts as Percent of GDP by ' +
-                         'Democrat Senate Seats: 1929-2020')
-            file_name = 'revenuesGDP_SenateSeats.html'
-            y_label = 'Receipts / GDP'
-            y_value = 'receipts_gdp'
-            min_y = df[y_value].min()
-            max_y = df[y_value].max()
+    # Create entire time series column data source for main and recession df's
+    main_cds = ColumnDataSource(main_df)
 
-    # Console start notification
-    print('Generating ' + file_name)
+    # Create Full control (WH + Sen + HouseRep) Republican control elements
+    cntrl_all_rep_df = \
+        main_df[(main_df['president_party'] == 'Republican') &
+                (main_df['rep_senateseats'] >=
+                0.5 * main_df['total_senateseats']) &
+                (main_df['rep_houseseats'] >=
+                0.5 * main_df['total_houseseats'])]
+    cntrl_all_rep_cds = ColumnDataSource(cntrl_all_rep_df)
 
-    # Generate Figures
-    fig_list = []
-    fig_list = generateFigures(fig_title, x_label, y_label, min_seats,
-                               max_seats, min_y, max_y)
+    # Create Full control (WH + Sen + HouseRep) Democrat control elements
+    cntrl_all_dem_df = \
+        main_df[(main_df['president_party'] == 'Democrat') &
+                (main_df['dem_senateseats'] >=
+                0.5 * main_df['total_senateseats']) &
+                (main_df['dem_houseseats'] >=
+                0.5 * main_df['total_houseseats'])]
+    cntrl_all_dem_cds = ColumnDataSource(cntrl_all_dem_df)
 
-    # Vertical black line noting half of senate seats
-    halfLine = Span(location=half_line, dimension='height', line_color='black',
-                    line_width=2)
-    for i in range(3):
-        fig_list[i].add_layout(halfLine)
+    # Create Full control (WH + Sen + HouseRep) split control elements
+    cntrl_all_split_df = \
+        main_df[((main_df['president_party'] == 'Republican') &
+                ((main_df['rep_senateseats'] <
+                0.5 * main_df['total_senateseats']) |
+                (main_df['rep_houseseats'] <
+                0.5 * main_df['total_houseseats']))) |
+                ((main_df['president_party'] == 'Democrat') &
+                ((main_df['dem_senateseats'] <
+                0.5 * main_df['total_senateseats']) |
+                (main_df['dem_houseseats'] <
+                0.5 * main_df['total_houseseats'])))]
+    cntrl_all_split_cds = ColumnDataSource(cntrl_all_split_df)
 
-    # Plot data points
-    for n in range(3):
-        for i in range(starting_index, data_length):
-            if n == 0:
-                if(df['DemHouseSeats'][i] < 217 and
-                   df['DemSenateSeats'][i] < 50 and
-                   df['DemWhitehouse'][i] == 0):
-                    plotCircle(i, x_value, y_value, fig_list[n], 'red', df)
-                elif (df['DemHouseSeats'][i] > 217 and
-                      df['DemSenateSeats'][i] > 50 and
-                      df['DemWhitehouse'][i] == 1):
-                    plotCircle(i, x_value, y_value, fig_list[n], 'blue', df)
-                else:
-                    plotCircle(i,x_value, y_value, fig_list[n], 'green', df)
-            elif n == 1:
-                if (df['DemSenateSeats'][i] < 50 and
-                    df['DemWhitehouse'][i] == 0):
-                    plotCircle(i, x_value, y_value, fig_list[n], 'red', df)
-                elif (df['DemSenateSeats'][i] > 50 and
-                      df['DemWhitehouse'][i] == 1):
-                    plotCircle(i, x_value, y_value, fig_list[n], 'blue', df)
-                else:
-                    plotCircle(i, x_value, y_value, fig_list[n], 'green', df)
-            elif n == 2:
-                if (df['DemHouseSeats'][i] < 217 and
-                    df['DemWhitehouse'][i] == 0):
-                    plotCircle(i, x_value, y_value, fig_list[n], 'red', df)
-                elif (df['DemHouseSeats'][i] > 217 and
-                      df['DemWhitehouse'][i] == 1):
-                    plotCircle(i, x_value, y_value, fig_list[n], 'blue', df)
-                else:
-                    plotCircle(i, x_value, y_value, fig_list[n], 'green', df)
+    # Create Senate control (WH + Sen) Republican control elements
+    cntrl_whsen_rep_df = \
+        main_df[(main_df['president_party'] == 'Republican') &
+                (main_df['rep_senateseats'] >=
+                0.5 * main_df['total_senateseats'])]
+    cntrl_whsen_rep_cds = ColumnDataSource(cntrl_whsen_rep_df)
 
-    # Set up hover tool for each figure
-    TOOLTIPS = [('Year', '@Year'),
-                ('Deficit over GDP', '@deficit_gdp{0.0}'+'%'),
-                ('President','@President'),
-                ('White House', '@PresidentParty'),
-                ('Rep. House Seats', '@RepHouseSeats'),
-                ('Dem. House Seats', '@DemHouseSeats'),
-                ('Rep. Senate Seats', '@RepSenateSeats'),
-                ('Dem. Senate Seats', '@DemSenateSeats')]
-    for i in range(3):
-        fig_list[i].scatter(x=x_value, y=y_value, source=cds, size=20, alpha=0,
-                            name='hover_trigger')
-        fig_list[i].add_tools(HoverTool(tooltips=TOOLTIPS,
-                                        names=['hover_trigger']))
+    # Create Senate control (WH + Sen) Democrat control elements
+    cntrl_whsen_dem_df = \
+        main_df[(main_df['president_party'] == 'Democrat') &
+                (main_df['dem_senateseats'] >=
+                0.5 * main_df['total_senateseats'])]
+    cntrl_whsen_dem_cds = ColumnDataSource(cntrl_whsen_dem_df)
 
-   # Set up legend for each figure
-    for i in range(3):
-        fig_list[i].legend.location = 'bottom_right'
-        fig_list[i].legend.border_line_width = 2
-        fig_list[i].legend.border_line_color = 'black'
-        fig_list[i].legend.border_line_alpha = 1
-        fig_list[i].legend.label_text_font_size = '4mm'
+    # Create Senate control (WH + Sen) split control elements
+    cntrl_whsen_split_df = \
+        main_df[((main_df['president_party'] == 'Republican') &
+                (main_df['rep_senateseats'] <
+                0.5 * main_df['total_senateseats'])) |
+                ((main_df['president_party'] == 'Democrat') &
+                (main_df['dem_senateseats'] <
+                0.5 * main_df['total_senateseats']))]
+    cntrl_whsen_split_cds = ColumnDataSource(cntrl_whsen_split_df)
+
+    # Create House control (WH + HouseRep) Republican control elements
+    cntrl_whhou_rep_df = \
+        main_df[(main_df['president_party'] == 'Republican') &
+                (main_df['rep_houseseats'] >=
+                0.5 * main_df['total_houseseats'])]
+    cntrl_whhou_rep_cds = ColumnDataSource(cntrl_whhou_rep_df)
+
+    # Create House control (WH + HouseRep) Democrat control elements
+    cntrl_whhou_dem_df = \
+        main_df[(main_df['president_party'] == 'Democrat') &
+                (main_df['dem_houseseats'] >=
+                0.5 * main_df['total_houseseats'])]
+    cntrl_whhou_dem_cds = ColumnDataSource(cntrl_whhou_dem_df)
+
+    # Create House control (WH + HouseRep) split control elements
+    cntrl_whhou_split_df = \
+        main_df[((main_df['president_party'] == 'Republican') &
+                (main_df['rep_houseseats'] <
+                0.5 * main_df['total_houseseats'])) |
+                ((main_df['president_party'] == 'Democrat') &
+                (main_df['dem_houseseats'] <
+                0.5 * main_df['total_houseseats']))]
+    cntrl_whhou_split_cds = ColumnDataSource(cntrl_whhou_split_df)
+
+    cntrl_cds_list = \
+        [[cntrl_all_rep_cds, cntrl_all_dem_cds, cntrl_all_split_cds],
+         [cntrl_whsen_rep_cds, cntrl_whsen_dem_cds, cntrl_whsen_split_cds],
+         [cntrl_whhou_rep_cds, cntrl_whhou_dem_cds, cntrl_whhou_split_cds]]
+
+    #-----------------------------------------------------------------
+    # Create figure for each of the three party control definitions
+    #-----------------------------------------------------------------
+    cntrl_str_list = ['all', 'whsen', 'whhou']
+    panel_title_list = \
+        ['Full control: (White House + Senate + House of Reps.)',
+         'Senate control: (White House + Senate)',
+         'House control: (White House + House of Reps.)']
+    panel_list = []
+
+    for k, v in enumerate(cntrl_str_list):
+        # Create a figure with '% of GDP' as Y-axis and year as X-axis
+        fig = figure(title=fig_title,
+                     plot_height=600,
+                     plot_width=1200,
+                     x_axis_label='Democrat '+seat_type+' seats',
+                     x_range=(min_seat - xy_buffer, max_seat + xy_buffer),
+                     y_axis_label='Percent of Gross Domestic Product',
+                     y_range=(min_yvar - 3, max_yvar + 3),
+                     toolbar_location=None)
+
+        # Set title font size and axes font sizes
+        fig.title.text_font_size = '17pt'
+        fig.xaxis.axis_label_text_font_size = '12pt'
+        fig.xaxis.major_label_text_font_size = '12pt'
+        fig.yaxis.axis_label_text_font_size = '12pt'
+        fig.yaxis.major_label_text_font_size = '12pt'
+
+        # Modify tick intervals for X-axis and Y-axis
+        fig.xaxis.ticker = SingleIntervalTicker(interval=10, num_minor_ticks=2)
+        fig.xgrid.ticker = SingleIntervalTicker(interval=10)
+        fig.yaxis.ticker = SingleIntervalTicker(interval=5, num_minor_ticks=5)
+        fig.ygrid.ticker = SingleIntervalTicker(interval=5)
+
+        # Plotting the scatter point circles
+        fig.circle(x=xvar_str, y=yvar_str, source=cntrl_cds_list[k][0], size=10,
+                   line_width=1, line_color='black', fill_color='red',
+                   alpha=0.7, muted_alpha=0.2,
+                   legend_label='Republican control')
+
+        fig.circle(x=xvar_str, y=yvar_str, source=cntrl_cds_list[k][1], size=10,
+                   line_width=1, line_color='black', fill_color='blue',
+                   alpha=0.7, muted_alpha=0.2, legend_label='Democrat control')
+
+        fig.circle(x=xvar_str, y=yvar_str, source=cntrl_cds_list[k][2], size=10,
+                   line_width=1, line_color='black', fill_color='green',
+                   alpha=0.7, muted_alpha=0.2, legend_label='Split control')
+
+        # Add information on hover
+        if yvar_str == 'deficit_gdp':
+            tool_str = 'Deficit / GDP'
+        elif yvar_str == 'receipts_gdp':
+            tool_str = 'Receipts / GDP'
+        elif yvar_str == 'spend_nonint_gdp':
+            tool_str = 'NonInt Spend / GDP'
+        tooltips = [('Year', '@Year'),
+                    (tool_str, '@' + yvar_str +'{0.0}'+'%'),
+                    ('President','@president'),
+                    ('White House', '@president_party'),
+                    ('Rep. House Seats', '@rep_houseseats'),
+                    ('Dem. House Seats', '@dem_houseseats'),
+                    ('Rep. Senate Seats', '@rep_senateseats'),
+                    ('Dem. Senate Seats', '@dem_senateseats')]
+        hover_glyph = fig.circle(x='Year', y=yvar_str, source=main_cds,
+                                 size=10, alpha=0, hover_fill_color='gray',
+                                 hover_alpha=0.5)
+        fig.add_tools(HoverTool(tooltips=tooltips))
+
+        # Turn off scrolling
+        fig.toolbar.active_drag = None
+
+        # Add legend
+        fig.legend.location = legend_location
+        fig.legend.border_line_width = 2
+        fig.legend.border_line_color = 'black'
+        fig.legend.border_line_alpha = 1
+        fig.legend.label_text_font_size = '4mm'
+
         # Set legend muting click policy
-        fig_list[i].legend.click_policy = 'mute'
+        fig.legend.click_policy = 'mute'
 
-    # Add notes below plot
-    for i in range(3):
-        #Add notes below image
-        note_text_1 = ('Note: Republican control in a given year is defined ' +
-                       'as the President being Republican and Republicans ' +
-                       'holding more than ' + footnotes + ' for the majority of that year.')
-        caption1 = Title(text=note_text_1, align='left', text_font_size='4mm',
-                        text_font_style='italic')
-        fig_list[i].add_layout(caption1, 'below')
-        note_text_2 = ('   Democrat control is defined as the President being ' +
-                    'Democrat and Democrats holding more than '+footnotes+
-                    ' for the majority of that year. Split government is')
-        caption2 = Title(text=note_text_2, align='left', text_font_size='4mm',
-                        text_font_style='italic')
-        fig_list[i].add_layout(caption2, 'below')
-        note_text_3 = ('   defined as one party holding the White ' +
-                    'House while the other party holds a majority of House seats.')
-        caption3 = Title(text=note_text_3, align='left', text_font_size='4mm',
-                        text_font_style='italic')
-        fig_list[i].add_layout(caption3, 'below')
-        note_text_4 = ('Source: Federal Reserve Economic Data (FRED, FYFRGDA188S), ' +
-                    'United States House of Representatives History, Art, & ' +
-                    'Archives, "Party Divisions of the House of')
-        caption4 = Title(text=note_text_4, align='left', text_font_size='4mm',
-                        text_font_style='italic')
-        fig_list[i].add_layout(caption4, 'below')
-        note_text_5 = ('   Representatives, 1789 to present", '+
-                    'https://history.house.gov/Institution/Party-Divisions/Party-Divisions/, '+
-                    'Richard W. Evans (@rickecon).')
-        caption5 = Title(text=note_text_5, align='left', text_font_size='4mm',
-                        text_font_style='italic')
-        fig_list[i].add_layout(caption5, 'below')
+        # Add notes below image
+        for note_text in note_text_list[k]:
+            caption = Title(text=note_text, align='left', text_font_size='4mm',
+                            text_font_style='italic')
+            fig.add_layout(caption, 'below')
 
-    # Output figures to an HTML file
-    output(fig_title, file_name)
+        panel = Panel(child=fig, title=panel_title_list[k])
+        panel_list.append(panel)
 
-    panel_list=[]
-    title_str_full = 'Full control: White House + Senate + House'
-    title_str_senate = 'White House and Senate control'
-    title_str_house = 'White House and House control'
-    panel_list.append(Panel(child=fig_list[0], title=title_str_full))
-    panel_list.append(Panel(child=fig_list[1], title=title_str_senate))
-    panel_list.append(Panel(child=fig_list[2], title=title_str_house))
 
+    # Assign the panels to Tabs
     tabs = Tabs(tabs=panel_list)
-    save(tabs)
-    # Console start notification
-    print(file_name + ' Complete')
 
-    if show_fig:  # Show figure by opening browser page
-        show(tabs)
+    # Display the generated figure
+    # show(tabs)
 
     return tabs
+    
 
 
 if __name__ == "__main__":
-    '''
-    Execute all six plots if user runs the module as a script
-    '''
-    deficitPartyPlots('deficit', 'senate')
-    deficitPartyPlots('revenues', 'senate')
-    deficitPartyPlots('spending', 'senate')
-    deficitPartyPlots('deficit', 'house')
-    deficitPartyPlots('revenues', 'house')
-    deficitPartyPlots('spending', 'house')
+    #---------------------------------------------------------------------------
+    # Create time series for deficit_gdp by party control
+    #---------------------------------------------------------------------------
+    
+    note_text_list = \
+        [
+            [
+                ('Note: Republican control in a given year is defined as ' +
+                'the President being Republican and Republicans holding at ' +
+                'least half of Senate seats (50 or more) and at least'),
+                ('   half of House seats (usually 217 or more) for the ' +
+                'majority of that year. Democrat control is defined as the ' +
+                'President being Democrat and Democrats holding at least'),
+                ('   half of the Senate seats and at least half of the ' +
+                'House seats for the majority of that year. Split ' +
+                'government is defined as one party holding the White House ' +
+                'while'),
+                ('   either not holding a majority of Senate seates or not ' +
+                'holding a majority of House seats.'),
+                ('Source: Federal Reserve Economic Data (FRED, ' +
+                 'FYFRGDA188S), United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of the House of'),
+                ('   Representatives, 1789 to present", ' +
+                 'https://history.house.gov/Institution/Party-Divisions/' +
+                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+            ],
+            [
+                ('Note: Republican control in a given year is defined as ' +
+                'the President being Republican and Republicans holding at ' +
+                'least half of the Senate seats (50 or more) for the'),
+                ('   majority of that year. Democrat control is defined as ' +
+                'the President being Democrat and Democrats holding at ' +
+                'least half of the Senate seats for the majority of that'),
+                ('   year. Split government is defined as one party holding ' +
+                 'the White House while not holding a majority of Senate ' +
+                 'seats.'),
+                ('Source: Federal Reserve Economic Data (FRED, ' +
+                 'FYFRGDA188S), United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of the House of'),
+                ('   Representatives, 1789 to present", ' +
+                 'https://history.house.gov/Institution/Party-Divisions/' +
+                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+            ],
+            [
+                ('Note: Republican control in a given year is defined as ' +
+                'the President being Republican and Republicans holding at ' +
+                'least half of the House seats (usually 217 or more)'),
+                ('   for the majority of that year. Democrat control is ' +
+                'defined as the President being Democrat and Democrats ' +
+                'holding at least half of the House seats for the majority ' +
+                'of'),
+                ('   that year. Split government is defined as one party ' +
+                'holding the White House while not holding a majority of ' +
+                'House seats.'),
+                ('Source: Federal Reserve Economic Data (FRED, ' +
+                 'FYFRGDA188S), United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of the House of'),
+                ('   Representatives, 1789 to present", ' +
+                 'https://history.house.gov/Institution/Party-Divisions/' +
+                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+            ]
+        ]
+
+    #------------------------
+    # Function Calls
+    #------------------------
+
+    # Create deficits-to-GDP by Democrat Senate seats scatterplot
+    fig_title_deficit = ('U.S. Federal Deficits as Percent of GDP by ' +
+                         'Democrat Senate Seats: 1929-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'deficitGDP_SenateSeats.html')
+    deficit_gdp_party_tseries = \
+        deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats',
+                    note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
+    show(deficit_gdp_party_tseries)
+
+    # Create deficits-to-GDP by Democrat House seats scatterplot
+    fig_title_deficit = ('U.S. Federal Deficits as Percent of GDP by ' +
+                         'Democrat House Seats: 1929-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'deficitGDP_HouseSeats.html')
+    deficit_gdp_party_tseries = \
+        deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_houseseats',
+                    note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
+    show(deficit_gdp_party_tseries)
+
+    # Create non-interest spending-to-GDP by Democrat Senate seats scatterplot
+    fig_title_deficit = ('U.S. Federal Non-interest Spending as Percent of GDP by ' +
+                         'Democrat Senate Seats: 1929-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'spendingGDP_SenateSeats.html')
+    deficit_gdp_party_tseries = \
+        deficitPartyPlots(yvar_str='spend_nonint_gdp', xvar_str='dem_senateseats',
+                    note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
+    show(deficit_gdp_party_tseries)
+
+    # Create non-interest spending-to-GDP by Democrat House seats scatterplot
+    fig_title_deficit = ('U.S. Federal Non-interest Spending as Percent of GDP by ' +
+                         'Democrat House Seats: 1929-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'spendingGDP_HouseSeats.html')
+    deficit_gdp_party_tseries = \
+        deficitPartyPlots(yvar_str='spend_nonint_gdp', xvar_str='dem_houseseats',
+                    note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
+    show(deficit_gdp_party_tseries)
+
+    # Create revenues-to-GDP by Democrat Senate seats scatterplot
+    fig_title_deficit = ('U.S. Federal Revenues as Percent of GDP by ' +
+                         'Democrat Senate Seats: 1929-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'revenuesGDP_SenateSeats.html')
+    deficit_gdp_party_tseries = \
+        deficitPartyPlots(yvar_str='receipts_gdp', xvar_str='dem_senateseats',
+                    note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
+    show(deficit_gdp_party_tseries)
+
+    # Create revenues-to-GDP by Democrat House seats scatterplot
+    fig_title_deficit = ('U.S. Federal Revenues as Percent of GDP by ' +
+                         'Democrat House Seats: 1929-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'revenuesGDP_HouseSeats.html')
+    deficit_gdp_party_tseries = \
+        deficitPartyPlots(yvar_str='receipts_gdp', xvar_str='dem_houseseats',
+                    note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
+    show(deficit_gdp_party_tseries)
+
+
+
