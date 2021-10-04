@@ -82,7 +82,6 @@ def deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats', main_d
     max_seat = main_df[xvar_str].max()
     min_yvar = main_df[yvar_str].min()
     max_yvar = main_df[yvar_str].max()
-    xy_buffer = (max_seat - min_seat) * .1
     if(xvar_str == 'dem_senateseats'):
         seat_type = 'Senate'
     else:
@@ -196,15 +195,19 @@ def deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats', main_d
          'House control: (White House + House of Reps.)']
     panel_list = []
 
+    # Create buffers for data on both axis
+    x_buffer = (max_seat - min_seat) * .1
+    y_buffer = (max_yvar - min_yvar) * .1
+
     for k, v in enumerate(cntrl_str_list):
         # Create a figure with '% of GDP' as Y-axis and year as X-axis
         fig = figure(title=fig_title,
                      plot_height=600,
                      plot_width=1200,
                      x_axis_label='Democrat '+seat_type+' seats',
-                     x_range=(min_seat - xy_buffer, max_seat + xy_buffer),
+                     x_range=(min_seat - x_buffer, max_seat + x_buffer),
                      y_axis_label='Percent of Gross Domestic Product',
-                     y_range=(min_yvar - 3, max_yvar + 3),
+                     y_range=(min_yvar - y_buffer, max_yvar + y_buffer),
                      toolbar_location=None)
 
         # Set title font size and axes font sizes
@@ -215,10 +218,14 @@ def deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats', main_d
         fig.yaxis.major_label_text_font_size = '12pt'
 
         # Modify tick intervals for X-axis and Y-axis
-        fig.xaxis.ticker = SingleIntervalTicker(interval=10, num_minor_ticks=2)
-        fig.xgrid.ticker = SingleIntervalTicker(interval=10)
         fig.yaxis.ticker = SingleIntervalTicker(interval=5, num_minor_ticks=5)
         fig.ygrid.ticker = SingleIntervalTicker(interval=5)
+        if(seat_type == 'Senate'):
+            fig.xaxis.ticker = SingleIntervalTicker(interval=10, num_minor_ticks=2)
+            fig.xgrid.ticker = SingleIntervalTicker(interval=10)
+        else:
+            fig.xaxis.ticker = SingleIntervalTicker(interval=20, num_minor_ticks=4)
+            fig.xgrid.ticker = SingleIntervalTicker(interval=20)
 
         # Plotting the scatter point circles
         fig.circle(x=xvar_str, y=yvar_str, source=cntrl_cds_list[k][0], size=10,
