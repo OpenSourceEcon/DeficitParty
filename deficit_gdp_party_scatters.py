@@ -86,12 +86,28 @@ def deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats', main_d
         seat_type = 'Senate'
     else:
         seat_type = 'House'
+    
     if(yvar_str == 'deficit_gdp'):
+        # Set location of legend
         legend_location = 'bottom_right'
+        # Create buffers for data on both axis
+        x_buffer = (max_seat - min_seat) * .1
+        y_buffer = (max_yvar - min_yvar) * .1
     elif(yvar_str == 'spend_nonint_gdp'):
-        legend_location = 'bottom_right'
-    else:
+        # Set location of legend
         legend_location = 'top_right'
+        # Create buffers for data on both axis
+        if(seat_type=="Senate"):
+            x_buffer = ((max_seat - min_seat) * .1)-7
+        else:
+            x_buffer = ((max_seat - min_seat) * .1)-30
+        y_buffer = ((max_yvar - min_yvar) * .1)
+    else:
+        # Set location of legend
+        legend_location = 'top_right'
+        # Create buffers for data on both axis
+        x_buffer = (max_seat - min_seat) * .1
+        y_buffer = (max_yvar - min_yvar) * .1
 
     #------------------------------------------------------------------
     # Create Column Data Sources for each definition of party control
@@ -195,19 +211,15 @@ def deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats', main_d
          'House control: (White House + House of Reps.)']
     panel_list = []
 
-    # Create buffers for data on both axis
-    x_buffer = (max_seat - min_seat) * .1
-    y_buffer = (max_yvar - min_yvar) * .1
-
     for k, v in enumerate(cntrl_str_list):
         # Create a figure with '% of GDP' as Y-axis and year as X-axis
         fig = figure(title=fig_title,
                      plot_height=600,
                      plot_width=1200,
                      x_axis_label='Democrat '+seat_type+' seats',
-                     x_range=(min_seat - x_buffer, max_seat + x_buffer),
+                     x_range=(min_seat-x_buffer, max_seat+x_buffer),
                      y_axis_label='Percent of Gross Domestic Product',
-                     y_range=(min_yvar - y_buffer, max_yvar + y_buffer),
+                     y_range=(min_yvar-y_buffer, max_yvar+y_buffer),
                      toolbar_location=None)
 
         # Set title font size and axes font sizes
