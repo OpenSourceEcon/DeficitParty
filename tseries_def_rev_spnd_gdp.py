@@ -44,10 +44,12 @@ main_df = pd.read_csv(party_data_path,
                              'dem_senateseats': np.int64,
                              'rep_senateseats': np.int64,
                              'other_senateseats': np.int64,
+                             'dem_senate_maj': np.int64,
                              'total_senateseats': np.int64,
                              'dem_houseseats': np.int64,
                              'rep_houseseats': np.int64,
                              'other_houseseats': np.int64,
+                             'dem_house_maj': np.int64,
                              'total_houseseats': np.int64},
                       skiprows=3)
 
@@ -82,81 +84,65 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
     # Create Full control (WH + Sen + HouseRep) Republican control elements
     cntrl_all_rep_df = \
         main_df[(main_df['president_party'] == 'Republican') &
-                (main_df['rep_senateseats'] >=
-                0.5 * main_df['total_senateseats']) &
-                (main_df['rep_houseseats'] >=
-                0.5 * main_df['total_houseseats'])]
+                (main_df['dem_senate_maj'] == 0) &
+                (main_df['dem_house_maj'] == 0)]
     cntrl_all_rep_cds = ColumnDataSource(cntrl_all_rep_df)
 
     # Create Full control (WH + Sen + HouseRep) Democrat control elements
     cntrl_all_dem_df = \
         main_df[(main_df['president_party'] == 'Democrat') &
-                (main_df['dem_senateseats'] >=
-                0.5 * main_df['total_senateseats']) &
-                (main_df['dem_houseseats'] >=
-                0.5 * main_df['total_houseseats'])]
+                (main_df['dem_senate_maj'] == 1) &
+                (main_df['dem_house_maj'] == 1)]
     cntrl_all_dem_cds = ColumnDataSource(cntrl_all_dem_df)
 
     # Create Full control (WH + Sen + HouseRep) split control elements
     cntrl_all_split_df = \
         main_df[((main_df['president_party'] == 'Republican') &
-                ((main_df['rep_senateseats'] <
-                0.5 * main_df['total_senateseats']) |
-                (main_df['rep_houseseats'] <
-                0.5 * main_df['total_houseseats']))) |
+                ((main_df['dem_senate_maj'] == 1) |
+                (main_df['dem_house_maj'] == 1))) |
                 ((main_df['president_party'] == 'Democrat') &
-                ((main_df['dem_senateseats'] <
-                0.5 * main_df['total_senateseats']) |
-                (main_df['dem_houseseats'] <
-                0.5 * main_df['total_houseseats'])))]
+                ((main_df['dem_senate_maj'] == 0) |
+                (main_df['dem_house_maj'] == 0)))]
     cntrl_all_split_cds = ColumnDataSource(cntrl_all_split_df)
 
     # Create Senate control (WH + Sen) Republican control elements
     cntrl_whsen_rep_df = \
         main_df[(main_df['president_party'] == 'Republican') &
-                (main_df['rep_senateseats'] >=
-                0.5 * main_df['total_senateseats'])]
+                (main_df['dem_senate_maj'] == 0)]
     cntrl_whsen_rep_cds = ColumnDataSource(cntrl_whsen_rep_df)
 
     # Create Senate control (WH + Sen) Democrat control elements
     cntrl_whsen_dem_df = \
         main_df[(main_df['president_party'] == 'Democrat') &
-                (main_df['dem_senateseats'] >=
-                0.5 * main_df['total_senateseats'])]
+                (main_df['dem_senate_maj'] == 1)]
     cntrl_whsen_dem_cds = ColumnDataSource(cntrl_whsen_dem_df)
 
     # Create Senate control (WH + Sen) split control elements
     cntrl_whsen_split_df = \
         main_df[((main_df['president_party'] == 'Republican') &
-                (main_df['rep_senateseats'] <
-                0.5 * main_df['total_senateseats'])) |
+                (main_df['dem_senate_maj'] == 1)) |
                 ((main_df['president_party'] == 'Democrat') &
-                (main_df['dem_senateseats'] <
-                0.5 * main_df['total_senateseats']))]
+                (main_df['dem_senate_maj'] == 0))]
     cntrl_whsen_split_cds = ColumnDataSource(cntrl_whsen_split_df)
 
     # Create House control (WH + HouseRep) Republican control elements
     cntrl_whhou_rep_df = \
         main_df[(main_df['president_party'] == 'Republican') &
-                (main_df['rep_houseseats'] >=
-                0.5 * main_df['total_houseseats'])]
+                (main_df['dem_house_maj'] == 0)]
     cntrl_whhou_rep_cds = ColumnDataSource(cntrl_whhou_rep_df)
 
     # Create House control (WH + HouseRep) Democrat control elements
     cntrl_whhou_dem_df = \
         main_df[(main_df['president_party'] == 'Democrat') &
-                (main_df['dem_houseseats'] >=
-                0.5 * main_df['total_houseseats'])]
+                (main_df['dem_house_maj'] == 1)]
     cntrl_whhou_dem_cds = ColumnDataSource(cntrl_whhou_dem_df)
 
     # Create House control (WH + HouseRep) split control elements
     cntrl_whhou_split_df = \
         main_df[((main_df['president_party'] == 'Republican') &
-                (main_df['rep_houseseats'] <
-                0.5 * main_df['total_houseseats'])) |
+                (main_df['dem_house_maj'] == 1)) |
                 ((main_df['president_party'] == 'Democrat') &
-                (main_df['dem_houseseats'] <
-                0.5 * main_df['total_houseseats']))]
+                (main_df['dem_house_maj'] == 0))]
     cntrl_whhou_split_cds = ColumnDataSource(cntrl_whhou_split_df)
 
     cntrl_cds_list = \
@@ -184,8 +170,8 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
     for k, v in enumerate(cntrl_str_list):
         # Create a figure with '% of GDP' as Y-axis and year as X-axis
         fig = figure(title=fig_title,
-                     plot_height=600,
-                     plot_width=1200,
+                     plot_height=650,
+                     plot_width=1100,
                      x_axis_label='Year',
                      x_range=(min_year - 1, max_year + 1),
                      y_axis_label='Percent of Gross Domestic Product',
@@ -193,7 +179,7 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
                      toolbar_location=None)
 
         # Set title font size and axes font sizes
-        fig.title.text_font_size = '17pt'
+        fig.title.text_font_size = '15.5pt'
         fig.xaxis.axis_label_text_font_size = '12pt'
         fig.xaxis.major_label_text_font_size = '12pt'
         fig.yaxis.axis_label_text_font_size = '12pt'
@@ -306,58 +292,65 @@ if __name__ == "__main__":
         [
             [
                 ('Note: Republican control in a given year is defined as ' +
-                'the President being Republican and Republicans holding at ' +
-                'least half of Senate seats (50 or more) and at least'),
-                ('   half of House seats (usually 217 or more) for the ' +
-                'majority of that year. Democrat control is defined as the ' +
-                'President being Democrat and Democrats holding at least'),
-                ('   half of the Senate seats and at least half of the ' +
-                'House seats for the majority of that year. Split ' +
-                'government is defined as one party holding the White House ' +
-                'while'),
-                ('   either not holding a majority of Senate seates or not ' +
-                'holding a majority of House seats.'),
+                 'the President being Republican and Republicans holding ' +
+                 'the majority of the Senate (either the most'),
+                ('   caucus seats or a tiebreaker majority with the Vice ' +
+                 'President) and a majority of House seats (usually 217 or ' +
+                 'more) for the majority of that year. Democrat'),
+                ('   control is defined similarly in the White House, ' +
+                 'Senate, and House of Representatives. Split government is ' +
+                 'defined as one party holding the White House'),
+                ('   while either not holding the majority in the Sentate ' +
+                 'or not holding the majority in the House of ' +
+                 'Representatives.'),
                 ('Source: Federal Reserve Economic Data (FRED, ' +
-                 'FYFRGDA188S), United States House of Representatives ' +
-                 'History, Art, & Archives, "Party Divisions of the House of'),
-                ('   Representatives, 1789 to present", ' +
+                 'FYFRGDA188S); United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of'),
+                ('   the House of Representatives, 1789 to present", ' +
                  'https://history.house.gov/Institution/Party-Divisions/' +
-                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+                 'Party-Divisions/; United States Senate, Art & History,'),
+                ('   Party Division, ' +
+                 'https://www.cop.senate.gov/history/partydiv.htm; ' +
+                 'Richard W. Evans (@rickecon).')
             ],
             [
                 ('Note: Republican control in a given year is defined as ' +
-                'the President being Republican and Republicans holding at ' +
-                'least half of the Senate seats (50 or more) for the'),
-                ('   majority of that year. Democrat control is defined as ' +
-                'the President being Democrat and Democrats holding at ' +
-                'least half of the Senate seats for the majority of that'),
-                ('   year. Split government is defined as one party holding ' +
-                 'the White House while not holding a majority of Senate ' +
-                 'seats.'),
+                 'the President being Republican and Republicans holding ' +
+                 'the majority of the Senate (either the most'),
+                ('   caucus seats or a tiebreaker majority with the Vice ' +
+                 'President) for the majority of that year. Democrat ' +
+                 'control is defined similarly in the White House and'),
+                ('   Senate. Split government is defined as one party ' +
+                 'holding the White House while not holding the majority in ' +
+                 'the Senate.'),
                 ('Source: Federal Reserve Economic Data (FRED, ' +
-                 'FYFRGDA188S), United States House of Representatives ' +
-                 'History, Art, & Archives, "Party Divisions of the House of'),
-                ('   Representatives, 1789 to present", ' +
+                 'FYFRGDA188S); United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of'),
+                ('   the House of Representatives, 1789 to present", ' +
                  'https://history.house.gov/Institution/Party-Divisions/' +
-                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+                 'Party-Divisions/; United States Senate, Art & History,'),
+                ('   Party Division, ' +
+                 'https://www.cop.senate.gov/history/partydiv.htm; ' +
+                 'Richard W. Evans (@rickecon).')
             ],
             [
                 ('Note: Republican control in a given year is defined as ' +
-                'the President being Republican and Republicans holding at ' +
-                'least half of the House seats (usually 217 or more)'),
-                ('   for the majority of that year. Democrat control is ' +
-                'defined as the President being Democrat and Democrats ' +
-                'holding at least half of the House seats for the majority ' +
-                'of'),
-                ('   that year. Split government is defined as one party ' +
-                'holding the White House while not holding a majority of ' +
-                'House seats.'),
+                 'the President being Republican and Republicans holding a ' +
+                 'majority of House seats (usually 217 or'),
+                ('   more) for the majority of that year. Democrat control ' +
+                 'is defined similarly in the White House and House of ' +
+                 'Representatives. Split government is defined'),
+                ('   as one party holding the White House while not holding ' +
+                 'a majority of House seats.'),
                 ('Source: Federal Reserve Economic Data (FRED, ' +
-                 'FYFRGDA188S), United States House of Representatives ' +
-                 'History, Art, & Archives, "Party Divisions of the House of'),
-                ('   Representatives, 1789 to present", ' +
+                 'FYFRGDA188S); United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of'),
+                ('   the House of Representatives, 1789 to present", ' +
                  'https://history.house.gov/Institution/Party-Divisions/' +
-                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+                 'Party-Divisions/; United States Senate, Art & History,'),
+                ('   Party Division, ' +
+                 'https://www.cop.senate.gov/history/partydiv.htm; ' +
+                 'Richard W. Evans (@rickecon).')
             ]
         ]
 
