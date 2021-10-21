@@ -53,7 +53,6 @@ main_df = pd.read_csv(party_data_path,
                              'total_houseseats': np.int64},
                       skiprows=3)
 
-
 def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
                 recession_df=recession_df, note_text_list=[], fig_title_str='',
                 fig_path=''):
@@ -168,7 +167,7 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
     panel_list = []
 
     for k, v in enumerate(cntrl_str_list):
-        # Create a figure with '% of GDP' as Y-axis and year as X-axis
+        # Create a figure with '% of GDP' as y-axis and year as x-axis
         fig = figure(title=fig_title,
                      plot_height=650,
                      plot_width=1100,
@@ -272,7 +271,6 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
         panel = Panel(child=fig, title=panel_title_list[k])
         panel_list.append(panel)
 
-
     # Assign the panels to Tabs
     tabs = Tabs(tabs=panel_list)
 
@@ -360,23 +358,23 @@ if __name__ == "__main__":
                         'Control: 1947-2020')
     fig_path_deficit = os.path.join(images_dir,
                                     'tseries_deficit_gdp_party.html')
-    deficit_gdp_party_tseries = \
+    tseries_deficit_gdp_party = \
         gen_tseries(yvar_str='deficit_gdp', start_year=1947,
                     note_text_list=note_text_list,
                     fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
-    show(deficit_gdp_party_tseries)
+    show(tseries_deficit_gdp_party)
 
     # Create receipts-to-GDP time series by party control figure
     fig_title_receipts = ('U.S. Federal Receipts as Percent of Gross ' +
                           'Domestic Product by Party Control: 1947-2020')
     fig_path_receipts = os.path.join(images_dir,
                                      'tseries_receipts_gdp_party.html')
-    receipts_gdp_party_tseries = \
+    tseries_receipts_gdp_party = \
         gen_tseries(yvar_str='receipts_gdp', start_year=1947,
                     note_text_list=note_text_list,
                     fig_title_str=fig_title_receipts,
                     fig_path=fig_path_receipts)
-    show(receipts_gdp_party_tseries )
+    show(tseries_receipts_gdp_party)
 
     # Create noninterest speinding-to-GDP time series by party control figure
     fig_title_nonintspend = ('U.S. Federal Noninterest Spending as Percent ' +
@@ -384,9 +382,9 @@ if __name__ == "__main__":
                              '1947-2020')
     fig_path_nonintspend = os.path.join(images_dir,
                                         'tseries_nonintspend_gdp_party.html')
-    nonintspend_gdp_party_tseries = \
+    tseries_nonintspend_gdp_party = \
         gen_tseries(yvar_str='spend_nonint_gdp', start_year=1947,
                     note_text_list=note_text_list,
                     fig_title_str=fig_title_nonintspend,
                     fig_path=fig_path_nonintspend)
-    show(nonintspend_gdp_party_tseries )
+    show(tseries_nonintspend_gdp_party)
