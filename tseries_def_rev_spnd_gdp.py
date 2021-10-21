@@ -30,7 +30,7 @@ recession_df = pd.read_csv(recession_data_path, parse_dates=['Peak','Trough'])
 
 # Reading data from CVS (deficit_party_data.csv)
 main_df = pd.read_csv(party_data_path,
-                      dtype={'Year': np.int64,
+                      dtype={'year': np.int64,
                              'deficit_gdp': np.float64,
                              'receipts_gdp': np.float64,
                              'spend_int_gdp': np.float64,
@@ -70,11 +70,11 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
     # Create Variables for min and max values
     recession_data_length = len(recession_df['Peak'])
     if start_year == 'min':
-        min_year = main_df['Year'].min()
+        min_year = main_df['year'].min()
     else:
         min_year = int(start_year)
-    main_df = main_df[main_df['Year'] >= min_year]
-    max_year = main_df['Year'].max()
+    main_df = main_df[main_df['year'] >= min_year]
+    max_year = main_df['year'].max()
     min_yvar = main_df[yvar_str].min()
     max_yvar = main_df[yvar_str].max()
 
@@ -213,20 +213,20 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
                           legend_label='Recession')
 
         # Plotting the line and scatter point circles
-        fig.line(x='Year', y=yvar_str, source=main_cds, color='#423D3C',
+        fig.line(x='year', y=yvar_str, source=main_cds, color='#423D3C',
                  line_width=2)
 
 
-        fig.circle(x='Year', y=yvar_str, source=cntrl_cds_list[k][0], size=10,
+        fig.circle(x='year', y=yvar_str, source=cntrl_cds_list[k][0], size=10,
                    line_width=1, line_color='black', fill_color='red',
                    alpha=0.7, muted_alpha=0.2,
                    legend_label='Republican control')
 
-        fig.circle(x='Year', y=yvar_str, source=cntrl_cds_list[k][1], size=10,
+        fig.circle(x='year', y=yvar_str, source=cntrl_cds_list[k][1], size=10,
                    line_width=1, line_color='black', fill_color='blue',
                    alpha=0.7, muted_alpha=0.2, legend_label='Democrat control')
 
-        fig.circle(x='Year', y=yvar_str, source=cntrl_cds_list[k][2], size=10,
+        fig.circle(x='year', y=yvar_str, source=cntrl_cds_list[k][2], size=10,
                    line_width=1, line_color='black', fill_color='green',
                    alpha=0.7, muted_alpha=0.2, legend_label='Split control')
 
@@ -237,7 +237,7 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
             tool_str = 'Receipts / GDP'
         elif yvar_str == 'spend_nonint_gdp':
             tool_str = 'NonInt Spend / GDP'
-        tooltips = [('Year', '@Year'),
+        tooltips = [('Year', '@year'),
                     (tool_str, '@' + yvar_str +'{0.0}'+'%'),
                     ('President','@president'),
                     ('White House', '@president_party'),
@@ -245,7 +245,7 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
                     ('Dem. House Seats', '@dem_houseseats'),
                     ('Rep. Senate Seats', '@rep_senateseats'),
                     ('Dem. Senate Seats', '@dem_senateseats')]
-        hover_glyph = fig.circle(x='Year', y=yvar_str, source=main_cds,
+        hover_glyph = fig.circle(x='year', y=yvar_str, source=main_cds,
                                  size=10, alpha=0, hover_fill_color='gray',
                                  hover_alpha=0.5)
         fig.add_tools(HoverTool(tooltips=tooltips))
