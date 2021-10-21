@@ -35,28 +35,31 @@ images_dir = os.path.join(cur_path, 'images')
 
 # Reading data from CVS (deficit_party_data.csv)
 main_df = pd.read_csv(party_data_path,
-                 dtype={'Year': np.int64,
-                     'deficit_gdp': np.float64,
-                     'receipts_gdp': np.float64,
-                     'spend_int_gdp': np.float64,
-                     'spend_nonint_gdp': np.float64,
-                     'spend_tot_gdp': np.float64,
-                     'president': 'str',
-                     'president_party': 'str',
-                     'congress_num': np.int64,
-                     'congress_sess': np.int64,
-                     'dem_whitehouse': np.int64,
-                     'dem_senateseats': np.int64,
-                     'rep_senateseats': np.int64,
-                     'oth_senateseats': np.int64,
-                     'tot_senateseats': np.int64,
-                     'dem_houseseats': np.int64,
-                     'rep_houseseats': np.int64,
-                     'oth_houseseats': np.int64,
-                     'tot_houseseats': np.int64},
-                 skiprows=3)
+                      dtype={'Year': np.int64,
+                             'deficit_gdp': np.float64,
+                             'receipts_gdp': np.float64,
+                             'spend_int_gdp': np.float64,
+                             'spend_nonint_gdp': np.float64,
+                             'spend_tot_gdp': np.float64,
+                             'president': 'str',
+                             'president_party': 'str',
+                             'congress_num': np.int64,
+                             'congress_sess': np.int64,
+                             'dem_whitehouse': np.int64,
+                             'dem_senateseats': np.int64,
+                             'rep_senateseats': np.int64,
+                             'oth_senateseats': np.int64,
+                             'tot_senateseats': np.int64,
+                             'dem_houseseats': np.int64,
+                             'rep_houseseats': np.int64,
+                             'oth_houseseats': np.int64,
+                             'tot_houseseats': np.int64},
+                      skiprows=3)
 
-def deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats', main_df=main_df, note_text_list=[], fig_title_str='',fig_path=''):
+
+def deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats',
+                      main_df=main_df, note_text_list=[], fig_title_str='',
+                      fig_path=''):
     '''
     Generates one of six different plot types of U.S. deficit/GDP by year, by
     Democrat held Senate seats or House seats, and by three different measures
@@ -86,7 +89,7 @@ def deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats', main_d
         seat_type = 'Senate'
     else:
         seat_type = 'House'
-    
+
     if(yvar_str == 'deficit_gdp'):
         # Set location of legend
         legend_location = 'bottom_right'
@@ -303,14 +306,13 @@ def deficitPartyPlots(yvar_str='deficit_gdp', xvar_str='dem_senateseats', main_d
     # show(tabs)
 
     return tabs
-    
 
 
 if __name__ == "__main__":
     #---------------------------------------------------------------------------
     # Create time series for deficit_gdp by party control
     #---------------------------------------------------------------------------
-    
+
     note_text_list = \
         [
             [
@@ -439,6 +441,3 @@ if __name__ == "__main__":
                     note_text_list=note_text_list,
                     fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
     show(deficit_gdp_party_tseries)
-
-
-
