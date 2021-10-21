@@ -99,6 +99,7 @@ def gen_scatter(yvar_str='deficit_gdp', xvar_str='dem_senateseats',
         x_tick_interval = 2
         x_num_minor_ticks = 2
         x_grid_interval = x_tick_interval
+        mid_line = 50
         if yvar_str == 'deficit_gdp':
             y_tick_interval = 5
             y_num_minor_ticks = 5
@@ -115,6 +116,7 @@ def gen_scatter(yvar_str='deficit_gdp', xvar_str='dem_senateseats',
         x_tick_interval = 10
         x_num_minor_ticks = 2
         x_grid_interval = x_tick_interval
+        mid_line = 217.5
         if yvar_str == 'deficit_gdp':
             y_tick_interval = 5
             y_num_minor_ticks = 5
@@ -276,6 +278,9 @@ def gen_scatter(yvar_str='deficit_gdp', xvar_str='dem_senateseats',
                    size=10, line_width=1, line_color='black',
                    fill_color='green', alpha=0.7, muted_alpha=0.2,
                    legend_label='Split control')
+
+        fig.segment(x0=mid_line, y0=-40, x1=mid_line, y1=40, color='black',
+                    line_dash='6 2', line_width=2)
 
         # Add information on hover
         if yvar_str == 'deficit_gdp':
