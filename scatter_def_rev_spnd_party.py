@@ -342,58 +342,65 @@ if __name__ == "__main__":
         [
             [
                 ('Note: Republican control in a given year is defined as ' +
-                'the President being Republican and Republicans holding at ' +
-                'least half of Senate seats (50 or more) and at least'),
-                ('   half of House seats (usually 217 or more) for the ' +
-                'majority of that year. Democrat control is defined as the ' +
-                'President being Democrat and Democrats holding at least'),
-                ('   half of the Senate seats and at least half of the ' +
-                'House seats for the majority of that year. Split ' +
-                'government is defined as one party holding the White House ' +
-                'while'),
-                ('   either not holding a majority of Senate seates or not ' +
-                'holding a majority of House seats.'),
+                 'the President being Republican and Republicans holding ' +
+                 'the majority of the Senate (either the most'),
+                ('   caucus seats or a tiebreaker majority with the Vice ' +
+                 'President) and a majority of House seats (usually 217 or ' +
+                 'more) for the majority of that year. Democrat'),
+                ('   control is defined similarly in the White House, ' +
+                 'Senate, and House of Representatives. Split government is ' +
+                 'defined as one party holding the White House'),
+                ('   while either not holding the majority in the Sentate ' +
+                 'or not holding the majority in the House of ' +
+                 'Representatives.'),
                 ('Source: Federal Reserve Economic Data (FRED, ' +
-                 'FYFRGDA188S), United States House of Representatives ' +
-                 'History, Art, & Archives, "Party Divisions of the House of'),
-                ('   Representatives, 1789 to present", ' +
+                 'FYFRGDA188S); United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of'),
+                ('   the House of Representatives, 1789 to present", ' +
                  'https://history.house.gov/Institution/Party-Divisions/' +
-                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+                 'Party-Divisions/; United States Senate, Art & History,'),
+                ('   Party Division, ' +
+                 'https://www.cop.senate.gov/history/partydiv.htm; ' +
+                 'Richard W. Evans (@rickecon).')
             ],
             [
                 ('Note: Republican control in a given year is defined as ' +
-                'the President being Republican and Republicans holding at ' +
-                'least half of the Senate seats (50 or more) for the'),
-                ('   majority of that year. Democrat control is defined as ' +
-                'the President being Democrat and Democrats holding at ' +
-                'least half of the Senate seats for the majority of that'),
-                ('   year. Split government is defined as one party holding ' +
-                 'the White House while not holding a majority of Senate ' +
-                 'seats.'),
+                 'the President being Republican and Republicans holding ' +
+                 'the majority of the Senate (either the most'),
+                ('   caucus seats or a tiebreaker majority with the Vice ' +
+                 'President) for the majority of that year. Democrat ' +
+                 'control is defined similarly in the White House and'),
+                ('   Senate. Split government is defined as one party ' +
+                 'holding the White House while not holding the majority in ' +
+                 'the Senate.'),
                 ('Source: Federal Reserve Economic Data (FRED, ' +
-                 'FYFRGDA188S), United States House of Representatives ' +
-                 'History, Art, & Archives, "Party Divisions of the House of'),
-                ('   Representatives, 1789 to present", ' +
+                 'FYFRGDA188S); United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of'),
+                ('   the House of Representatives, 1789 to present", ' +
                  'https://history.house.gov/Institution/Party-Divisions/' +
-                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+                 'Party-Divisions/; United States Senate, Art & History,'),
+                ('   Party Division, ' +
+                 'https://www.cop.senate.gov/history/partydiv.htm; ' +
+                 'Richard W. Evans (@rickecon).')
             ],
             [
                 ('Note: Republican control in a given year is defined as ' +
-                'the President being Republican and Republicans holding at ' +
-                'least half of the House seats (usually 217 or more)'),
-                ('   for the majority of that year. Democrat control is ' +
-                'defined as the President being Democrat and Democrats ' +
-                'holding at least half of the House seats for the majority ' +
-                'of'),
-                ('   that year. Split government is defined as one party ' +
-                'holding the White House while not holding a majority of ' +
-                'House seats.'),
+                 'the President being Republican and Republicans holding a ' +
+                 'majority of House seats (usually 217 or'),
+                ('   more) for the majority of that year. Democrat control ' +
+                 'is defined similarly in the White House and House of ' +
+                 'Representatives. Split government is defined'),
+                ('   as one party holding the White House while not holding ' +
+                 'a majority of House seats.'),
                 ('Source: Federal Reserve Economic Data (FRED, ' +
-                 'FYFRGDA188S), United States House of Representatives ' +
-                 'History, Art, & Archives, "Party Divisions of the House of'),
-                ('   Representatives, 1789 to present", ' +
+                 'FYFRGDA188S); United States House of Representatives ' +
+                 'History, Art, & Archives, "Party Divisions of'),
+                ('   the House of Representatives, 1789 to present", ' +
                  'https://history.house.gov/Institution/Party-Divisions/' +
-                 'Party-Divisions/, Richard W. Evans (@rickecon).')
+                 'Party-Divisions/; United States Senate, Art & History,'),
+                ('   Party Division, ' +
+                 'https://www.cop.senate.gov/history/partydiv.htm; ' +
+                 'Richard W. Evans (@rickecon).')
             ]
         ]
 
