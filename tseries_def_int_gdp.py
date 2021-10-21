@@ -26,13 +26,13 @@ deficit_dataframe = pd.read_excel(deficit_data_path,
                                   dtype={'A': np.int64, 'B': np.float64,
                                          'C': np.float64, 'D': np.float64},
                                   skiprows=7)
-deficit_dataframe.rename(columns={'Unnamed: 0':'Year'}, inplace=True)
+deficit_dataframe.rename(columns={'Unnamed: 0':'year'}, inplace=True)
 deficit_cds = ColumnDataSource(deficit_dataframe)
 
 # Create Variables for min and max values
-data_length = len(deficit_dataframe['Year'])
-min_year = deficit_dataframe['Year'].min()
-max_year = deficit_dataframe['Year'].max()
+data_length = len(deficit_dataframe['year'])
+min_year = deficit_dataframe['year'].min()
+max_year = deficit_dataframe['year'].max()
 min_deficit = deficit_dataframe['Total Deficit'].min()
 max_deficit = deficit_dataframe['Total Deficit'].max()
 
@@ -68,14 +68,14 @@ fig.ygrid.ticker=SingleIntervalTicker(interval=3)
 fig.segment(x0=-3000, y0=0, x1=3000, y1=0, color='gray', line_width=4)
 bar_width=0.5
 # Bar graph for Net Interest
-fig.vbar(x='Year', top='Primary Deficit', bottom='Total Deficit',
+fig.vbar(x='year', top='Primary Deficit', bottom='Total Deficit',
          source=deficit_cds, width=bar_width, fill_color='#6C9CB2',
          legend_label='Net Interest')
 # Bar Graph for Primary Deficit
-fig.vbar(x='Year', top='Primary Deficit', source=deficit_cds, width=bar_width,
+fig.vbar(x='year', top='Primary Deficit', source=deficit_cds, width=bar_width,
          fill_color='#7D386E', legend_label='Primary Deficit')
 # Line for Total Deficit
-fig.line(x='Year', y='Total Deficit', source=deficit_cds, color='#5D1950',
+fig.line(x='year', y='Total Deficit', source=deficit_cds, color='#5D1950',
          line_width=5, legend_label='Total Deficit')
 fig.segment(x0=2020.5, y0=min_deficit-100, x1=2020.5, y1=max_deficit + 100,
             color='gray', line_dash='6 2', line_width=2)
@@ -87,11 +87,11 @@ fig.add_layout(label_temp)
 fig.legend.location = 'bottom_left'
 
 # Add information on hover
-tooltips = [ ('Year', '@Year'),
+tooltips = [ ('Year', '@year'),
              ('Primary Deficit', '@{Primary Deficit}{0.0}'+'%'),
              ('Net Interest', '@{Net Interest}{0.0}'+'%'),
              ('Total Deficit', '@{Total Deficit}{0.0}'+'%')]
-hover_glyph = fig.circle(x='Year', y='Total Deficit', source=deficit_cds,
+hover_glyph = fig.circle(x='year', y='Total Deficit', source=deficit_cds,
                          size=10, alpha=0, hover_fill_color='gray',
                          hover_alpha=0.5)
 fig.add_tools(HoverTool(tooltips=tooltips))
