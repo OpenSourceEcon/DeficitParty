@@ -112,17 +112,5 @@ caption2 = Title(text=note_text_2, align='left', text_font_size='4mm',
                  text_font_style='italic')
 fig.add_layout(caption2, 'below')
 
-# # Add source text below image
-# fig.add_layout(Title(text='Source: Congressional Budget Office, ' +
-#                           'Richard W. Evans (@RickEcon), ' +
-#                           'historical data from FRED FYFSGDA188S series. ' +
-#                           'CBO forecast values from CBO extended baseline ' +
-#                           'forecast of Revenues Minus Total Spending ' +
-#                           '(Mar. 2021).',
-#                      align='center',
-#                      text_font_size='3mm',
-#                      text_font_style='italic'),
-#                'below')
-
 # Display the generated figure
 show(fig)
