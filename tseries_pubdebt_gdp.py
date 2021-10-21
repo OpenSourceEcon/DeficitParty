@@ -18,7 +18,7 @@ debt_data_path = os.path.join(data_dir, 'Mar21-Data-Underlying-Figures.xlsx')
 images_dir = os.path.join(cur_path, 'images')
 
 
-#Pull data from Excel Sheet "Mar21-Data-Underlying-Figures.xlsx"
+# Pull data from Excel Sheet "Mar21-Data-Underlying-Figures.xlsx"
 debt_df = pd.read_excel(debt_data_path,
                         sheet_name=1,
                         usecols="A,B",
@@ -28,19 +28,19 @@ debt_df = pd.read_excel(debt_data_path,
 debt_df.rename(columns={'Unnamed: 0':'year','Unnamed: 1':'debt'}, inplace=True)
 debt_cds = ColumnDataSource(debt_df)
 
-#Create Variables for min and max values
+# Create Variables for min and max values
 data_length = len(debt_df['year'])
 min_year = debt_df['year'].min()
 max_year = debt_df['year'].max()
 min_debt = debt_df['debt'].min()
 max_debt = debt_df['debt'].max()
 
-#Output to HTML file titled: "federal_debt_image.html"
+# Output to HTML file titled: "federal_debt_image.html"
 fig_title = 'U.S. Federal Debt Held by the Public, 1900 to 2051'
 fig_path = os.path.join(images_dir, 'tseries_pubdebt_gdp.html')
 output_file(fig_path, title=fig_title)
 
-#Create a figure with '% of GDP' as Y-axis and year as X-axis
+# Create a figure with '% of GDP' as Y-axis and year as X-axis
 fig = figure(title=fig_title,
              plot_height=600,
              plot_width=1200,
@@ -57,19 +57,19 @@ fig.xaxis.major_label_text_font_size = '12pt'
 fig.yaxis.axis_label_text_font_size = '12pt'
 fig.yaxis.major_label_text_font_size = '12pt'
 
-#Modify tick intervals for X-axis and Y-axis
+# Modify tick intervals for X-axis and Y-axis
 fig.xaxis.ticker=SingleIntervalTicker(interval=10, num_minor_ticks=0)
 fig.xgrid.ticker=SingleIntervalTicker(interval=20)
 fig.yaxis.ticker=SingleIntervalTicker(interval=25, num_minor_ticks=0)
 fig.ygrid.ticker=SingleIntervalTicker(interval=50)
 
-#Plotting the data line
+# Plotting the data line
 fig.varea(x='year', y1='debt', y2=0, source=debt_cds, color='#C584DB')
-#Vertical line showing start of forecast data
+# Vertical line showing start of forecast data
 fig.segment(x0=2021, y0=0, x1=2021, y1=300, color='gray', line_dash='6 2',
             line_width=2)
 
-#Labels of significant events
+# Labels of significant events
 label_temp = Label(x=1915, y=38, x_units='data', y_units='data',
                    text='World War I')
 fig.add_layout(label_temp)
@@ -93,16 +93,16 @@ label_temp = Label(x=2021.7, y=190, x_units='data', y_units='data',
                    text='Projected')
 fig.add_layout(label_temp)
 
-#Add information on hover
+# Add information on hover
 tooltips = [ ('Year', '@year'), ('Debt', '@debt{0.0}'+'%')]
 hover_glyph = fig.circle(x='year', y='debt', source=debt_cds,size=10, alpha=0,
                          hover_fill_color='gray', hover_alpha=0.5)
 fig.add_tools(HoverTool(tooltips=tooltips))
 
-#Turn off scrolling
+# Turn off scrolling
 fig.toolbar.active_drag = None
 
-#Add source text below image
+# Add source text below image
 note_text_1 = ('Source: Congressional Budget Office, Richard W. Evans ' +
                '(@RickEcon), historical data from FRED FYFSGDA188S series. ' +
                'CBO forecast values from CBO extended')
@@ -115,5 +115,5 @@ caption2 = Title(text=note_text_2, align='left', text_font_size='4mm',
                  text_font_style='italic')
 fig.add_layout(caption2, 'below')
 
-#Display the generated figure
+# Display the generated figure
 show(fig)
