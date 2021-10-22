@@ -1,23 +1,31 @@
+'''
+The deficit_plots.py module prints plots of deficit/GDP for United States
+across years, by number of Democrat-held Senate seats and House seats, and by
+three different measures of party control. If a user runs this module as a
+script, it will create all six plots.
+'''
+
 # Import packages
 from bokeh.core.property.numeric import Interval
+from bokeh.io.output import reset_output
 from bokeh.models.annotations import Label, LabelSet
 from bokeh.models.glyphs import VArea
+from bokeh.models.layouts import Panel
 from bokeh.models.tickers import SingleIntervalTicker
 import numpy as np
 import pandas as pd
 import datetime as dt
 import os
-from bokeh.io import output_file
+from bokeh.io import output_file, save
 from bokeh.plotting import figure, show
-from bokeh.models import (ColumnDataSource, Title, Legend, HoverTool,
-                          NumeralTickFormatter)
-from bokeh.models.widgets import Tabs, Panel
+from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
+                          Legend, HoverTool, NumeralTickFormatter, Span, Tabs,
+                          Panel)
 
 # Set paths to work across Mac/Windows/Linux platforms
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(cur_path, 'data')
 party_data_path = os.path.join(data_dir, 'deficit_party_data.csv')
-recession_data_path = os.path.join(data_dir, 'recession_data.csv')
 images_dir = os.path.join(cur_path, 'images')
 
 '''
@@ -25,8 +33,6 @@ images_dir = os.path.join(cur_path, 'images')
 Create pandas DataFrames and Column Data Source data objects
 -------------------------------------------------------------------------------
 '''
-# Create recession data column data source object
-recession_df = pd.read_csv(recession_data_path, parse_dates=['Peak','Trough'])
 
 # Reading data from CVS (deficit_party_data.csv)
 main_df = pd.read_csv(party_data_path,
@@ -53,21 +59,25 @@ main_df = pd.read_csv(party_data_path,
                              'total_houseseats': np.int64},
                       skiprows=3)
 
-def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
-                recession_df=recession_df, note_text_list=[], fig_title_str='',
-                fig_path=''):
-    """
-    This function creates a three-panel time-series plot--one panel for each
-    definition of party control--for a particular variable as a percent of GDP.
-    The particular variable is either deficits, receipts, or non-interest
-    spending.
 
-    Inputs:
-        yvar_str (string): either ''deficit_gdp', 'receipts_gdp', or
-            'spend_nonint_gdp'
+def gen_scatter(yvar_str='deficit_gdp', xvar_str='dem_senateseats',
+                start_year='min', main_df=main_df, note_text_list=[],
+                fig_title_str='', fig_path=''):
     """
-    # Create Variables for min and max values
-    recession_data_length = len(recession_df['Peak'])
+    Generates one of six different plot types of U.S. deficit/GDP by year, by
+    Democrat held Senate seats or House seats, and by three different measures
+    of political control
+
+    Args:
+        deficit_component (string): either "deficit", "spending", or "revenues"
+        seat_type (string): either "house" or "senate"
+        df (DataFrame): input data
+        show (boolean): =True shows figure by opening browser page
+
+    Returns:
+        Y (array_like): aggregate output
+    """
+    # Create Variables for min and max values and plot buffer amounts
     if start_year == 'min':
         min_year = main_df['year'].min()
     else:
@@ -76,6 +86,52 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
     max_year = main_df['year'].max()
     min_yvar = main_df[yvar_str].min()
     max_yvar = main_df[yvar_str].max()
+
+    buffer_pct = 0.075
+    y_buffer = (max_yvar - min_yvar) * buffer_pct
+
+    max_seats = main_df[xvar_str].max()
+    min_seats = main_df[xvar_str].min()
+    x_buffer = (max_seats - min_seats) * buffer_pct
+
+    # Create x and y interval tick marks and gridlines for each plot
+    if xvar_str == 'dem_senateseats':
+        x_tick_interval = 2
+        x_num_minor_ticks = 2
+        x_grid_interval = x_tick_interval
+        mid_line = 50
+        if yvar_str == 'deficit_gdp':
+            y_tick_interval = 5
+            y_num_minor_ticks = 5
+            y_grid_interval = y_tick_interval
+        elif yvar_str == 'receipts_gdp':
+            y_tick_interval = 2
+            y_num_minor_ticks = 2
+            y_grid_interval = y_tick_interval
+        elif yvar_str == 'spend_nonint_gdp':
+            y_tick_interval = 5
+            y_num_minor_ticks = 5
+            y_grid_interval = y_tick_interval
+    elif xvar_str == 'dem_houseseats':
+        x_tick_interval = 10
+        x_num_minor_ticks = 2
+        x_grid_interval = x_tick_interval
+        mid_line = 217.5
+        if yvar_str == 'deficit_gdp':
+            y_tick_interval = 5
+            y_num_minor_ticks = 5
+            y_grid_interval = y_tick_interval
+        elif yvar_str == 'receipts_gdp':
+            y_tick_interval = 2
+            y_num_minor_ticks = 2
+            y_grid_interval = y_tick_interval
+        elif yvar_str == 'spend_nonint_gdp':
+            y_tick_interval = 5
+            y_num_minor_ticks = 5
+            y_grid_interval = y_tick_interval
+
+    # Create entire time series column data source for main and recession df's
+    main_cds = ColumnDataSource(main_df)
 
     # Create entire time series column data source for main and recession df's
     main_cds = ColumnDataSource(main_df)
@@ -154,6 +210,19 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
     fig_path = fig_path
     output_file(fig_path, title=fig_title)
 
+    # Set legend locations and label variables
+    if yvar_str == 'deficit_gdp':
+        legend_location = 'bottom_right'
+    elif yvar_str == 'spend_nonint_gdp':
+        legend_location = 'top_right'
+    elif yvar_str == 'receipts_gdp':
+        legend_location = 'top_right'
+
+    if xvar_str == 'dem_senateseats':
+        seat_type = 'Senate'
+    elif xvar_str == 'dem_houseseats':
+        seat_type = 'House'
+
     '''
     ---------------------------------------------------------------------------
     Create figure for each of the three party control definitions
@@ -167,14 +236,14 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
     panel_list = []
 
     for k, v in enumerate(cntrl_str_list):
-        # Create a figure with '% of GDP' as y-axis and year as x-axis
+        # Create a figure with '% of GDP' as y-axis and num seats as x-axis
         fig = figure(title=fig_title,
                      plot_height=650,
                      plot_width=1100,
-                     x_axis_label='Year',
-                     x_range=(min_year - 1, max_year + 1),
+                     x_axis_label='Democrat ' + seat_type + ' seats',
+                     x_range=(min_seats - x_buffer, max_seats + x_buffer),
                      y_axis_label='Percent of Gross Domestic Product',
-                     y_range=(min_yvar - 3, max_yvar + 3),
+                     y_range=(min_yvar - y_buffer, max_yvar + y_buffer),
                      toolbar_location=None)
 
         # Set title font size and axes font sizes
@@ -185,49 +254,33 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
         fig.yaxis.major_label_text_font_size = '12pt'
 
         # Modify tick intervals for X-axis and Y-axis
-        fig.xaxis.ticker = SingleIntervalTicker(interval=10, num_minor_ticks=2)
-        fig.xgrid.ticker = SingleIntervalTicker(interval=10)
-        fig.yaxis.ticker = SingleIntervalTicker(interval=5, num_minor_ticks=5)
-        fig.ygrid.ticker = SingleIntervalTicker(interval=5)
+        fig.yaxis.ticker = \
+            SingleIntervalTicker(interval=y_tick_interval,
+                                 num_minor_ticks=y_num_minor_ticks)
+        fig.ygrid.ticker = SingleIntervalTicker(interval=y_grid_interval)
+        fig.xaxis.ticker = \
+            SingleIntervalTicker(interval=x_tick_interval,
+                                 num_minor_ticks=x_num_minor_ticks)
+        fig.xgrid.ticker = SingleIntervalTicker(interval=x_grid_interval)
 
-        # Create recession bars
-        for x in range(0,recession_data_length):
-            peak_year = recession_df['Peak'][x].year
-            trough_year = recession_df['Trough'][x].year
-            if(peak_year >= min_year and trough_year >= min_year):
-                fig.patch(x=[peak_year, trough_year, trough_year,peak_year],
-                          y=[-100, -100, max_yvar + 10, max_yvar + 10],
-                          fill_color='gray',
-                          fill_alpha=0.4,
-                          line_width=0,
-                          legend_label='Recession')
-            if(peak_year == trough_year and peak_year >= min_year and
-            trough_year >= min_year):
-                fig.patch(x=[peak_year, trough_year + 1, trough_year + 1,
-                             peak_year],
-                          y=[-100, -100, max_yvar + 10, max_yvar + 10],
-                          fill_color='gray',
-                          fill_alpha=0.4,
-                          line_width=0,
-                          legend_label='Recession')
-
-        # Plotting the line and scatter point circles
-        fig.line(x='year', y=yvar_str, source=main_cds, color='#423D3C',
-                 line_width=2)
-
-
-        fig.circle(x='year', y=yvar_str, source=cntrl_cds_list[k][0], size=10,
-                   line_width=1, line_color='black', fill_color='red',
+        # Plotting the scatter point circles
+        fig.circle(x=xvar_str, y=yvar_str, source=cntrl_cds_list[k][0],
+                   size=10, line_width=1, line_color='black', fill_color='red',
                    alpha=0.7, muted_alpha=0.2,
                    legend_label='Republican control')
 
-        fig.circle(x='year', y=yvar_str, source=cntrl_cds_list[k][1], size=10,
-                   line_width=1, line_color='black', fill_color='blue',
-                   alpha=0.7, muted_alpha=0.2, legend_label='Democrat control')
+        fig.circle(x=xvar_str, y=yvar_str, source=cntrl_cds_list[k][1],
+                   size=10, line_width=1, line_color='black',
+                   fill_color='blue', alpha=0.7, muted_alpha=0.2,
+                   legend_label='Democrat control')
 
-        fig.circle(x='year', y=yvar_str, source=cntrl_cds_list[k][2], size=10,
-                   line_width=1, line_color='black', fill_color='green',
-                   alpha=0.7, muted_alpha=0.2, legend_label='Split control')
+        fig.circle(x=xvar_str, y=yvar_str, source=cntrl_cds_list[k][2],
+                   size=10, line_width=1, line_color='black',
+                   fill_color='green', alpha=0.7, muted_alpha=0.2,
+                   legend_label='Split control')
+
+        fig.segment(x0=mid_line, y0=-40, x1=mid_line, y1=40, color='black',
+                    line_dash='6 2', line_width=2)
 
         # Add information on hover
         if yvar_str == 'deficit_gdp':
@@ -253,7 +306,7 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
         fig.toolbar.active_drag = None
 
         # Add legend
-        fig.legend.location = 'bottom_center'
+        fig.legend.location = legend_location
         fig.legend.border_line_width = 2
         fig.legend.border_line_color = 'black'
         fig.legend.border_line_alpha = 1
@@ -281,11 +334,10 @@ def gen_tseries(yvar_str='deficit_gdp', start_year='min', main_df=main_df,
 
 
 if __name__ == "__main__":
-    '''
-    ---------------------------------------------------------------------------
-    Create time series for deficit_gdp by party control
-    ---------------------------------------------------------------------------
-    '''
+    #---------------------------------------------------------------------------
+    # Create time series for deficit_gdp by party control
+    #---------------------------------------------------------------------------
+
     note_text_list = \
         [
             [
@@ -352,39 +404,74 @@ if __name__ == "__main__":
             ]
         ]
 
-    # Create deficits-to-GDP time series by party control figure
-    fig_title_deficit = ('U.S. Federal Surplus (+) or Deficit (-) as ' +
-                        'Percent of Gross Domestic Product by Party ' +
-                        'Control: 1947-2020')
+    # Create deficits-to-GDP by Democrat Senate seats scatterplot
+    fig_title_deficit = ('U.S. Federal Deficits as Percent of GDP by ' +
+                         'Democrat Senate Seats: 1947-2020')
     fig_path_deficit = os.path.join(images_dir,
-                                    'tseries_deficit_gdp_party.html')
-    tseries_deficit_gdp_party = \
-        gen_tseries(yvar_str='deficit_gdp', start_year=1947,
-                    note_text_list=note_text_list,
-                    fig_title_str=fig_title_deficit, fig_path=fig_path_deficit)
-    show(tseries_deficit_gdp_party)
+                                    'scatter_defgdp_senateseats.html')
+    scatter_defgdp_senateseats = \
+        gen_scatter(yvar_str='deficit_gdp', xvar_str='dem_senateseats',
+                    start_year=1947, note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit,
+                    fig_path=fig_path_deficit)
+    show(scatter_defgdp_senateseats)
 
-    # Create receipts-to-GDP time series by party control figure
-    fig_title_receipts = ('U.S. Federal Receipts as Percent of Gross ' +
-                          'Domestic Product by Party Control: 1947-2020')
-    fig_path_receipts = os.path.join(images_dir,
-                                     'tseries_receipts_gdp_party.html')
-    tseries_receipts_gdp_party = \
-        gen_tseries(yvar_str='receipts_gdp', start_year=1947,
-                    note_text_list=note_text_list,
-                    fig_title_str=fig_title_receipts,
-                    fig_path=fig_path_receipts)
-    show(tseries_receipts_gdp_party)
+    # Create deficits-to-GDP by Democrat House seats scatterplot
+    fig_title_deficit = ('U.S. Federal Deficits as Percent of GDP by ' +
+                         'Democrat House Seats: 1947-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'scatter_defgdp_houseseats.html')
+    scatter_defgdp_houseseats = \
+        gen_scatter(yvar_str='deficit_gdp', xvar_str='dem_houseseats',
+                    start_year=1947, note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit,
+                    fig_path=fig_path_deficit)
+    show(scatter_defgdp_houseseats)
 
-    # Create noninterest speinding-to-GDP time series by party control figure
-    fig_title_nonintspend = ('U.S. Federal Noninterest Spending as Percent ' +
-                             'of Gross Domestic Product by Party Control: ' +
-                             '1947-2020')
-    fig_path_nonintspend = os.path.join(images_dir,
-                                        'tseries_nonintspend_gdp_party.html')
-    tseries_nonintspend_gdp_party = \
-        gen_tseries(yvar_str='spend_nonint_gdp', start_year=1947,
-                    note_text_list=note_text_list,
-                    fig_title_str=fig_title_nonintspend,
-                    fig_path=fig_path_nonintspend)
-    show(tseries_nonintspend_gdp_party)
+    # Create non-interest spending-to-GDP by Democrat Senate seats scatterplot
+    fig_title_deficit = ('U.S. Federal Non-interest Spending as Percent of ' +
+                         'GDP by Democrat Senate Seats: 1947-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'scatter_spendgdp_senateseats.html')
+    scatter_spendgdp_senateseats = \
+        gen_scatter(yvar_str='spend_nonint_gdp', xvar_str='dem_senateseats',
+                    start_year=1947, note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit,
+                    fig_path=fig_path_deficit)
+    show(scatter_spendgdp_senateseats)
+
+    # Create non-interest spending-to-GDP by Democrat House seats scatterplot
+    fig_title_deficit = ('U.S. Federal Non-interest Spending as Percent of ' +
+                         'GDP by Democrat House Seats: 1947-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'scatter_spendgdp_houseseats.html')
+    scatter_spendgdp_houseseats = \
+        gen_scatter(yvar_str='spend_nonint_gdp', xvar_str='dem_houseseats',
+                    start_year=1947, note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit,
+                    fig_path=fig_path_deficit)
+    show(scatter_spendgdp_houseseats)
+
+    # Create revenues-to-GDP by Democrat Senate seats scatterplot
+    fig_title_deficit = ('U.S. Federal Revenues as Percent of GDP by ' +
+                         'Democrat Senate Seats: 1947-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'scatter_revgdp_senateseats.html')
+    scatter_revgdp_senateseats = \
+        gen_scatter(yvar_str='receipts_gdp', xvar_str='dem_senateseats',
+                    start_year=1947, note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit,
+                    fig_path=fig_path_deficit)
+    show(scatter_revgdp_senateseats)
+
+    # Create revenues-to-GDP by Democrat House seats scatterplot
+    fig_title_deficit = ('U.S. Federal Revenues as Percent of GDP by ' +
+                         'Democrat House Seats: 1947-2020')
+    fig_path_deficit = os.path.join(images_dir,
+                                    'scatter_revgdp_houseseats.html')
+    scatter_revgdp_houseseats = \
+        gen_scatter(yvar_str='receipts_gdp', xvar_str='dem_houseseats',
+                    start_year=1947, note_text_list=note_text_list,
+                    fig_title_str=fig_title_deficit,
+                    fig_path=fig_path_deficit)
+    show(scatter_revgdp_houseseats)
