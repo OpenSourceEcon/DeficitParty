@@ -1,7 +1,7 @@
 [![OSE Lab cataloged](https://img.shields.io/badge/OSE%20Lab-catalogued-critical)](https://www.oselab.org/gallery)
 [![Python 3.8.2+](https://img.shields.io/badge/python-3.8.2%2B-blue.svg)](https://www.python.org/downloads/release/python-382/)
 
-# Data, code and HTML/JavaScript dynamic images of U.S. debt and deficits
+# Data, code, and HTML/JavaScript dynamic images of U.S. debt and deficits
 This repository contains data, code, and dynamic visualizations of U.S. deficits over time by political party prevalence in both the White House and U.S. Congress. The data visualizations show deficits by party control of the U.S. Congress. All dynamic visualizations in this repository were created in the [Python](https://www.python.org/) programming language using the [Bokeh](https://bokeh.org/) visualization library.
 
 The "DeficitParty" name has a double meaning. First, this repository represents a coding party of deficit and debt dynamic data visualization. This should be a nice tutorial for using Bokeh to richly display data for description and exploration. The second and more literal significance of the repository name "DeficitParty" is that these visualizations show government debt held by the public and the deficit components that contributed to those debts by party control of the White House and U.S. Congress.
