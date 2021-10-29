@@ -47,7 +47,7 @@ fig = figure(title=fig_title,
              x_axis_label='Year',
              x_range=(min_year, max_year),
              y_axis_label='Percent of Gross Domestic Product',
-             y_range=(0,max_debt+20),
+             y_range=(0, max_debt + 20),
              toolbar_location=None)
 
 # Set title font size and axes font sizes
