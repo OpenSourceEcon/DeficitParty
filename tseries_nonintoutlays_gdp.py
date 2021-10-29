@@ -122,7 +122,8 @@ if __name__ == "__main__":
         ]
 
     # Create time series plot of total non-interest outlays as percent of GDP
-    fig_title = ('Total Non-interest Outlays as Percent of GDP: 1962-2020')
+    fig_title = ('Total U.S. Non-interest Outlays as Percent of GDP: ' +
+                 '1962-2020')
     fig_path = os.path.join(images_dir, 'tseries_nonintoutlays_gdp.html')
     nonintoutlays_gdp_tseries = \
         gen_tseries('tot_nonint_outlays_gdp', hover_descr='Nonint Outlays/GDP',
