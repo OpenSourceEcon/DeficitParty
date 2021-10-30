@@ -37,9 +37,9 @@ main_df = pd.read_csv(data_path,
 main_df = main_df.drop(['Unnamed: 8'], axis=1)
 
 
-def gen_tseries(tseries_var, hover_descr='yvar', df=main_df, start_year='min',
-                end_year='max', note_text_list=[], fig_title_str='',
-                fig_path=''):
+def gen_one_tseries(tseries_var, hover_descr='yvar', df=main_df,
+                    start_year='min', end_year='max', note_text_list=[],
+                    fig_title_str='', fig_path='', line_color='blue'):
     """
     This function creates a plot of a single time series from the set of
     variables from the outlays.csv dataset.
@@ -87,15 +87,25 @@ def gen_tseries(tseries_var, hover_descr='yvar', df=main_df, start_year='min',
     # Modify tick intervals for X-axis and Y-axis
     fig.xaxis.ticker = SingleIntervalTicker(interval=5, num_minor_ticks=5)
     fig.xgrid.ticker = SingleIntervalTicker(interval=5)
-    fig.yaxis.ticker = SingleIntervalTicker(interval=2, num_minor_ticks=2)
-    fig.ygrid.ticker = SingleIntervalTicker(interval=2)
+    if tseries_var == 'tot_nonint_outlays_gdp':
+        fig.yaxis.ticker = SingleIntervalTicker(interval=2, num_minor_ticks=2)
+        fig.ygrid.ticker = SingleIntervalTicker(interval=2)
+    elif tseries_var == 'mand_outlays_pct_tot_nonint':
+        fig.yaxis.ticker = SingleIntervalTicker(interval=5, num_minor_ticks=1)
+        fig.ygrid.ticker = SingleIntervalTicker(interval=5)
 
-    fig.line(x='year', y=tseries_var, source=cds, color='blue', line_width=4,
-             alpha=0.7)
+    fig.line(x='year', y=tseries_var, source=cds, color=line_color,
+             line_width=4, alpha=0.7)
+
+    fig.circle(x='year', y=tseries_var, source=cds, color=line_color, size=7,
+               line_width=1, line_color='black', fill_color=line_color,
+               alpha=0.7)
 
     # Add information on hover
     tooltips = [('Year', '@year'),
                 (hover_descr, '@' + tseries_var + '{0.0}'+'%')]
+    hover_glyph = fig.circle(x='year', y=tseries_var, source=cds, size=10,
+                             alpha=0, hover_fill_color='gray', hover_alpha=0.5)
     fig.add_tools(HoverTool(tooltips=tooltips))
 
     # Turn off scrolling
@@ -118,16 +128,30 @@ if __name__ == "__main__":
         [
             ('Source: Historical data associated with CBO February ' +
              '2021 "The Budget and Economic Outlook: 2021 to 2031. ' +
-             'Richard W. Evans (@rickecon).')
+             'Richard W. Evans (@RickEcon).')
         ]
 
     # Create time series plot of total non-interest outlays as percent of GDP
-    fig_title = ('Total U.S. Non-interest Outlays as Percent of GDP: ' +
-                 '1962-2020')
-    fig_path = os.path.join(images_dir, 'tseries_nonintoutlays_gdp.html')
+    fig_title1 = ('Total U.S. Non-interest Outlays as Percent of GDP: ' +
+                  '1962-2020')
+    fig_path1 = os.path.join(images_dir, 'tseries_nonintoutlays_gdp.html')
     nonintoutlays_gdp_tseries = \
-        gen_tseries('tot_nonint_outlays_gdp', hover_descr='Nonint Outlays/GDP',
-                    start_year='min', end_year=2020,
-                    note_text_list=note_text_list,
-                    fig_title_str=fig_title, fig_path=fig_path)
+        gen_one_tseries('tot_nonint_outlays_gdp',
+                        hover_descr='Nonint Outlays/GDP', start_year='min',
+                        end_year=2020, note_text_list=note_text_list,
+                        fig_title_str=fig_title1, fig_path=fig_path1,
+                        line_color='blue')
     show(nonintoutlays_gdp_tseries)
+
+    fig_title2 = ('Mandatory Spending as Percent of Total U.S. Non-interest ' +
+                  'Outlays: 1962-2020')
+    fig_path2 = os.path.join(images_dir,
+                            'tseries_mandatory_totnonintoutlays.html')
+    mandatory_nonintoutlays_tseries = \
+        gen_one_tseries('mand_outlays_pct_tot_nonint',
+                        hover_descr='Mandatory/Nonint Outlays',
+                        start_year='min', end_year=2020,
+                        note_text_list=note_text_list,
+                        fig_title_str=fig_title2, fig_path=fig_path2,
+                        line_color='green')
+    show(mandatory_nonintoutlays_tseries)
