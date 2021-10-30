@@ -14,7 +14,7 @@ from bokeh.models import (ColumnDataSource, CDSView, GroupFilter, Title,
 # Set paths to work across Mac/Windows/Linux platforms
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(cur_path, 'data')
-debt_data_path = os.path.join(data_dir, 'Mar21-Data-Underlying-Figures.xlsx')
+debt_data_path = os.path.join(data_dir, '56977-Data-Underlying-Figures.xlsx')
 images_dir = os.path.join(cur_path, 'images')
 
 
@@ -47,7 +47,7 @@ fig = figure(title=fig_title,
              x_axis_label='Year',
              x_range=(min_year, max_year),
              y_axis_label='Percent of Gross Domestic Product',
-             y_range=(0,max_debt+20),
+             y_range=(0, max_debt + 20),
              toolbar_location=None)
 
 # Set title font size and axes font sizes
@@ -103,14 +103,13 @@ fig.add_tools(HoverTool(tooltips=tooltips))
 fig.toolbar.active_drag = None
 
 # Add source text below image
-note_text_1 = ('Source: Congressional Budget Office, Richard W. Evans ' +
-               '(@RickEcon), historical data from FRED FYFSGDA188S series. ' +
-               'CBO forecast values from CBO extended')
+note_text_1 = ('Source: Recreation of Figure 1 from CBO "The 2021 Long-term ' +
+               'Budget Outlook", Mar. 4, 2021, using dat from '+
+               '56977-Data-Underlying-Figures.xlsx, Richard W. Evans')
 caption1 = Title(text=note_text_1, align='left', text_font_size='4mm',
                  text_font_style='italic')
 fig.add_layout(caption1, 'below')
-note_text_2 = ('   baseline forecast of Revenues Minus Total Spending ' +
-               '(Mar. 2021).')
+note_text_2 = ('   (@RickEcon).')
 caption2 = Title(text=note_text_2, align='left', text_font_size='4mm',
                  text_font_style='italic')
 fig.add_layout(caption2, 'below')
