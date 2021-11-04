@@ -354,12 +354,14 @@ if __name__ == "__main__":
                  'or not holding the majority in the House of ' +
                  'Representatives.'),
                 ('Source: Federal Reserve Economic Data (FRED, ' +
-                 'FYFRGDA188S); United States House of Representatives ' +
-                 'History, Art, & Archives, "Party Divisions of'),
-                ('   the House of Representatives, 1789 to present", ' +
+                 'FYFSGDA188S, FYONDA188S, FYOIDA188S, FYFRGDA188S); United ' +
+                 'States House of Representa-'),
+                ('   tives History, Art, & Archives, "Party Divisions of ' +
+                 'the House of Representatives, 1789 to present", ' +
                  'https://history.house.gov/Institution/Party-Divisions/' +
-                 'Party-Divisions/; United States Senate, Art & History,'),
-                ('   Party Division, ' +
+                 ''),
+                ('   Party-Divisions/; United States Senate, Art & History, ' +
+                 'Party Division, ' +
                  'https://www.cop.senate.gov/history/partydiv.htm; ' +
                  'Richard W. Evans (@rickecon).')
             ],
@@ -374,12 +376,14 @@ if __name__ == "__main__":
                  'holding the White House while not holding the majority in ' +
                  'the Senate.'),
                 ('Source: Federal Reserve Economic Data (FRED, ' +
-                 'FYFRGDA188S); United States House of Representatives ' +
-                 'History, Art, & Archives, "Party Divisions of'),
-                ('   the House of Representatives, 1789 to present", ' +
+                 'FYFSGDA188S, FYONDA188S, FYOIDA188S, FYFRGDA188S); United ' +
+                 'States House of Representa-'),
+                ('   tives History, Art, & Archives, "Party Divisions of ' +
+                 'the House of Representatives, 1789 to present", ' +
                  'https://history.house.gov/Institution/Party-Divisions/' +
-                 'Party-Divisions/; United States Senate, Art & History,'),
-                ('   Party Division, ' +
+                 ''),
+                ('   Party-Divisions/; United States Senate, Art & History, ' +
+                 'Party Division, ' +
                  'https://www.cop.senate.gov/history/partydiv.htm; ' +
                  'Richard W. Evans (@rickecon).')
             ],
@@ -393,12 +397,14 @@ if __name__ == "__main__":
                 ('   as one party holding the White House while not holding ' +
                  'a majority of House seats.'),
                 ('Source: Federal Reserve Economic Data (FRED, ' +
-                 'FYFRGDA188S); United States House of Representatives ' +
-                 'History, Art, & Archives, "Party Divisions of'),
-                ('   the House of Representatives, 1789 to present", ' +
+                 'FYFSGDA188S, FYONDA188S, FYOIDA188S, FYFRGDA188S); United ' +
+                 'States House of Representa-'),
+                ('   tives History, Art, & Archives, "Party Divisions of ' +
+                 'the House of Representatives, 1789 to present", ' +
                  'https://history.house.gov/Institution/Party-Divisions/' +
-                 'Party-Divisions/; United States Senate, Art & History,'),
-                ('   Party Division, ' +
+                 ''),
+                ('   Party-Divisions/; United States Senate, Art & History, ' +
+                 'Party Division, ' +
                  'https://www.cop.senate.gov/history/partydiv.htm; ' +
                  'Richard W. Evans (@rickecon).')
             ]
