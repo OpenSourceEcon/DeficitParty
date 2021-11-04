@@ -674,6 +674,30 @@ print('One-sided p-value of t-stat with df = ' + str(df9) + ':',
 # print('One-sided p-value of t-stat with df = ' + str(df10) + ':',
 #       "{:.3f}".format(p_value10))
 
+# print('')
+# print('Spending: Column 5 (WH + Sen with forecast): Pr: Rep control = ' +
+#       'Dem control (using Dem control)')
+# df11 = n_nis_gdp_whsen_dem_21 - 1
+# t_test_stat11 = ((avg_nis_gdp_whsen_rep_21 - avg_nis_gdp_whsen_dem_21) /
+#                  std_nis_gdp_whsen_dem_21)
+# p_value11 = 1 - tdist.cdf(abs(t_test_stat11), df11)
+# print('t-test stat with df = ' + str(df11) + ':',
+#       "{:.3f}".format(t_test_stat11))
+# print('One-sided p-value of t-stat with df = ' + str(df11) + ':',
+#       "{:.3f}".format(p_value11))
+
+print('')
+print('Spending: Column 5 (WH + Sen with forecast): Pr: Rep control = ' +
+      'Dem control (using Rep control)')
+df12 = n_nis_gdp_whsen_rep_21 - 1
+t_test_stat12 = ((avg_nis_gdp_whsen_rep_21 - avg_nis_gdp_whsen_dem_21) /
+                std_nis_gdp_whsen_rep_21)
+p_value12 = 1 - tdist.cdf(abs(t_test_stat12), df12)
+print('t-test stat with df = ' + str(df12) + ':',
+      "{:.3f}".format(t_test_stat12))
+print('One-sided p-value of t-stat with df = ' + str(df12) + ':',
+      "{:.3f}".format(p_value12))
+
 '''
 -------------------------------------------------------------------------------
 Run regressions on Republican and Democrat control scatter data
@@ -695,6 +719,34 @@ print('')
 print('Regression results for def/GDP by Dem House seats, ' +
       'Republican Control (WH + Sen) 1947-2020')
 print(res1b.summary())
+reg1c = sm.OLS(endog=df1['spend_nonint_gdp'],
+               exog=df1[['const', 'dem_senateseats']], missing='drop')
+res1c = reg1c.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem Senate seats, ' +
+      'Republican Control (WH + Sen) 1947-2020')
+print(res1c.summary())
+reg1d = sm.OLS(endog=df1['spend_nonint_gdp'],
+               exog=df1[['const', 'dem_houseseats']], missing='drop')
+res1d = reg1d.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem House seats, ' +
+      'Republican Control (WH + Sen) 1947-2020')
+print(res1d.summary())
+reg1e = sm.OLS(endog=df1['receipts_gdp'],
+               exog=df1[['const', 'dem_senateseats']], missing='drop')
+res1e = reg1e.fit()
+print('')
+print('Regression results for rev/GDP by Dem Senate seats, ' +
+      'Republican Control (WH + Sen) 1947-2020')
+print(res1e.summary())
+reg1f = sm.OLS(endog=df1['receipts_gdp'],
+               exog=df1[['const', 'dem_houseseats']], missing='drop')
+res1f = reg1f.fit()
+print('')
+print('Regression results for rev/GDP by Dem House seats, ' +
+      'Republican Control (WH + Sen) 1947-2020')
+print(res1f.summary())
 
 
 df2 = cntrl_whsen_dem_20_df
@@ -713,6 +765,34 @@ print('')
 print('Regression results for def/GDP by Dem House seats, ' +
       'Democrat Control (WH + Sen) 1947-2020')
 print(res2b.summary())
+reg2c = sm.OLS(endog=df2['spend_nonint_gdp'],
+               exog=df2[['const', 'dem_senateseats']], missing='drop')
+res2c = reg2c.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem Senate seats, ' +
+      'Democrat Control (WH + Sen) 1947-2020')
+print(res2c.summary())
+reg2d = sm.OLS(endog=df2['spend_nonint_gdp'],
+               exog=df2[['const', 'dem_houseseats']], missing='drop')
+res2d = reg2d.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem House seats, ' +
+      'Democrat Control (WH + Sen) 1947-2020')
+print(res2d.summary())
+reg2e = sm.OLS(endog=df2['receipts_gdp'],
+               exog=df2[['const', 'dem_senateseats']], missing='drop')
+res2e = reg2e.fit()
+print('')
+print('Regression results for rev/GDP by Dem Senate seats, ' +
+      'Democrat Control (WH + Sen) 1947-2020')
+print(res2e.summary())
+reg2f = sm.OLS(endog=df2['receipts_gdp'],
+               exog=df2[['const', 'dem_houseseats']], missing='drop')
+res2f = reg2f.fit()
+print('')
+print('Regression results for rev/GDP by Dem House seats, ' +
+      'Democrat Control (WH + Sen) 1947-2020')
+print(res2f.summary())
 
 df3 = cntrl_whsen_dem_21_df
 df3['const'] = 1
@@ -730,3 +810,31 @@ print('')
 print('Regression results for def/GDP by Dem House seats, ' +
       'Democrat Control (WH + Sen) 1947-2021')
 print(res3b.summary())
+reg3c = sm.OLS(endog=df3['spend_nonint_gdp'],
+               exog=df3[['const', 'dem_senateseats']], missing='drop')
+res3c = reg3c.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem Senate seats, ' +
+      'Democrat Control (WH + Sen) 1947-2021')
+print(res3c.summary())
+reg3d = sm.OLS(endog=df3['spend_nonint_gdp'],
+               exog=df3[['const', 'dem_houseseats']], missing='drop')
+res3d = reg3d.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem House seats, ' +
+      'Democrat Control (WH + Sen) 1947-2021')
+print(res3d.summary())
+reg3e = sm.OLS(endog=df3['receipts_gdp'],
+               exog=df3[['const', 'dem_senateseats']], missing='drop')
+res3e = reg3e.fit()
+print('')
+print('Regression results for rev/GDP by Dem Senate seats, ' +
+      'Democrat Control (WH + Sen) 1947-2021')
+print(res3e.summary())
+reg3f = sm.OLS(endog=df3['receipts_gdp'],
+               exog=df3[['const', 'dem_houseseats']], missing='drop')
+res3f = reg3f.fit()
+print('')
+print('Regression results for rev/GDP by Dem House seats, ' +
+      'Democrat Control (WH + Sen) 1947-2021')
+print(res3f.summary())
