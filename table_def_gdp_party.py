@@ -7,6 +7,8 @@ spending, and revenues as a percent of GDP by party control.
 import numpy as np
 import pandas as pd
 import os
+from scipy.stats import t as tdist
+import statsmodels.api as sm
 
 # Set paths to work across Mac/Windows/Linux platforms
 cur_path = os.path.split(os.path.abspath(__file__))[0]
@@ -555,3 +557,284 @@ print('            & $N$=' + str(n_rev_gdp_all_spl_20) + ' & $N$=' +
       ' & $N$=' + str(n_rev_gdp_all_spl_21) + ' & $N$=' +
       str(n_rev_gdp_whsen_spl_21) + ' & $N$=' + str(n_rev_gdp_whhou_spl_21) +
       ' \\\\')
+
+'''
+-------------------------------------------------------------------------------
+Print p-values from t-tests
+-------------------------------------------------------------------------------
+'''
+print('')
+print('Deficit: Column 5 (WH + Sen with forecast): Pr: split control = ' +
+      'Rep control (using split control)')
+df1 = n_def_gdp_whsen_spl_21 - 1
+t_test_stat1 = ((avg_def_gdp_whsen_spl_21 - avg_def_gdp_whsen_rep_21) /
+                std_def_gdp_whsen_spl_21)
+p_value1 = 1 - tdist.cdf(abs(t_test_stat1), df1)
+print('t-test stat with df = ' + str(df1) + ':', "{:.3f}".format(t_test_stat1))
+print('One-sided p-value of t-stat with df = ' + str(df1) + ':',
+      "{:.3f}".format(p_value1))
+
+# print('')
+# print('Deficit: Column 5 (WH + Sen with forecast): Pr: split control = ' +
+#       'Rep control (using Rep control)')
+# df2 = n_def_gdp_whsen_rep_21 - 1
+# t_test_stat2 = ((avg_def_gdp_whsen_rep_21 - avg_def_gdp_whsen_spl_21) /
+#                 std_def_gdp_whsen_rep_21)
+# p_value2 = 1 - tdist.cdf(abs(t_test_stat2), df2)
+# print('t-test stat with df = ' + str(df2) + ':', "{:.3f}".format(t_test_stat2))
+# print('One-sided p-value of t-stat with df = ' + str(df2) + ':',
+#       "{:.3f}".format(p_value2))
+
+print('')
+print('Deficit: Column 5 (WH + Sen with forecast): Pr: split control = ' +
+      'Dem control (using split control)')
+df3 = n_def_gdp_whsen_spl_21 - 1
+t_test_stat3 = ((avg_def_gdp_whsen_spl_21 - avg_def_gdp_whsen_dem_21) /
+                std_def_gdp_whsen_spl_21)
+p_value3 = 1 - tdist.cdf(abs(t_test_stat3), df3)
+print('t-test stat with df = ' + str(df3) + ':', "{:.3f}".format(t_test_stat3))
+print('One-sided p-value of t-stat with df = ' + str(df3) + ':',
+      "{:.3f}".format(p_value3))
+
+# print('')
+# print('Deficit: Column 5 (WH + Sen with forecast): Pr: split control = ' +
+#       'Dem control (using Dem control)')
+# df4 = n_def_gdp_whsen_dem_21 - 1
+# t_test_stat4 = ((avg_def_gdp_whsen_dem_21 - avg_def_gdp_whsen_spl_21) /
+#                 std_def_gdp_whsen_dem_21)
+# p_value4 = 1 - tdist.cdf(abs(t_test_stat4), df4)
+# print('t-test stat with df = ' + str(df4) + ':', "{:.3f}".format(t_test_stat4))
+# print('One-sided p-value of t-stat with df = ' + str(df4) + ':',
+#       "{:.3f}".format(p_value4))
+
+# print('')
+# print('Deficit: Column 5 (WH + Sen with forecast): Pr: Rep control = ' +
+#       'Dem control (using Dem control)')
+# df5 = n_def_gdp_whsen_dem_21 - 1
+# t_test_stat5 = ((avg_def_gdp_whsen_rep_21 - avg_def_gdp_whsen_dem_21) /
+#                 std_def_gdp_whsen_dem_21)
+# p_value5 = 1 - tdist.cdf(abs(t_test_stat5), df5)
+# print('t-test stat with df = ' + str(df5) + ':', "{:.3f}".format(t_test_stat5))
+# print('One-sided p-value of t-stat with df = ' + str(df5) + ':',
+#       "{:.3f}".format(p_value5))
+
+print('')
+print('Deficit: Column 5 (WH + Sen with forecast): Pr: Rep control = ' +
+      'Dem control (using Rep control)')
+df6 = n_def_gdp_whsen_rep_21 - 1
+t_test_stat6 = ((avg_def_gdp_whsen_rep_21 - avg_def_gdp_whsen_dem_21) /
+                std_def_gdp_whsen_rep_21)
+p_value6 = 1 - tdist.cdf(abs(t_test_stat6), df6)
+print('t-test stat with df = ' + str(df6) + ':', "{:.3f}".format(t_test_stat6))
+print('One-sided p-value of t-stat with df = ' + str(df6) + ':',
+      "{:.3f}".format(p_value6))
+
+print('')
+print('Spending: Column 5 (WH + Sen with forecast): Pr: split control = ' +
+      'Rep control (using split control)')
+df7 = n_nis_gdp_whsen_spl_21 - 1
+t_test_stat7 = ((avg_nis_gdp_whsen_rep_21 - avg_nis_gdp_whsen_spl_21) /
+                std_nis_gdp_whsen_spl_21)
+p_value7 = 1 - tdist.cdf(abs(t_test_stat7), df7)
+print('t-test stat with df = ' + str(df7) + ':', "{:.3f}".format(t_test_stat7))
+print('One-sided p-value of t-stat with df = ' + str(df7) + ':',
+      "{:.3f}".format(p_value7))
+
+# print('')
+# print('Spending: Column 5 (WH + Sen with forecast): Pr: split control = ' +
+#       'Rep control (using Rep control)')
+# df8 = n_nis_gdp_whsen_rep_21 - 1
+# t_test_stat8 = ((avg_nis_gdp_whsen_rep_21 - avg_nis_gdp_whsen_spl_21) /
+#                 std_nis_gdp_whsen_rep_21)
+# p_value8 = 1 - tdist.cdf(abs(t_test_stat8), df8)
+# print('t-test stat with df = ' + str(df8) + ':', "{:.3f}".format(t_test_stat8))
+# print('One-sided p-value of t-stat with df = ' + str(df8) + ':',
+#       "{:.3f}".format(p_value8))
+
+print('')
+print('Spending: Column 5 (WH + Sen with forecast): Pr: split control = ' +
+      'Dem control (using split control)')
+df9 = n_nis_gdp_whsen_spl_21 - 1
+t_test_stat9 = ((avg_nis_gdp_whsen_dem_21 - avg_nis_gdp_whsen_spl_21) /
+                std_nis_gdp_whsen_spl_21)
+p_value9 = 1 - tdist.cdf(abs(t_test_stat9), df9)
+print('t-test stat with df = ' + str(df9) + ':', "{:.3f}".format(t_test_stat9))
+print('One-sided p-value of t-stat with df = ' + str(df9) + ':',
+      "{:.3f}".format(p_value9))
+
+# print('')
+# print('Spending: Column 5 (WH + Sen with forecast): Pr: split control = ' +
+#       'Dem control (using Dem control)')
+# df10 = n_nis_gdp_whsen_dem_21 - 1
+# t_test_stat10 = ((avg_nis_gdp_whsen_dem_21 - avg_nis_gdp_whsen_spl_21) /
+#                  std_nis_gdp_whsen_dem_21)
+# p_value10 = 1 - tdist.cdf(abs(t_test_stat10), df10)
+# print('t-test stat with df = ' + str(df10) + ':',
+#       "{:.3f}".format(t_test_stat10))
+# print('One-sided p-value of t-stat with df = ' + str(df10) + ':',
+#       "{:.3f}".format(p_value10))
+
+# print('')
+# print('Spending: Column 5 (WH + Sen with forecast): Pr: Rep control = ' +
+#       'Dem control (using Dem control)')
+# df11 = n_nis_gdp_whsen_dem_21 - 1
+# t_test_stat11 = ((avg_nis_gdp_whsen_rep_21 - avg_nis_gdp_whsen_dem_21) /
+#                  std_nis_gdp_whsen_dem_21)
+# p_value11 = 1 - tdist.cdf(abs(t_test_stat11), df11)
+# print('t-test stat with df = ' + str(df11) + ':',
+#       "{:.3f}".format(t_test_stat11))
+# print('One-sided p-value of t-stat with df = ' + str(df11) + ':',
+#       "{:.3f}".format(p_value11))
+
+print('')
+print('Spending: Column 5 (WH + Sen with forecast): Pr: Rep control = ' +
+      'Dem control (using Rep control)')
+df12 = n_nis_gdp_whsen_rep_21 - 1
+t_test_stat12 = ((avg_nis_gdp_whsen_rep_21 - avg_nis_gdp_whsen_dem_21) /
+                std_nis_gdp_whsen_rep_21)
+p_value12 = 1 - tdist.cdf(abs(t_test_stat12), df12)
+print('t-test stat with df = ' + str(df12) + ':',
+      "{:.3f}".format(t_test_stat12))
+print('One-sided p-value of t-stat with df = ' + str(df12) + ':',
+      "{:.3f}".format(p_value12))
+
+'''
+-------------------------------------------------------------------------------
+Run regressions on Republican and Democrat control scatter data
+-------------------------------------------------------------------------------
+'''
+df1 = cntrl_whsen_rep_20_df
+df1['const'] = 1
+reg1a = sm.OLS(endog=df1['deficit_gdp'], exog=df1[['const', 'dem_senateseats']],
+              missing='drop')
+res1a = reg1a.fit()
+print('')
+print('Regression results for def/GDP by Dem Senate seats, ' +
+      'Republican Control (WH + Sen) 1947-2020')
+print(res1a.summary())
+reg1b = sm.OLS(endog=df1['deficit_gdp'], exog=df1[['const', 'dem_houseseats']],
+              missing='drop')
+res1b = reg1b.fit()
+print('')
+print('Regression results for def/GDP by Dem House seats, ' +
+      'Republican Control (WH + Sen) 1947-2020')
+print(res1b.summary())
+reg1c = sm.OLS(endog=df1['spend_nonint_gdp'],
+               exog=df1[['const', 'dem_senateseats']], missing='drop')
+res1c = reg1c.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem Senate seats, ' +
+      'Republican Control (WH + Sen) 1947-2020')
+print(res1c.summary())
+reg1d = sm.OLS(endog=df1['spend_nonint_gdp'],
+               exog=df1[['const', 'dem_houseseats']], missing='drop')
+res1d = reg1d.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem House seats, ' +
+      'Republican Control (WH + Sen) 1947-2020')
+print(res1d.summary())
+reg1e = sm.OLS(endog=df1['receipts_gdp'],
+               exog=df1[['const', 'dem_senateseats']], missing='drop')
+res1e = reg1e.fit()
+print('')
+print('Regression results for rev/GDP by Dem Senate seats, ' +
+      'Republican Control (WH + Sen) 1947-2020')
+print(res1e.summary())
+reg1f = sm.OLS(endog=df1['receipts_gdp'],
+               exog=df1[['const', 'dem_houseseats']], missing='drop')
+res1f = reg1f.fit()
+print('')
+print('Regression results for rev/GDP by Dem House seats, ' +
+      'Republican Control (WH + Sen) 1947-2020')
+print(res1f.summary())
+
+
+df2 = cntrl_whsen_dem_20_df
+df2['const'] = 1
+reg2a = sm.OLS(endog=df2['deficit_gdp'], exog=df2[['const', 'dem_senateseats']],
+              missing='drop')
+res2a = reg2a.fit()
+print('')
+print('Regression results for def/GDP by Dem Senate seats, ' +
+      'Democrat Control (WH + Sen) 1947-2020')
+print(res2a.summary())
+reg2b = sm.OLS(endog=df2['deficit_gdp'], exog=df2[['const', 'dem_houseseats']],
+              missing='drop')
+res2b = reg2b.fit()
+print('')
+print('Regression results for def/GDP by Dem House seats, ' +
+      'Democrat Control (WH + Sen) 1947-2020')
+print(res2b.summary())
+reg2c = sm.OLS(endog=df2['spend_nonint_gdp'],
+               exog=df2[['const', 'dem_senateseats']], missing='drop')
+res2c = reg2c.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem Senate seats, ' +
+      'Democrat Control (WH + Sen) 1947-2020')
+print(res2c.summary())
+reg2d = sm.OLS(endog=df2['spend_nonint_gdp'],
+               exog=df2[['const', 'dem_houseseats']], missing='drop')
+res2d = reg2d.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem House seats, ' +
+      'Democrat Control (WH + Sen) 1947-2020')
+print(res2d.summary())
+reg2e = sm.OLS(endog=df2['receipts_gdp'],
+               exog=df2[['const', 'dem_senateseats']], missing='drop')
+res2e = reg2e.fit()
+print('')
+print('Regression results for rev/GDP by Dem Senate seats, ' +
+      'Democrat Control (WH + Sen) 1947-2020')
+print(res2e.summary())
+reg2f = sm.OLS(endog=df2['receipts_gdp'],
+               exog=df2[['const', 'dem_houseseats']], missing='drop')
+res2f = reg2f.fit()
+print('')
+print('Regression results for rev/GDP by Dem House seats, ' +
+      'Democrat Control (WH + Sen) 1947-2020')
+print(res2f.summary())
+
+df3 = cntrl_whsen_dem_21_df
+df3['const'] = 1
+reg3a = sm.OLS(endog=df3['deficit_gdp'], exog=df3[['const', 'dem_senateseats']],
+              missing='drop')
+res3a = reg3a.fit()
+print('')
+print('Regression results for def/GDP by Dem Senate seats, ' +
+      'Democrat Control (WH + Sen) 1947-2021')
+print(res3a.summary())
+reg3b = sm.OLS(endog=df3['deficit_gdp'], exog=df3[['const', 'dem_houseseats']],
+              missing='drop')
+res3b = reg3b.fit()
+print('')
+print('Regression results for def/GDP by Dem House seats, ' +
+      'Democrat Control (WH + Sen) 1947-2021')
+print(res3b.summary())
+reg3c = sm.OLS(endog=df3['spend_nonint_gdp'],
+               exog=df3[['const', 'dem_senateseats']], missing='drop')
+res3c = reg3c.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem Senate seats, ' +
+      'Democrat Control (WH + Sen) 1947-2021')
+print(res3c.summary())
+reg3d = sm.OLS(endog=df3['spend_nonint_gdp'],
+               exog=df3[['const', 'dem_houseseats']], missing='drop')
+res3d = reg3d.fit()
+print('')
+print('Regression results for nonint spend/GDP by Dem House seats, ' +
+      'Democrat Control (WH + Sen) 1947-2021')
+print(res3d.summary())
+reg3e = sm.OLS(endog=df3['receipts_gdp'],
+               exog=df3[['const', 'dem_senateseats']], missing='drop')
+res3e = reg3e.fit()
+print('')
+print('Regression results for rev/GDP by Dem Senate seats, ' +
+      'Democrat Control (WH + Sen) 1947-2021')
+print(res3e.summary())
+reg3f = sm.OLS(endog=df3['receipts_gdp'],
+               exog=df3[['const', 'dem_houseseats']], missing='drop')
+res3f = reg3f.fit()
+print('')
+print('Regression results for rev/GDP by Dem House seats, ' +
+      'Democrat Control (WH + Sen) 1947-2021')
+print(res3f.summary())
