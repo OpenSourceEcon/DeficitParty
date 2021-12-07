@@ -302,7 +302,7 @@ if __name__ == "__main__":
         ]
 
     fig_title2 = ('Debt-to-GDP in Two Reforms Forecasts versus Baseline ' +
-                  'Forecasts, 2021 to 2055')
+                  'Forecast, 2021 to 2055')
     fig_path2 = os.path.join(images_dir,
                              'tseries_pubdebt_gdp_G033_T340.html')
     pubdebt_gdp_G033_T340_tseries = \
