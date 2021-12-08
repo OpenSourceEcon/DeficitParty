@@ -17,6 +17,7 @@ cur_path = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(cur_path, 'data')
 data_path1 = os.path.join(data_dir, 'cbo_ogusa_debt_forecasts.csv')
 data_path2 = os.path.join(data_dir, 'ogusa_aggr_data.csv')
+data_path3 = os.path.join(data_dir, 'ogusa_avg_hhdist_data.csv')
 images_dir = os.path.join(cur_path, 'images')
 
 # Read data from cbo_debt_forecasts.csv
@@ -49,6 +50,19 @@ df2 = pd.read_csv(data_path2, header=2,
 df2['DebtGDP_base'] = (df2['D_base'] / df2['Y_base']) * 100
 df2['DebtGDP_ref_G033'] = (df2['D_ref_G033'] / df2['Y_ref_G033']) * 100
 df2['DebtGDP_ref_T340'] = (df2['D_ref_T340'] / df2['Y_ref_T340']) * 100
+
+# Read data from ogusa_avg_hhdist_data.csv
+df3 = pd.read_csv(data_path3, header=2,
+                  dtype={'lfinc_qntl': str,
+                         'c_avgpctchg_G033': np.float64,
+                         'b_avgpctchg_G033': np.float64,
+                         'n_avgpctchg_G033': np.float64,
+                         'y_avgpctchg_G033': np.float64,
+                         'c_avgpctchg_T340': np.float64,
+                         'b_avgpctchg_T340': np.float64,
+                         'n_avgpctchg_T340': np.float64,
+                         'y_avgpctchg_T340': np.float64},
+                  skiprows=0)
 
 
 def gen_tseries_dy(var_list, legend_label_list, df, color_list, marker_list,
