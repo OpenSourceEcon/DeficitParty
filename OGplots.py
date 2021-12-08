@@ -367,3 +367,12 @@ if __name__ == "__main__":
                           end_year=2055, note_text_list=note_text_list4,
                           fig_title_str=fig_title4, fig_path=fig_path4)
     show(MacroAgg_PctChange_T340)
+
+    # Create distribution analysis bar charts (cons, save, labor, BTincome)
+    # from spending cut simulation (average annual percent change in first 10
+    # years)
+
+
+    # Create distribution analysis bar charts (cons, save, labor, BTincome)
+    # from tax increase simulation (average annual percent change in first 10
+    # years)
