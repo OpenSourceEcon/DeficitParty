@@ -215,7 +215,7 @@ def gen_tseries_macro(var_list, legend_label_list, df, color_list, marker_list,
                     legend_label=legend_label_list[k])
 
     # Add vertical dashed line at 2050
-    fig.segment(x0=2050, y0=-2, x1=2050, y1=14, color='black',
+    fig.segment(x0=2050, y0=-10, x1=2050, y1=20, color='black',
                 line_dash='6 4', line_width=2)
 
     # Add information on hover
@@ -321,9 +321,8 @@ if __name__ == "__main__":
              'forecasts from simulations in Appendix D.'),
         ]
 
-    fig_title3 = ('Macroeconomic Aggregates, Percent Change from Baseline ' +
-                  'from Cut to Government Discretionary Spending, 2021 to ' +
-                  '2055')
+    fig_title3 = ('Macroeconomic Aggregates, Pct Chg from Baseline, ' +
+                  'Cut Government Discretionary Spending, 2021 to 2055')
     fig_path3 = os.path.join(images_dir,
                              'MacroAgg_PctChange_G033.html')
     MacroAgg_PctChange_G033 = \
@@ -332,3 +331,39 @@ if __name__ == "__main__":
                           end_year=2055, note_text_list=note_text_list3,
                           fig_title_str=fig_title3, fig_path=fig_path3)
     show(MacroAgg_PctChange_G033)
+
+    # Plot macro aggregates percent changes from OG-USA tax increase
+    df2['Y_pctchg_T340'] = ((df2['Y_ref_T340'] - df2['Y_base']) /
+                            df2['Y_base']) * 100
+    df2['C_pctchg_T340'] = ((df2['C_ref_T340'] - df2['C_base']) /
+                            df2['C_base']) * 100
+    df2['K_pctchg_T340'] = ((df2['K_ref_G033'] - df2['K_base']) /
+                            df2['K_base']) * 100
+    df2['L_pctchg_T340'] = ((df2['L_ref_T340'] - df2['L_base']) /
+                            df2['L_base']) * 100
+    frcst_var_list4 = ['Y_pctchg_T340', 'C_pctchg_T340', 'K_pctchg_T340',
+                       'L_pctchg_T340']
+    color_list4 = ['blue', 'orange', 'green', 'red']
+    marker_list4 = ['circle', 'triangle', 'square', 'square_pin']
+    legend_label_list4 = [
+        'GDP', 'Aggregate consumption', 'Aggregate capital stock',
+        'Aggregate labor']
+    note_text_list4 = \
+        [
+            ('Source: Macroeconomic effect of increasing personal income '+
+             'marginal tax rates by 34 percent. Percent changes in ' +
+             'macroeconomic variables come from'),
+            ('   OG-USA baseline and reform forecasts from simulations in ' +
+             'Appendix D.'),
+        ]
+
+    fig_title4 = ('Macroeconomic Aggregates, Pct Chg from Baseline, ' +
+                  'Increase in PIT and CIT rates, 2021 to 2055')
+    fig_path4 = os.path.join(images_dir,
+                             'MacroAgg_PctChange_T340.html')
+    MacroAgg_PctChange_T340 = \
+        gen_tseries_macro(frcst_var_list4, legend_label_list4, df2,
+                          color_list4, marker_list4, start_year=2021,
+                          end_year=2055, note_text_list=note_text_list4,
+                          fig_title_str=fig_title4, fig_path=fig_path4)
+    show(MacroAgg_PctChange_T340)
