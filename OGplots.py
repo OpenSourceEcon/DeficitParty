@@ -350,130 +350,130 @@ if __name__ == "__main__":
     """
     Script that runs if the module is called and executed directly
     """
-    # # Create publicly held debt forecasts figure
-    # frcst_var_list1 = ['mar_2021', 'ogusa']
-    # color_list1 = ['red', 'blue']
-    # marker_list1 = ['triangle', 'circle']
-    # legend_label_list1 = [
-    #     'CBO forecast (Mar. 2021)', 'OG-USA baseline forecast']
-    # note_text_list1 = \
-    #     [
-    #         ('Source: U.S. publicly held debt-to-GDP forecasts (extended ' +
-    #          'baseline) from Congressional Budget Office Long-term Budget ' +
-    #          'Outlook March 4, 2021 report.'),
-    #         ('   OG-USA forecast from baseline simulation in Appendix D.')
-    #     ]
+    # Create publicly held debt forecasts figure
+    frcst_var_list1 = ['mar_2021', 'ogusa']
+    color_list1 = ['red', 'blue']
+    marker_list1 = ['triangle', 'circle']
+    legend_label_list1 = [
+        'CBO forecast (Mar. 2021)', 'OG-USA baseline forecast']
+    note_text_list1 = \
+        [
+            ('Source: U.S. publicly held debt-to-GDP forecasts (extended ' +
+             'baseline) from Congressional Budget Office Long-term Budget ' +
+             'Outlook March 4, 2021 report.'),
+            ('   OG-USA forecast from baseline simulation in Appendix D.')
+        ]
 
-    # fig_title1 = ('Baseline Forecasts of U.S. Federal Debt Held by the ' +
-    #               'Public, CBO March 2021 versus OG-USA, 2021 to 2051')
-    # fig_path1 = os.path.join(images_dir,
-    #                          'tseries_pubdebt_gdp_cbo_ogusa_frcsts.html')
-    # pubdebt_gdp_frcsts_cbo_ogusa_tseries = \
-    #     gen_tseries_dy(frcst_var_list1, legend_label_list1, df1, color_list1,
-    #                    marker_list1, start_year=2021, end_year=2051,
-    #                    note_text_list=note_text_list1,
-    #                    fig_title_str=fig_title1, fig_path=fig_path1)
-    # show(pubdebt_gdp_frcsts_cbo_ogusa_tseries)
+    fig_title1 = ('Baseline Forecasts of U.S. Federal Debt Held by the ' +
+                  'Public, CBO March 2021 versus OG-USA, 2021 to 2051')
+    fig_path1 = os.path.join(images_dir,
+                             'tseries_pubdebt_gdp_cbo_ogusa_frcsts.html')
+    pubdebt_gdp_frcsts_cbo_ogusa_tseries = \
+        gen_tseries_dy(frcst_var_list1, legend_label_list1, df1, color_list1,
+                       marker_list1, start_year=2021, end_year=2051,
+                       note_text_list=note_text_list1,
+                       fig_title_str=fig_title1, fig_path=fig_path1)
+    show(pubdebt_gdp_frcsts_cbo_ogusa_tseries)
 
-    # # Create figure of baseline and reform debt-to-GDP time paths
-    # frcst_var_list2 = ['DebtGDP_base', 'DebtGDP_ref_G033', 'DebtGDP_ref_T340']
-    # color_list2 = ['blue', 'green', '#C584DB']
-    # marker_list2 = ['circle', 'triangle', 'square']
-    # legend_label_list2 = [
-    #     'Current law baseline', 'Gov\'t discretionary spending cut',
-    #     'Pers. income and corporate tax increase']
-    # note_text_list2 = \
-    #     [
-    #         ('Source: OG-USA baseline and reform forecasts from simulations ' +
-    #          'in Appendix D. One reform is to reduce government ' +
-    #          'discretionary spending by 1.7 per-'),
-    #         ('   centage points. The other reform is to increase personal ' +
-    #          'income marginal tax rates and the corporate income tax rate ' +
-    #          'by 34 percent.'),
-    #     ]
+    # Create figure of baseline and reform debt-to-GDP time paths
+    frcst_var_list2 = ['DebtGDP_base', 'DebtGDP_ref_G033', 'DebtGDP_ref_T340']
+    color_list2 = ['blue', 'green', '#C584DB']
+    marker_list2 = ['circle', 'triangle', 'square']
+    legend_label_list2 = [
+        'Current law baseline', 'Gov\'t discretionary spending cut',
+        'Pers. income and corporate tax increase']
+    note_text_list2 = \
+        [
+            ('Source: OG-USA baseline and reform forecasts from simulations ' +
+             'in Appendix D. One reform is to reduce government ' +
+             'discretionary spending by 1.7 per-'),
+            ('   centage points. The other reform is to increase personal ' +
+             'income marginal tax rates and the corporate income tax rate ' +
+             'by 34 percent.'),
+        ]
 
-    # fig_title2 = ('Debt-to-GDP in Two Reforms Forecasts versus Baseline ' +
-    #               'Forecast, 2021 to 2055')
-    # fig_path2 = os.path.join(images_dir,
-    #                          'tseries_pubdebt_gdp_G033_T340.html')
-    # pubdebt_gdp_G033_T340_tseries = \
-    #     gen_tseries_dy(frcst_var_list2, legend_label_list2, df2, color_list2,
-    #                    marker_list2, start_year=2021, end_year=2055,
-    #                    note_text_list=note_text_list2,
-    #                    fig_title_str=fig_title2, fig_path=fig_path2)
-    # show(pubdebt_gdp_G033_T340_tseries)
+    fig_title2 = ('Debt-to-GDP in Two Reforms Forecasts versus Baseline ' +
+                  'Forecast, 2021 to 2055')
+    fig_path2 = os.path.join(images_dir,
+                             'tseries_pubdebt_gdp_G033_T340.html')
+    pubdebt_gdp_G033_T340_tseries = \
+        gen_tseries_dy(frcst_var_list2, legend_label_list2, df2, color_list2,
+                       marker_list2, start_year=2021, end_year=2055,
+                       note_text_list=note_text_list2,
+                       fig_title_str=fig_title2, fig_path=fig_path2)
+    show(pubdebt_gdp_G033_T340_tseries)
 
-    # # Plot macro aggregates percent changes from OG-USA gov't spending cut
-    # df2['Y_pctchg_G033'] = ((df2['Y_ref_G033'] - df2['Y_base']) /
-    #                         df2['Y_base']) * 100
-    # df2['C_pctchg_G033'] = ((df2['C_ref_G033'] - df2['C_base']) /
-    #                         df2['C_base']) * 100
-    # df2['K_pctchg_G033'] = ((df2['K_ref_G033'] - df2['K_base']) /
-    #                         df2['K_base']) * 100
-    # df2['L_pctchg_G033'] = ((df2['L_ref_G033'] - df2['L_base']) /
-    #                         df2['L_base']) * 100
-    # frcst_var_list3 = ['Y_pctchg_G033', 'C_pctchg_G033', 'K_pctchg_G033',
-    #                    'L_pctchg_G033']
-    # color_list3 = ['blue', 'orange', 'green', 'red']
-    # marker_list3 = ['circle', 'triangle', 'square', 'square_pin']
-    # legend_label_list3 = [
-    #     'GDP', 'Aggregate consumption', 'Aggregate capital stock',
-    #     'Aggregate labor']
-    # note_text_list3 = \
-    #     [
-    #         ('Source: Macroeconomic effect of cutting government ' +
-    #          'discretionary spending as a percent of GDP by 1.7 percentage ' +
-    #          'points. Percent changes in macro-'),
-    #         ('   economic variables come from OG-USA baseline and reform ' +
-    #          'forecasts from simulations in Appendix D.'),
-    #     ]
+    # Plot macro aggregates percent changes from OG-USA gov't spending cut
+    df2['Y_pctchg_G033'] = ((df2['Y_ref_G033'] - df2['Y_base']) /
+                            df2['Y_base']) * 100
+    df2['C_pctchg_G033'] = ((df2['C_ref_G033'] - df2['C_base']) /
+                            df2['C_base']) * 100
+    df2['K_pctchg_G033'] = ((df2['K_ref_G033'] - df2['K_base']) /
+                            df2['K_base']) * 100
+    df2['L_pctchg_G033'] = ((df2['L_ref_G033'] - df2['L_base']) /
+                            df2['L_base']) * 100
+    frcst_var_list3 = ['Y_pctchg_G033', 'C_pctchg_G033', 'K_pctchg_G033',
+                       'L_pctchg_G033']
+    color_list3 = ['blue', 'orange', 'green', 'red']
+    marker_list3 = ['circle', 'triangle', 'square', 'square_pin']
+    legend_label_list3 = [
+        'GDP', 'Aggregate consumption', 'Aggregate capital stock',
+        'Aggregate labor']
+    note_text_list3 = \
+        [
+            ('Source: Macroeconomic effect of cutting government ' +
+             'discretionary spending as a percent of GDP by 1.7 percentage ' +
+             'points. Percent changes in macro-'),
+            ('   economic variables come from OG-USA baseline and reform ' +
+             'forecasts from simulations in Appendix D.'),
+        ]
 
-    # fig_title3 = ('Macroeconomic Aggregates, Pct Chg from Baseline, ' +
-    #               'Cut Government Discretionary Spending, 2021 to 2055')
-    # fig_path3 = os.path.join(images_dir,
-    #                          'MacroAgg_PctChange_G033.html')
-    # MacroAgg_PctChange_G033 = \
-    #     gen_tseries_macro(frcst_var_list3, legend_label_list3, df2,
-    #                       color_list3, marker_list3, start_year=2021,
-    #                       end_year=2055, note_text_list=note_text_list3,
-    #                       fig_title_str=fig_title3, fig_path=fig_path3)
-    # show(MacroAgg_PctChange_G033)
+    fig_title3 = ('Macroeconomic Aggregates, Pct Chg from Baseline, ' +
+                  'Cut Government Discretionary Spending, 2021 to 2055')
+    fig_path3 = os.path.join(images_dir,
+                             'MacroAgg_PctChange_G033.html')
+    MacroAgg_PctChange_G033 = \
+        gen_tseries_macro(frcst_var_list3, legend_label_list3, df2,
+                          color_list3, marker_list3, start_year=2021,
+                          end_year=2055, note_text_list=note_text_list3,
+                          fig_title_str=fig_title3, fig_path=fig_path3)
+    show(MacroAgg_PctChange_G033)
 
-    # # Plot macro aggregates percent changes from OG-USA tax increase
-    # df2['Y_pctchg_T340'] = ((df2['Y_ref_T340'] - df2['Y_base']) /
-    #                         df2['Y_base']) * 100
-    # df2['C_pctchg_T340'] = ((df2['C_ref_T340'] - df2['C_base']) /
-    #                         df2['C_base']) * 100
-    # df2['K_pctchg_T340'] = ((df2['K_ref_G033'] - df2['K_base']) /
-    #                         df2['K_base']) * 100
-    # df2['L_pctchg_T340'] = ((df2['L_ref_T340'] - df2['L_base']) /
-    #                         df2['L_base']) * 100
-    # frcst_var_list4 = ['Y_pctchg_T340', 'C_pctchg_T340', 'K_pctchg_T340',
-    #                    'L_pctchg_T340']
-    # color_list4 = ['blue', 'orange', 'green', 'red']
-    # marker_list4 = ['circle', 'triangle', 'square', 'square_pin']
-    # legend_label_list4 = [
-    #     'GDP', 'Aggregate consumption', 'Aggregate capital stock',
-    #     'Aggregate labor']
-    # note_text_list4 = \
-    #     [
-    #         ('Source: Macroeconomic effect of increasing personal income '+
-    #          'marginal tax rates by 34 percent. Percent changes in ' +
-    #          'macroeconomic variables come from'),
-    #         ('   OG-USA baseline and reform forecasts from simulations in ' +
-    #          'Appendix D.'),
-    #     ]
+    # Plot macro aggregates percent changes from OG-USA tax increase
+    df2['Y_pctchg_T340'] = ((df2['Y_ref_T340'] - df2['Y_base']) /
+                            df2['Y_base']) * 100
+    df2['C_pctchg_T340'] = ((df2['C_ref_T340'] - df2['C_base']) /
+                            df2['C_base']) * 100
+    df2['K_pctchg_T340'] = ((df2['K_ref_G033'] - df2['K_base']) /
+                            df2['K_base']) * 100
+    df2['L_pctchg_T340'] = ((df2['L_ref_T340'] - df2['L_base']) /
+                            df2['L_base']) * 100
+    frcst_var_list4 = ['Y_pctchg_T340', 'C_pctchg_T340', 'K_pctchg_T340',
+                       'L_pctchg_T340']
+    color_list4 = ['blue', 'orange', 'green', 'red']
+    marker_list4 = ['circle', 'triangle', 'square', 'square_pin']
+    legend_label_list4 = [
+        'GDP', 'Aggregate consumption', 'Aggregate capital stock',
+        'Aggregate labor']
+    note_text_list4 = \
+        [
+            ('Source: Macroeconomic effect of increasing personal income '+
+             'marginal tax rates by 34 percent. Percent changes in ' +
+             'macroeconomic variables come from'),
+            ('   OG-USA baseline and reform forecasts from simulations in ' +
+             'Appendix D.'),
+        ]
 
-    # fig_title4 = ('Macroeconomic Aggregates, Pct Chg from Baseline, ' +
-    #               'Increase in PIT and CIT rates, 2021 to 2055')
-    # fig_path4 = os.path.join(images_dir,
-    #                          'MacroAgg_PctChange_T340.html')
-    # MacroAgg_PctChange_T340 = \
-    #     gen_tseries_macro(frcst_var_list4, legend_label_list4, df2,
-    #                       color_list4, marker_list4, start_year=2021,
-    #                       end_year=2055, note_text_list=note_text_list4,
-    #                       fig_title_str=fig_title4, fig_path=fig_path4)
-    # show(MacroAgg_PctChange_T340)
+    fig_title4 = ('Macroeconomic Aggregates, Pct Chg from Baseline, ' +
+                  'Increase in PIT and CIT rates, 2021 to 2055')
+    fig_path4 = os.path.join(images_dir,
+                             'MacroAgg_PctChange_T340.html')
+    MacroAgg_PctChange_T340 = \
+        gen_tseries_macro(frcst_var_list4, legend_label_list4, df2,
+                          color_list4, marker_list4, start_year=2021,
+                          end_year=2055, note_text_list=note_text_list4,
+                          fig_title_str=fig_title4, fig_path=fig_path4)
+    show(MacroAgg_PctChange_T340)
 
     # Create two distribution analysis bar charts (cons, save, labor, BTincome)
     # from spending cut simulation (average annual percent change in first 10
@@ -500,7 +500,3 @@ if __name__ == "__main__":
                          note_text_list=note_text_list5,
                          fig_title_str=fig_title5, fig_path=fig_path5)
     show(hh_pctchg_G033)
-
-    # Create distribution analysis bar charts (cons, save, labor, BTincome)
-    # from tax increase simulation (average annual percent change in first 10
-    # years) by lifetime income group
