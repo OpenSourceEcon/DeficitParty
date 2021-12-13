@@ -1,0 +1,85 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+  
+  <head>
+    
+      <meta charset="utf-8">
+      <title>Bokeh Plot</title>
+      
+      
+        
+          
+        
+        
+          
+        <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.2.min.js"></script>
+        <script type="text/javascript">
+            Bokeh.set_log_level("info");
+        </script>
+        
+      
+      
+    
+  </head>
+  
+  
+  <body>
+    
+      
+        
+          
+          
+            
+              <div class="bk-root" id="102f2905-e350-4d48-b9e1-c45f9114bd51" data-root-id="1010"></div>
+            
+          
+        
+      
+      
+        <script type="application/json" id="1179">
+          {"c98e0d52-69cb-44cb-88d5-936468b738e0":{"defs":[],"roots":{"references":[{"attributes":{"label":{"value":"consumption"},"renderers":[{"id":"1049"}]},"id":"1061","type":"LegendItem"},{"attributes":{"axis_label":"Percent change","axis_label_text_font_size":"12pt","coordinates":null,"formatter":{"id":"1052"},"group":null,"major_label_policy":{"id":"1053"},"major_label_text_font_size":"12pt","ticker":{"id":"1042"}},"id":"1024","type":"LinearAxis"},{"attributes":{},"id":"1057","type":"UnionRenderers"},{"attributes":{},"id":"1058","type":"Selection"},{"attributes":{},"id":"1029","type":"WheelZoomTool"},{"attributes":{"fill_alpha":{"value":0.1},"fill_color":{"value":"blue"},"hatch_alpha":{"value":0.1},"hatch_color":{"value":"blue"},"line_alpha":{"value":0.1},"line_color":{"value":"blue"},"top":{"field":"top"},"width":{"value":0.8},"x":{"field":"x"}},"id":"1047","type":"VBar"},{"attributes":{},"id":"1022","type":"CategoricalTicker"},{"attributes":{"fill_alpha":{"value":0.2},"fill_color":{"value":"blue"},"hatch_alpha":{"value":0.2},"hatch_color":{"value":"blue"},"line_alpha":{"value":0.2},"line_color":{"value":"blue"},"top":{"field":"top"},"width":{"value":0.8},"x":{"field":"x"}},"id":"1048","type":"VBar"},{"attributes":{"axis":{"id":"1024"},"coordinates":null,"dimension":1,"group":null,"ticker":{"id":"1044"}},"id":"1027","type":"Grid"},{"attributes":{"source":{"id":"1045"}},"id":"1050","type":"CDSView"},{"attributes":{"coordinates":null,"group":null,"text_font_size":"15pt"},"id":"1011","type":"Title"},{"attributes":{"axis":{"id":"1021"},"coordinates":null,"group":null,"ticker":null},"id":"1023","type":"Grid"},{"attributes":{"data":{"top":[0.56595565,-0.94298813,0.05693052,-0.06519166,0.53638068,-0.84897084,0.06338544,-0.04169565,0.38443914,-0.53166038,-0.01351972,-0.02254168,0.41828519,-0.78088029,0.05865432,-0.00907176,0.43605189,-0.76626257,0.044008,-0.00936398,0.5861882,-0.94697952,0.09593017,-0.01808217,0.4870187,-0.777753,0.11683949,0.02745338],"x":[["0-25%","consumption"],["0-25%","savings"],["0-25%","labor supply"],["0-25%","before-tax income"],["25-50%","consumption"],["25-50%","savings"],["25-50%","labor supply"],["25-50%","before-tax income"],["50-70%","consumption"],["50-70%","savings"],["50-70%","labor supply"],["50-70%","before-tax income"],["70-80%","consumption"],["70-80%","savings"],["70-80%","labor supply"],["70-80%","before-tax income"],["80-90%","consumption"],["80-90%","savings"],["80-90%","labor supply"],["80-90%","before-tax income"],["90-99%","consumption"],["90-99%","savings"],["90-99%","labor supply"],["90-99%","before-tax income"],["99-100%","consumption"],["99-100%","savings"],["99-100%","labor supply"],["99-100%","before-tax income"]]},"selected":{"id":"1058"},"selection_policy":{"id":"1057"}},"id":"1045","type":"ColumnDataSource"},{"attributes":{"interval":0.1},"id":"1044","type":"SingleIntervalTicker"},{"attributes":{"below":[{"id":"1021"}],"center":[{"id":"1023"},{"id":"1027"},{"id":"1060"}],"left":[{"id":"1024"}],"renderers":[{"id":"1049"}],"title":{"id":"1011"},"toolbar":{"id":"1035"},"toolbar_location":null,"x_range":{"id":"1013"},"x_scale":{"id":"1017"},"y_range":{"id":"1015"},"y_scale":{"id":"1019"}},"id":"1010","subtype":"Figure","type":"Plot"},{"attributes":{"end":1.369967243,"start":-8.035381272999999},"id":"1015","type":"Range1d"},{"attributes":{},"id":"1019","type":"LinearScale"},{"attributes":{},"id":"1017","type":"CategoricalScale"},{"attributes":{"factors":["0-25%","25-50%","50-70%","70-80%","80-90%","90-99%","99-100%"]},"id":"1013","type":"FactorRange"},{"attributes":{"interval":0.1},"id":"1042","type":"SingleIntervalTicker"},{"attributes":{"coordinates":null,"data_source":{"id":"1045"},"glyph":{"id":"1046"},"group":null,"hover_glyph":null,"muted_glyph":{"id":"1048"},"nonselection_glyph":{"id":"1047"},"view":{"id":"1050"}},"id":"1049","type":"GlyphRenderer"},{"attributes":{"fill_color":{"value":"blue"},"hatch_color":{"value":"blue"},"line_color":{"value":"blue"},"top":{"field":"top"},"width":{"value":0.8},"x":{"field":"x"}},"id":"1046","type":"VBar"},{"attributes":{"axis_label":"Lifetime income quantiles","axis_label_text_font_size":"12pt","coordinates":null,"formatter":{"id":"1055"},"group":null,"major_label_policy":{"id":"1056"},"major_label_text_font_size":"12pt","ticker":{"id":"1022"}},"id":"1021","type":"CategoricalAxis"},{"attributes":{},"id":"1052","type":"BasicTickFormatter"},{"attributes":{"tools":[{"id":"1028"},{"id":"1029"},{"id":"1030"},{"id":"1031"},{"id":"1032"},{"id":"1033"}]},"id":"1035","type":"Toolbar"},{"attributes":{},"id":"1033","type":"HelpTool"},{"attributes":{},"id":"1028","type":"PanTool"},{"attributes":{"overlay":{"id":"1034"}},"id":"1030","type":"BoxZoomTool"},{"attributes":{},"id":"1053","type":"AllLabels"},{"attributes":{},"id":"1031","type":"SaveTool"},{"attributes":{},"id":"1032","type":"ResetTool"},{"attributes":{"coordinates":null,"group":null,"items":[{"id":"1061"}]},"id":"1060","type":"Legend"},{"attributes":{},"id":"1055","type":"CategoricalTickFormatter"},{"attributes":{"bottom_units":"screen","coordinates":null,"fill_alpha":0.5,"fill_color":"lightgrey","group":null,"left_units":"screen","level":"overlay","line_alpha":1.0,"line_color":"black","line_dash":[4,4],"line_width":2,"right_units":"screen","syncable":false,"top_units":"screen"},"id":"1034","type":"BoxAnnotation"},{"attributes":{},"id":"1056","type":"AllLabels"}],"root_ids":["1010"]},"title":"Bokeh Application","version":"2.4.2"}}
+        </script>
+        <script type="text/javascript">
+          (function() {
+            const fn = function() {
+              Bokeh.safely(function() {
+                (function(root) {
+                  function embed_document(root) {
+                    
+                  const docs_json = document.getElementById('1179').textContent;
+                  const render_items = [{"docid":"c98e0d52-69cb-44cb-88d5-936468b738e0","root_ids":["1010"],"roots":{"1010":"102f2905-e350-4d48-b9e1-c45f9114bd51"}}];
+                  root.Bokeh.embed.embed_items(docs_json, render_items);
+                
+                  }
+                  if (root.Bokeh !== undefined) {
+                    embed_document(root);
+                  } else {
+                    let attempts = 0;
+                    const timer = setInterval(function(root) {
+                      if (root.Bokeh !== undefined) {
+                        clearInterval(timer);
+                        embed_document(root);
+                      } else {
+                        attempts++;
+                        if (attempts > 100) {
+                          clearInterval(timer);
+                          console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                        }
+                      }
+                    }, 10, root)
+                  }
+                })(window);
+              });
+            };
+            if (document.readyState != "loading") fn();
+            else document.addEventListener("DOMContentLoaded", fn);
+          })();
+        </script>
+    
+  </body>
+  
+</html>
